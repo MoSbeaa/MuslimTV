@@ -108,8 +108,10 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     | "$PY" -I optimize/tv.py --batch
   echo "Safety switch armed: the stock home comes back by itself in 5 minutes unless the new home works."
 
-  # 3. Switch. Setup app first, then the stock home (this order avoided the black screen).
+  # 3. Switch: the HOME role (Android 10+; the classic set-home-activity for older sets and as a backup), then
+  #    the setup app off, then the stock home (this order avoided the black screen).
   printf '%s\n' \
+    "cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home" \
     "cmd package set-home-activity --user 0 sa.urtv.home/.MainActivity" \
     "pm disable-user --user 0 com.google.android.tungsten.setupwraith" \
     "pm disable-user --user 0 ${STOCK%%/*}" \
