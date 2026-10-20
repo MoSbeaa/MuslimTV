@@ -1090,11 +1090,13 @@
   "id": "134270",
   "en": "Monza",
   "ar": "مونزا",
-  "arFrom": "translit",
+  "arFrom": "wikidata",
   "leagues": [
    "Italian Serie A"
   ],
-  "alt": []
+  "alt": [
+   "AC Monza"
+  ]
  },
  {
   "id": "133670",
@@ -1134,11 +1136,13 @@
   "id": "133682",
   "en": "Roma",
   "ar": "روما",
-  "arFrom": "translit",
+  "arFrom": "wikidata",
   "leagues": [
    "Italian Serie A"
   ],
-  "alt": []
+  "alt": [
+   "AS Roma"
+  ]
  },
  {
   "id": "133701",
@@ -1318,18 +1322,20 @@
  {
   "id": "133665",
   "en": "Mainz",
-  "ar": "ماينز",
-  "arFrom": "translit",
+  "ar": "ماينتس",
+  "arFrom": "wikidata",
   "leagues": [
    "German Bundesliga"
   ],
-  "alt": []
+  "alt": [
+   "1. FSV Mainz 05"
+  ]
  },
  {
   "id": "134551",
   "en": "Paderborn",
   "ar": "بادربورن",
-  "arFrom": "translit",
+  "arFrom": "wikidata",
   "leagues": [
    "German Bundesliga"
   ],
@@ -1701,11 +1707,13 @@
   "id": "138864",
   "en": "Casa Pia",
   "ar": "كاسا بيا",
-  "arFrom": "translit",
+  "arFrom": "wikidata",
   "leagues": [
    "Portuguese Primeira Liga"
   ],
-  "alt": []
+  "alt": [
+   "Casa Pia A.C."
+  ]
  },
  {
   "id": "134106",
@@ -1743,7 +1751,7 @@
   "id": "136854",
   "en": "Famalicao",
   "ar": "فاماليكاو",
-  "arFrom": "translit",
+  "arFrom": "wikidata",
   "leagues": [
    "Portuguese Primeira Liga"
   ],
@@ -1813,11 +1821,13 @@
   "id": "136192",
   "en": "Santa Clara",
   "ar": "سانتا كلارا",
-  "arFrom": "translit",
+  "arFrom": "wikidata",
   "leagues": [
    "Portuguese Primeira Liga"
   ],
-  "alt": []
+  "alt": [
+   "C.D. Santa Clara"
+  ]
  },
  {
   "id": "135708",
@@ -2034,7 +2044,7 @@
   "id": "138004",
   "en": "Telstar",
   "ar": "تلستار",
-  "arFrom": "translit",
+  "arFrom": "wikidata",
   "leagues": [
    "Dutch Eredivisie"
   ],
@@ -2401,7 +2411,7 @@
  {
   "id": "156494",
   "en": "El Qanah",
-  "ar": "نادى القناة",
+  "ar": "القناة",
   "arFrom": "thesportsdb",
   "leagues": [
    "Egyptian Premier League"
@@ -2942,8 +2952,8 @@
  {
   "id": "134145",
   "en": "DC United",
-  "ar": "دي سي يونايتد",
-  "arFrom": "translit",
+  "ar": "دي.سي. يونايتد",
+  "arFrom": "wikidata",
   "leagues": [
    "American Major League Soccer"
   ],
