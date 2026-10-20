@@ -1,7 +1,7 @@
 # Install and reset a TV three times: the stress test for your AI agent
 
 Runs the whole setup from the `next` branch and puts the TV back as it came, three times in a row, to prove both
-work every time and leave nothing behind. It takes about 2 hours; the TV restarts several times. Only a few minutes
+work every time and leave nothing behind. It takes 45 minutes to 2 hours (a TCL on good Wi-Fi: 41 minutes); the TV restarts several times. Only a few minutes
 need you, at the start. Paste this to an agent that runs commands on a computer on the same Wi-Fi as the TV
 (Codex: choose «Approve for me»):
 
@@ -28,7 +28,7 @@ commands in English. Everything except the start runs without me.
    `optimize/venv/bin/python -I optimize/tv.py --probe`
 4. `optimize/shot.sh home my-apps`: write down the first 6 apps of my favourites row, left to right.
 5. If this TV has UrTV on it already: `optimize/reset.sh`, so cycle 1 starts like new.
-6. Tell me I can leave, and that the TV will restart several times over the next 2 hours.
+6. Tell me I can leave, and that the TV will restart several times over the next hour or two.
 
 ## Each cycle (3 times)
 
