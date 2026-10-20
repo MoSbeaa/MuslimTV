@@ -17,7 +17,7 @@ final class Prefs {
         {"136013", "الهلال"}, {"136137", "المنتخب السعودي"},
     };
 
-    // League name exactly as TheSportsDB spells it (checked from CI, .github/tools/fetch_leagues.py), Arabic label.
+    // League name exactly as TheSportsDB spells it (checked from CI by .github/tools/team_ids.py), Arabic label.
     // Their clubs come from assets/shared/teams.json (Teams), which CI builds from these leagues' matches
     // (.github/tools/team_ids.py reads this list); a new league here needs its minimum club count there.
     static final String[][] LEAGUES = {
