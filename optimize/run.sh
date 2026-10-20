@@ -3,6 +3,8 @@
 # any failure just run it again and it carries on where it stopped.
 #   optimize/run.sh            do the next steps
 #   optimize/run.sh status     what is done
+#   optimize/run.sh again      redo every step on the same TV, as after a TV system update put things back
+#                              (the apps' settings stay: installing over keeps them)
 #   SKIP_LAUNCHER=1 optimize/run.sh   keep the TV's own home screen (firmware that won't let another app be Home)
 #   SKIP_EXTRAS=1 optimize/run.sh     without TV Bro and SmartTube
 # Before: optimize/setup.sh and optimize/find-tv.sh. Optional packages the household gave up go in
@@ -35,6 +37,11 @@ title() {
   esac
 }
 
+if [ "${1:-}" = again ]; then   # a TV system update can re-enable what we turned off and take Home back
+  rm -f "$RUN"/.done-* "$RUN/steps.log"
+  echo "Marks cleared: every step runs again (the backup from the first run is kept)."
+  shift
+fi
 if [ "${1:-}" = status ]; then
   for s in "${STEPS[@]}"; do printf '%s %s\n' "$([ -f "$RUN/.done-$s" ] && echo '✓' || echo '·')" "$(title "$s")"; done
   if [ -f "$RUN/report.md" ]; then   # the report's !! lines, so nobody has to grep it by hand

@@ -130,6 +130,8 @@ yet»), delete the folder and clone again.
   and remember progress. **If a command fails, run the same command again.** Don't write your own adb loops,
   probes or test scripts to find out why: the `!!` line and the table below say what to do.
 - One command at a time: never run two scripts against the TV at once, or in the background while you run another.
+- If the TV had a system update since the setup (Home back on the TV's own screen, apps it had off back on):
+  `optimize/run.sh again` redoes every step; the apps' settings stay.
 - Long commands (`run.sh`, `measure.sh`, `--reboot`) can be silent for 5 minutes. Give them a long timeout (40
   minutes for `run.sh`). If your tool kills one anyway, nothing is lost: run the same command again, it continues.
 - Never send `reboot` as a shell command. Restart only with `optimize/venv/bin/python -I optimize/tv.py --reboot`.
