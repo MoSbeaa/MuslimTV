@@ -11,40 +11,56 @@
 
 <div dir="rtl">
 
-## ركّبه بمساعد الذكاء الاصطناعي
+## ركّبه في 3 خطوات
 
-1. **على التلفزيون:** الإعدادات ← النظام ← حول ← اضغط OK على **Build** سبع مرات، ثم من **خيارات المطوّر** شغّل
-   **USB debugging**.
-2. **على كمبيوتر في نفس الواي فاي:** افتح مساعد يشغّل الأوامر على جهازك، مثل **Codex** أو **Claude Code**، والصق:
+### ① التلفزيون
+الإعدادات ← حول ← اضغط OK على **Build** سبع مرات. بعدها روح إلى **خيارات المطوّر** ← شغّل **USB debugging**.
 
-   > ركّب تلفزيوني من https://github.com/tshi-dev/UrTV: انسخ المستودع واتبع `docs/SETUP-PROMPT.md` خطوة بخطوة. أنت على كمبيوتر متصل بنفس شبكة الواي فاي حقت التلفزيون.
+### ② كمبيوتر على نفس الواي فاي، وعليه واحد من هذي
 
-   في Codex اختر «Approve for me» للموافقات من القائمة تحت خانة الكتابة.
+| **Codex** (OpenAI) | **Claude Code** (Anthropic) |
+|---|---|
+| مجاني بحساب ChatGPT | يحتاج اشتراك Claude Pro (20$ بالشهر) |
+| حمّل تطبيق Codex | حمّل تطبيق Claude ← تبويب **Code** |
+| الموافقات: اختر **«Approve for me»** | الموافقات: **Allow** للمهمة كلها |
 
-يسألك عن مدينتك والأندية اللي تتابعها، وبعدها يكمل لحاله في حوالي 40 دقيقة.
+<sub>ويندوز: ركّب Git وPython أول (`winget install Git.Git Python.Python.3.12`). Gemini CLI مجاني وناس قالوا يشتغل؛ ما جرّبناه.</sub>
 
-**آمن:** ما يحذف أي تطبيق، وما يلمس AirPlay ولا Chromecast ولا الصوت، و`optimize/reset.sh` يرجّع التلفزيون مثل ما كان.
+### ③ الصق هذا
+
+> ركّب تلفزيوني من https://github.com/tshi-dev/UrTV: انسخ المستودع واتبع `docs/SETUP-PROMPT.md` خطوة بخطوة. أنت على كمبيوتر متصل بنفس شبكة الواي فاي حقت التلفزيون.
+
+يسألك عن **مدينتك** و**أنديتك**، والتلفزيون يسألك **Allow** مرة وحدة، وبعدها خلّه يشتغل: 40 دقيقة وكم إعادة تشغيل.
+ترجع التلفزيون مثل ما كان بأي وقت: `optimize/reset.sh`.
 
 </div>
 
-## Set it up with your AI agent
+## Set it up in 3 steps
 
-1. **On the TV:** Settings → System → About → press OK on **Build** 7 times, then in **Developer options** turn on
-   **USB debugging**.
-2. **On a computer on the same Wi-Fi:** open an agent that runs commands on that computer, such as **Codex** or
-   **Claude Code**, and paste:
+### ① The TV
+Settings → About → press OK on **Build** 7 times. Then go to **Developer options** → turn on **USB debugging**.
 
-   > Set up my TV with https://github.com/tshi-dev/UrTV: clone it and follow `docs/SETUP-PROMPT.md` step by step. You are on a computer on the same Wi-Fi as the TV.
+### ② A computer on the same Wi-Fi, with one of these
 
-   In Codex, choose «Approve for me» for approvals in the menu under the chat box.
+| **Codex** (OpenAI) | **Claude Code** (Anthropic) |
+|---|---|
+| Free with a ChatGPT account | Needs Claude Pro ($20/month) |
+| Download the Codex app | Download the Claude app → **Code** tab |
+| Approvals: choose **«Approve for me»** | Approvals: **Allow** for the whole task |
 
-It asks for your city and the clubs you follow, then does the rest on its own in about 40 minutes.
+<sub>Windows: install Git and Python first (`winget install Git.Git Python.Python.3.12`). Gemini CLI is free and reported to work; not tested by us.</sub>
 
-**Safe:** nothing is uninstalled; AirPlay, Chromecast and voice are never touched; `optimize/reset.sh` puts the TV
-back as it came. The full prompt: [docs/SETUP-PROMPT.md](docs/SETUP-PROMPT.md).
+### ③ Paste this
 
-**Make your own:** to build a different screen or port it to another TV, give your agent this repo and
-[docs/RECREATE-PROMPT.md](docs/RECREATE-PROMPT.md) (the full design and behaviour spec).
+> Set up my TV with https://github.com/tshi-dev/UrTV: clone it and follow `docs/SETUP-PROMPT.md` step by step. You are on a computer on the same Wi-Fi as the TV.
+
+It asks your **city** and your **clubs**, the TV asks **Allow** once, then leave it: 40 minutes, a few restarts.
+Undo anytime: `optimize/reset.sh`.
+
+**Safe:** nothing is uninstalled; AirPlay, Chromecast and voice are never touched; a 5-minute safety switch puts the
+stock home back if ours doesn't come up. The apps are built and signed by GitHub Actions from this repo (version
+3.N = the build number). The full prompt: [docs/SETUP-PROMPT.md](docs/SETUP-PROMPT.md). To build a different
+screen: [docs/RECREATE-PROMPT.md](docs/RECREATE-PROMPT.md).
 
 ## What you get
 
