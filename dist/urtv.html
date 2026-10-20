@@ -621,6 +621,7 @@ const TEAM_BY_ID = {"137721": "الأهلي", "136017": "الاتفاق", "13601
 const TEAM_KEYS = {};
 // first entry wins on a clash: the Saudi "Al-Faisaly" before the Jordanian "Al Faisaly"
 for(const [en, arName] of Object.entries(TEAM_AR)) if(!(teamKey(en) in TEAM_KEYS)) TEAM_KEYS[teamKey(en)] = arName;
+let MATCHES_LOADED = false;   // a refresh answered; until then the saved row stays
 let MATCHES = {};   // team id -> next event
 let RESULTS = {};   // team id -> recent events
 let NEXT_LIST = {};   // team id -> upcoming events
@@ -798,7 +799,7 @@ function renderMatches(turn){
   const now = Date.now(), shown = new Set();
   const slots = CONFIG.teamIds.map(id => matchSlot(id, now, shown)).filter(Boolean);
   const row = document.getElementById('match-row');
-  if(!slots.length){ row.innerHTML = '<div class="none-week">لا شيء هذا الأسبوع</div>'; return; }
+  if(!slots.length){ if(!MATCHES_LOADED && row.firstElementChild) return; row.innerHTML = '<div class="none-week">لا شيء هذا الأسبوع</div>'; return; }
   const per = CONFIG.matchesPerPage, pages = Math.ceil(slots.length / per);
   if(turn) MATCH_PAGE++;
   MATCH_PAGE %= pages;
@@ -823,6 +824,7 @@ async function loadMatches(){
     try{ const l = await fetchLast(id); answered++; if(l.length) RESULTS[id] = l; }catch(e){}
   }));
   if(!answered && CONFIG.teamIds.length) return;    // offline: keep what is shown (the saved panels)
+  MATCHES_LOADED = true;
   renderMatches();
   if(CONFIG.panel === 'matches') renderPanel(false);
 }
@@ -885,7 +887,7 @@ async function loadTicker(t){
     const prev = closes.length >= 2 ? closes[closes.length-2]
                : (res.meta.chartPreviousClose || res.meta.previousClose || null);
     paintDir(t, prev == null ? null : price >= prev);
-  }catch(e){ paintDir(t, null); }
+  }catch(e){ if(!document.getElementById(t.chg).textContent) paintDir(t, null); }   // offline: keep the arrow on screen
 }
 
 const SKIP_TYPES = ['News','Talk Show','Sports','Game Show'];
@@ -976,6 +978,7 @@ function renderWeekPage(animate){
 
 // ---- the card beside the clock: one of several contents, picked in the app
 let FORECAST = [];
+try{ FORECAST = JSON.parse(localStorage.getItem('forecast:' + location.hash) || '[]') || []; }catch(e){}
 let LIST_PAGE = 0;
 const PANEL_TITLE = {shows:'هذا الأسبوع', prayers:'مواقيت اليوم', forecast:'الأيام القادمة', matches:'مباريات فرقك'};
 
@@ -1096,6 +1099,7 @@ async function loadWeather(){
     const dl = j.daily || {};
     FORECAST = (dl.time || []).map((t, i) => ({date:t, code:dl.weather_code?.[i],
       hi:dl.temperature_2m_max?.[i], lo:dl.temperature_2m_min?.[i]})).filter(x => x.hi != null && x.lo != null);
+    try{ localStorage.setItem('forecast:' + location.hash, JSON.stringify(FORECAST)); }catch(e){}
     if(CONFIG.panel === 'forecast') renderPanel(false);
   }catch(e){ return; }   // keep the last reading; with none only the city shows
 
@@ -1220,7 +1224,7 @@ function applyBackground(force){
 }
 
 // Last painted panels, shown at once on the next start while fresh data loads.
-const SNAP_KEY = 'snap2:' + location.hash;   // bump when the panels' markup changes
+const SNAP_KEY = 'snap3:' + location.hash;   // bump when the panels' markup changes
 const SNAP_SEL = ['.markets', '#week-list', '#match-row'];
 function saveSnap(){
   try{ localStorage.setItem(SNAP_KEY, JSON.stringify(SNAP_SEL.map(q => (document.querySelector(q)||{}).innerHTML || ''))); }catch(e){}

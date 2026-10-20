@@ -160,6 +160,32 @@ for (const panel of ['prayers', 'verse', 'shows']) {
   await ctx.close();
 }
 
+// ---- offline start: weather, market arrows and the match row stay as they were last time
+{
+  const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
+  await ctx.route(/^https?:/, r => r.abort());
+  const p = await ctx.newPage();
+  await p.goto(page('tv.html') + '#teams=136013');
+  await p.waitForTimeout(800);
+  await p.evaluate(() => {
+    document.getElementById('wx-temp').textContent = '٣٨°';
+    document.getElementById('wx-desc').textContent = 'غبار';
+    document.getElementById('wx-desc').classList.add('dust');
+    paintDir(TICKERS[0], true);
+    document.getElementById('match-row').innerHTML = '<div class="saved-match">SAVED</div>';
+    saveSnap();
+  });
+  await p.reload();
+  await p.waitForTimeout(1500);
+  const r = await p.evaluate(() => ({
+    temp: document.getElementById('wx-temp').textContent,
+    dust: document.getElementById('wx-desc').classList.contains('dust'),
+    arrow: document.getElementById('tasi-chg').textContent,
+    row: document.getElementById('match-row').textContent.trim() }));
+  check('offline start: weather, arrow and match row kept', r.temp === '٣٨°' && r.dust && r.arrow === '▲' && r.row === 'SAVED', JSON.stringify(r));
+  await ctx.close();
+}
+
 // ---- a finished game's score stays up for a day, even when the API has already moved on
 {
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
