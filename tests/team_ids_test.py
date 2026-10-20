@@ -177,6 +177,28 @@ def run_once(world, out, cache, full):
     return calls, json.loads((out / "report.json").read_text(encoding="utf-8"))
 
 
+
+# a club a match names without an id: reported, and the season still counts as complete
+def fake_get(path):
+    if not path.startswith("eventsseason.php"):
+        return {"events": None}
+    season = path.rsplit("s=", 1)[1]
+    names = [(str(500 + k), f"Club {k}") for k in range(20)]
+    names[19] = (None, "Club Without Id") if season == ti.seasons_to_try(ti.LEAGUES["Spanish La Liga"],
+                                                                         datetime.date.today())[0] else names[19]
+    return {"events": [{"idHomeTeam": a[0], "strHomeTeam": a[1], "idAwayTeam": b[0], "strAwayTeam": b[1]}
+                       for a, b in zip(names[::2], names[1::2])]}
+
+
+real_get, ti.get = ti.get, fake_get
+report, problems, teams = {"clubs per league": {}}, [], {}
+with contextlib.redirect_stdout(io.StringIO()):
+    ti.collect_league("Spanish La Liga", "4335", datetime.date.today(), teams, report, problems)
+ti.get = real_get
+league = report["clubs per league"]["Spanish La Liga"]
+check("a club without an id is reported and counted", not problems and "Club Without Id" in json.dumps(league)
+      and len(teams) == 20, (problems, league))
+
 real_fetch = ti.fetch
 with tempfile.TemporaryDirectory() as tmp:
     tmp = Path(tmp)

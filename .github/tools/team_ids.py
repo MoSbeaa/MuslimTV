@@ -51,7 +51,9 @@ PREFS = ROOT / "android/app/src/main/java/sa/urtv/screensaver/Prefs.java"
 OUT = Path(os.environ.get("TEAMS_OUT", "teams"))
 CACHE = ROOT / ".github/tools/teams-cache.json"
 FULL = os.environ.get("RUN_FULL") == "1"
-PACE = 2.0   # seconds between TheSportsDB requests: its free key allows 30 a minute
+# seconds between TheSportsDB requests: the free key says 30 a minute, but at 2 s a run drew 48 "429 Too Many
+# Requests" in 176 requests (37 minutes); at 4 s earlier runs drew almost none
+PACE = 4.0
 NATIONAL_LEAGUE = "National teams"
 
 # Every league in Prefs.LEAGUES: its country (Wikidata's ids for it, for checking a found item), the adjective that
@@ -130,7 +132,8 @@ def fetch(url, data=None, headers=None, pause=PACE, tries=6, count="thesportsdb"
             if e.code not in (429, 500, 502, 503, 504):
                 raise
             STATS["rate limited (429)" if e.code == 429 else "retried"] += 1
-            time.sleep(20 * (attempt + 1))
+            wait = e.headers.get("Retry-After") if e.headers else None
+            time.sleep(int(wait) if wait and wait.isdigit() and int(wait) < 600 else 20 * (attempt + 1))
         except (urllib.error.URLError, TimeoutError):
             STATS["retried"] += 1
             time.sleep(10 * (attempt + 1))
@@ -287,6 +290,11 @@ def sides(events):
                 yield str(i), en.strip()
 
 
+def no_id(events):   # clubs a match names without an id: they play, but can't be followed
+    return {e.get(f"str{side}Team").strip() for e in events or [] for side in ("Home", "Away")
+            if e.get(f"str{side}Team") and not e.get(f"id{side}Team")}
+
+
 def league_ids(names, cached=None):
     if cached and all(n in cached for n in names):
         return dict(cached)
@@ -306,16 +314,19 @@ def league_ids(names, cached=None):
 
 def collect_league(name, lid, today, teams, report, problems):
     """The clubs of the last two seasons that have matches, and of the last and next rounds."""
-    seasons = {}
+    seasons, nameless = {}, {}
     for s in seasons_to_try(LEAGUES[name], today):
         if len(seasons) == 2:
             break
-        found = dict(sides(get(f"eventsseason.php?id={lid}&s={s}").get("events")))
+        events = get(f"eventsseason.php?id={lid}&s={s}").get("events")
+        found = dict(sides(events))
         if found:
-            seasons[s] = found
-    rounds = {}
+            seasons[s], nameless[s] = found, no_id(events)
+    rounds, round_nameless = {}, set()
     for path in (f"eventspastleague.php?id={lid}", f"eventsnextleague.php?id={lid}"):
-        rounds.update(sides(get(path).get("events")))
+        events = get(path).get("events")
+        rounds.update(sides(events))
+        round_nameless |= no_id(events)
     every = {}
     for found in [*seasons.values(), rounds]:
         every.update(found)
@@ -323,14 +334,22 @@ def collect_league(name, lid, today, teams, report, problems):
         t = teams.setdefault(i, {"en": en, "leagues": []})
         if name not in t["leagues"]:
             t["leagues"].append(name)
-    report["clubs per league"][name] = {"clubs": len(every), "seasons": {s: len(f) for s, f in seasons.items()},
+    # the newest season with matches is the current one: its last and next rounds belong to it
+    clubs_in = {s: {**found, **(rounds if k == 0 else {})} for k, (s, found) in enumerate(seasons.items())}
+    without = {s: sorted((nameless[s] | (round_nameless if k == 0 else set())) - set(clubs_in[s].values()))
+               for k, s in enumerate(seasons)}
+    report["clubs per league"][name] = {"clubs": len(every), "seasons": {s: len(f) for s, f in clubs_in.items()},
                                         "last and next rounds": len(rounds)}
+    if any(without.values()):
+        report["clubs per league"][name]["named in matches without an id"] = {s: v for s, v in without.items() if v}
     print(f"{name}: {len(every)} clubs {report['clubs per league'][name]['seasons']}", flush=True)
     if len(seasons) < 2:
         problems.append(f"{name}: matches found for {len(seasons)} of the last two seasons")
-    for s, found in seasons.items():
-        if len(found) < LEAGUES[name]["min"]:
-            problems.append(f"{name} {s}: {len(found)} clubs, at least {LEAGUES[name]['min']} expected")
+    for s, found in clubs_in.items():   # a club without an id still counts: the season's data is all there
+        if len(found) + len(without[s]) < LEAGUES[name]["min"]:
+            problems.append(f"{name} {s}: {len(found)} clubs"
+                            + (f" and {len(without[s])} without an id" if without[s] else "")
+                            + f", at least {LEAGUES[name]['min']} expected")
 
 
 def find_national(en, teams, report, cache=None, listed=None):
@@ -437,6 +456,11 @@ def wikidata_arabic(teams, report, cache=None):
         hilal = next(iter(d.get("entities", {}).values()), {})
         props = [p for p, claims in hilal.get("claims", {}).items()
                  if any(((c.get("mainsnak") or {}).get("datavalue") or {}).get("value") == "136013" for c in claims)]
+        if len(props) != 1:   # Al-Hilal's item doesn't hold it: find the property by its name
+            d = wiki(WIKIDATA, {"action": "wbsearchentities", "search": "TheSportsDB team ID", "language": "en",
+                                "type": "property", "limit": 5})
+            props = [h["id"] for h in d.get("search", []) if re.search(r"thesportsdb.*team", h.get("label", ""), re.I)][:1]
+            notes["TheSportsDB property found by name"] = bool(props)
         notes["TheSportsDB property"] = props
         if len(props) == 1:
             ids = list(need)
