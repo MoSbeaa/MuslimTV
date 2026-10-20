@@ -24,6 +24,9 @@ Incremental: the matches decide the clubs every run (about 70 requests), but a t
 Wikidata lookups, and known league ids and national teams are reused. RUN_FULL=1 (the monthly run, or a manual run
 with "full") checks everything again.
 
+In CI: `plan` lists the parts, `collect --part NAME` runs on one runner per league and one for the national teams,
+and `merge` puts them together; with no arguments it does all three in one process.
+
 Writes teams/teams.json ([{id, en, ar, arFrom, leagues, alt}], the next assets/shared/teams.json),
 teams/teams-cache.json (the next .github/tools/teams-cache.json), teams/diff.json and teams/diff.md (added, removed
 and renamed against assets/shared/teams.json) and teams/report.json (with the requests made). Exits 1 after writing
@@ -95,6 +98,7 @@ PARTNERS = ["Saudi Arabia", "Iraq", "Qatar", "United Arab Emirates", "Kuwait", "
             "Syria", "Lebanon", "Egypt", "Morocco", "South Korea", "Japan"]
 KNOWN = {"136013": "Al-Hilal", "136022": "Al-Nassr", "133738": "Real Madrid", "133604": "Arsenal",
          "136137": "Saudi Arabia"}
+PROBE = {"133738": "Real Madrid"}   # does lookupteam.php answer by id? (one request per part, not one per KNOWN id)
 HILAL_ARTICLE = "نادي الهلال (السعودية)"   # Al-Hilal's Arabic Wikipedia article: finds Wikidata's TheSportsDB property
 
 FOOTBALL = re.compile(r"football|soccer", re.I)
@@ -411,7 +415,7 @@ def verify(teams, report, cache=None, listed=None, today=""):
     if not need:
         report["ids checked with"] = "nothing new to check"
         return
-    usable = all((lambda t: t and team_key(t.get("strTeam")) == team_key(n))(lookup(i)) for i, n in KNOWN.items())
+    usable = all((lambda t: t and team_key(t.get("strTeam")) == team_key(n))(lookup(i)) for i, n in PROBE.items())
     report["ids checked with"] = "lookupteam.php" if usable else "the team's own matches"
     for i in need:
         t = teams[i]
@@ -691,53 +695,110 @@ def alt_names(t):
     return out[:4]
 
 
-def main():
-    started, today = time.time(), datetime.date.today()
-    club_leagues = re.findall(r'\{"([^"]+)", "[^"]+"\}', PREFS.read_text(encoding="utf-8").split("LEAGUES = {")[1]
-                              .split("};")[0])
-    problems = [f"{n} is in Prefs.LEAGUES but not in team_ids.py's LEAGUES (country, minimum)"
-                for n in club_leagues if n not in LEAGUES]
-    report = {"date": today.isoformat(), "full run": FULL, "problems": problems, "requests": {},
-              "clubs per league": {}, "national teams found in their matches": [], "national teams not found": [],
-              "id checks": {"checked before": 0, "same team": 0, "another name": [], "no answer": []},
+# ---------- the run: one part per league and one for the national teams (CI runs them side by side), then merge
+
+def prefs_leagues():
+    return re.findall(r'\{"([^"]+)", "[^"]+"\}', PREFS.read_text(encoding="utf-8").split("LEAGUES = {")[1].split("};")[0])
+
+
+def slug(name):
+    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+
+
+def plan():
+    """The parts, for the workflow's matrix: every league of Prefs.LEAGUES, then the national teams."""
+    return [{"name": n, "slug": slug(n)} for n in prefs_leagues() + [NATIONAL_LEAGUE]]
+
+
+def new_report():
+    return {"problems": [], "clubs per league": {}, "national teams found in their matches": [],
+            "national teams not found": [], "id checks": {"checked before": 0, "same team": 0, "another name": [],
+                                                           "no answer": []}}
+
+
+def collect_part(part, today, cache, listed):
+    """One league's clubs (or the national teams), each id checked: {part, teams, report, ...}."""
+    started, before = time.time(), dict(STATS)
+    report, teams, out = new_report(), {}, {"part": part, "started": started}
+    try:
+        if part == NATIONAL_LEAGUE:
+            national = {}
+            for en, ar in NATIONAL.items():
+                hit = find_national(en, teams, report, cache, listed)
+                if hit:
+                    national[en] = list(hit)
+                    teams.setdefault(hit[0], {"en": hit[1], "leagues": []})
+                    teams[hit[0]].update(ar=ar)
+                    teams[hit[0]]["leagues"].append(NATIONAL_LEAGUE)
+            out["national"] = national
+            report["problems"] += [f"national team not found: {x}" for x in report["national teams not found"]]
+            print(len(national), "of", len(NATIONAL), "national teams", flush=True)
+        elif part not in LEAGUES:
+            report["problems"].append(f"{part} is in Prefs.LEAGUES but not in team_ids.py's LEAGUES (country, minimum)")
+        else:
+            ids = league_ids([part], cache["leagues"])
+            if part in ids:
+                collect_league(part, ids[part], today, teams, report, report["problems"])
+                if len(report["clubs per league"][part]["seasons"]) < 2 and part in cache["leagues"]:
+                    ids = league_ids([part])   # a reused league id that no longer answers: find it again
+                    report["problems"].clear()
+                    teams.clear()
+                    collect_league(part, ids[part], today, teams, report, report["problems"])
+            if part in ids:
+                out["league id"] = ids[part]
+            else:
+                report["problems"].append(f"league not found on TheSportsDB: {part}")
+        verify(teams, report, cache, listed, today.isoformat())
+    except Exception as e:  # noqa: BLE001  (written down, so the merge names the part and why)
+        report["problems"].append(f"{part}: the collection stopped: {e!r}"[:400])
+        out["error"] = repr(e)[:400]
+    out.update(teams=teams, report=report, requests={k: STATS[k] - before[k] for k in STATS},
+               minutes=round((time.time() - started) / 60, 1))
+    print(f"{part}: {len(teams)} teams, {out['requests']['thesportsdb']} TheSportsDB requests in {out['minutes']} "
+          f"minutes", flush=True)
+    return out
+
+
+def merge(parts, today, cache, started=None):
+    """Every part into one list: Arabic names (Wikidata here, on one runner), every check, the files. Returns the
+    problems found."""
+    leagues = prefs_leagues()
+    report = {"date": today.isoformat(), "full run": FULL, "problems": [], "requests": {"per part": {}},
+              **{k: v for k, v in new_report().items() if k != "problems"},
               "wikidata": {"ids on several or unlike items": []}, "names told apart": []}
-    cache, listed = load_cache()
-    leagues = [n for n in club_leagues if n in LEAGUES]
-    first_guess = (0 if all(n in cache["leagues"] for n in leagues) else 15) + 5 * len(leagues) \
-        + 3 * sum(en not in cache["national"] for en in NATIONAL) + (0 if listed or cache["teams"] else 420)
-    report["requests"]["estimated at the start"] = first_guess
-    print(f"{'full' if FULL else 'incremental'} run: about {first_guess} TheSportsDB requests, "
-          f"{first_guess * PACE / 60:.0f} minutes or more", flush=True)
-    ids = league_ids(leagues, cache["leagues"])
-    teams = {}   # id -> {"en", "leagues", ...}
-    for name in leagues:
-        if name in ids:
-            collect_league(name, ids[name], today, teams, report, problems)
-    short = [n for n in leagues if n in ids and len(report["clubs per league"][n]["seasons"]) < 2]
-    if short and ids == cache["leagues"]:   # a reused league id that no longer answers: find the ids again
-        ids = league_ids(leagues)
-        for name in short:
-            problems[:] = [x for x in problems if not x.startswith(name)]
-            collect_league(name, ids[name], today, teams, report, problems)
-    problems += [f"league not found on TheSportsDB: {n}" for n in leagues if n not in ids]
-    national = {}
-    for en, ar in NATIONAL.items():
-        hit = find_national(en, teams, report, cache, listed)
-        if hit:
-            national[en] = list(hit)
-            teams.setdefault(hit[0], {"en": hit[1], "leagues": []})
-            teams[hit[0]].update(ar=ar)
-            teams[hit[0]]["leagues"].append(NATIONAL_LEAGUE)
-    print(len(national), "of", len(NATIONAL), "national teams", flush=True)
-    problems += [f"national team not found: {x}" for x in report["national teams not found"]]
+    problems = report["problems"]
+    by_part = {p["part"]: p for p in parts}
+    teams, national, league_id = {}, {}, {}
+    for name in leagues + [NATIONAL_LEAGUE]:
+        p = by_part.get(name)
+        if p is None:
+            problems.append(f"{name}: no data from its collection (the job failed before writing it)")
+            continue
+        r = p["report"]
+        problems += r["problems"]
+        report["clubs per league"].update(r["clubs per league"])
+        for k in ("national teams found in their matches", "national teams not found"):
+            report[k] += r[k]
+        for k, v in r["id checks"].items():
+            report["id checks"][k] += v
+        for k in ("ids checked with", "found in their own matches"):
+            if k in r:
+                report.setdefault(k, {})[name] = r[k]
+        report["requests"]["per part"][name] = {"thesportsdb": p["requests"]["thesportsdb"],
+                                                "rate limited (429)": p["requests"]["rate limited (429)"],
+                                                "minutes": p["minutes"]}
+        national.update(p.get("national", {}))
+        if "league id" in p:
+            league_id[name] = p["league id"]
+        for i, t in p["teams"].items():
+            have = teams.setdefault(i, {**t, "leagues": []})
+            have["leagues"] += [l for l in t["leagues"] if l not in have["leagues"]]
+            if t.get("ar"):
+                have["ar"] = t["ar"]
     wrong = {i: n for i, n in KNOWN.items() if team_key(teams.get(i, {}).get("en", "")) != team_key(n)}
     if wrong:
         problems.append(f"these ids didn't come out right: {wrong}")
-    new = sum(1 for i, t in teams.items() if not known(i, t["en"], cache, listed))
-    report["requests"]["teams to look up"] = new
-    print(f"{len(teams)} teams, {new} to look up: about {new + (len(KNOWN) if new else 0)} more requests", flush=True)
-    verify(teams, report, cache, listed, today.isoformat())
-    print("ids:", {k: v if isinstance(v, int) else len(v) for k, v in report["id checks"].items()}, flush=True)
+    before = dict(STATS)
     wd = wikidata_arabic(teams, report, cache)
     for i, w in wd.items():
         teams[i]["wd_en"] = w[2]
@@ -745,23 +806,26 @@ def main():
     unique_names(teams, report, problems)
     problems += [f"Saudi club or national team named only by transliteration: {i} {t['en']}"
                  for i, t in teams.items() if t["arFrom"] == "translit" and (is_saudi(t) or NATIONAL_LEAGUE in t["leagues"])]
-    order = club_leagues + [NATIONAL_LEAGUE]
+    order = leagues + [NATIONAL_LEAGUE]
     out = [{"id": i, "en": t["en"], "ar": t["ar"], "arFrom": t["arFrom"], "leagues": t["leagues"], "alt": alt_names(t)}
            for i, t in teams.items()]
     out.sort(key=lambda t: (order.index(t["leagues"][0]), t["en"]))
-    new_cache = {"leagues": {n: ids[n] for n in leagues if n in ids}, "national": national,
+    new_cache = {"leagues": league_id, "national": national,
                  "teams": {i: {"en": t["en"], "checked": t.get("checked", ""), "lookup": t.get("lookup"),
                                "wd": list(wd[i]) if i in wd else None, "arFrom": t["arFrom"]}
                            for i, t in sorted(teams.items())}}
     report["teams"] = len(out)
-    report["requests"]["made"] = dict(STATS)
-    report["requests"]["minutes"] = round((time.time() - started) / 60, 1)
+    report["requests"]["thesportsdb"] = sum(p["requests"]["thesportsdb"] for p in parts)
+    report["requests"]["wikidata and wikipedia"] = STATS["wikidata and wikipedia"] - before["wikidata and wikipedia"]
+    report["requests"]["slowest part, minutes"] = max([p["minutes"] for p in parts] or [0])
+    first = min([p["started"] for p in parts] or [time.time()]) if started is None else started
+    report["requests"]["wall minutes"] = round((time.time() - first) / 60, 1)
     try:
         old = json.loads((ROOT / "assets/shared/teams.json").read_text(encoding="utf-8"))
     except (FileNotFoundError, ValueError):
         old = []
     d = diff(old, out)
-    OUT.mkdir(exist_ok=True)
+    OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "teams.json").write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     (OUT / "teams-cache.json").write_text(json.dumps(new_cache, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
     (OUT / "diff.json").write_text(json.dumps(d, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
@@ -770,7 +834,45 @@ def main():
     print(json.dumps({k: v for k, v in report.items() if k not in ("clubs per league", "names told apart")},
                      ensure_ascii=False, indent=1))
     print({k: len(v) for k, v in d.items()})
-    print(f"{STATS['thesportsdb']} TheSportsDB requests in {report['requests']['minutes']} minutes")
+    print(f"{report['requests']['thesportsdb']} TheSportsDB requests; {report['requests']['wall minutes']} minutes")
+    return problems
+
+
+def write_part(p):
+    (OUT / "parts").mkdir(parents=True, exist_ok=True)
+    (OUT / "parts" / f"{slug(p['part'])}.json").write_text(json.dumps(p, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def main(argv=None):
+    """team_ids.py: every part, then the merge, in one process (tests, local runs).
+    team_ids.py plan | collect --part NAME | merge: the workflow's three steps (one collect per runner)."""
+    argv = sys.argv[1:] if argv is None else argv
+    started, today = time.time(), datetime.date.today()
+    if argv[:1] == ["plan"]:
+        print(json.dumps(plan()))
+        return
+    cache, listed = load_cache()
+    if argv[:1] == ["collect"]:
+        name = argv[argv.index("--part") + 1]
+        p = collect_part(name, today, cache, listed)
+        write_part(p)
+        if p["report"]["problems"]:
+            print("\nPROBLEMS:\n- " + "\n- ".join(p["report"]["problems"]))
+        sys.exit(1 if "error" in p else 0)   # a short league is the merge's to report; a crash is this job's
+    if argv[:1] == ["merge"]:
+        parts = [json.loads(f.read_text(encoding="utf-8")) for f in sorted((OUT / "parts").glob("*.json"))]
+        problems = merge(parts, today, cache)
+    else:
+        names = [x["name"] for x in plan()]
+        guess = (0 if all(n in cache["leagues"] for n in names[:-1]) else 15) + 5 * (len(names) - 1) \
+            + 3 * sum(en not in cache["national"] for en in NATIONAL) + (0 if listed or cache["teams"] else 420)
+        print(f"{'full' if FULL else 'incremental'} run: about {guess} TheSportsDB requests, "
+              f"{guess * PACE / 60:.0f} minutes or more in one process", flush=True)
+        parts = []
+        for name in names:
+            parts.append(collect_part(name, today, cache, listed))
+            write_part(parts[-1])
+        problems = merge(parts, today, cache, started)
     if problems:
         print("\nPROBLEMS:\n- " + "\n- ".join(problems))
         sys.exit(1)

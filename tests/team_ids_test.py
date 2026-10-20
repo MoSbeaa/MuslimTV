@@ -165,16 +165,17 @@ def fake_fetch(world, calls):
     return fetch
 
 
-def run_once(world, out, cache, full):
+def run_once(world, out, cache, full, *argv):
     calls = []
     ti.fetch, ti.FULL, ti.OUT, ti.CACHE = fake_fetch(world, calls), full, out, cache
     ti.STATS.update({k: 0 for k in ti.STATS})
     try:
         with contextlib.redirect_stdout(io.StringIO()):
-            ti.main()
+            ti.main(list(argv))
     except SystemExit:
         pass   # a check failed (the fake Saudi clubs have no Arabic names): the files are written all the same
-    return calls, json.loads((out / "report.json").read_text(encoding="utf-8"))
+    report = out / "report.json"
+    return calls, json.loads(report.read_text(encoding="utf-8")) if report.is_file() else {}
 
 
 
@@ -228,19 +229,20 @@ with tempfile.TemporaryDirectory() as tmp:
     calls, report = run_once(world, tmp / "one", tmp / "none.json", full=True)
     lookups = [c for c in calls if "lookupteam.php" in c]
     every = len(json.loads((tmp / "one/teams.json").read_text(encoding="utf-8")))
-    check("full run: every team looked up (and the known ids first)", len(lookups) == every + len(ti.KNOWN),
-          (len(lookups), every))
+    parts = len(ti.plan())
+    check("full run: every team looked up (and one probe per part)", len(lookups) == every + parts,
+          (len(lookups), every, parts))
     check("full run: Jordan found in its matches", any("Jordan" in x for x in report["national teams found in their matches"]),
           report["national teams not found"])
     check("full run: every league above its minimum", not [p for p in report["problems"] if "expected" in p], report["problems"])
-    check("full run: the report counts the requests", report["requests"]["made"]["thesportsdb"] == len(
-        [c for c in calls if c.startswith(ti.API)]), report["requests"])
+    check("full run: the report counts the requests", report["requests"]["thesportsdb"] == len(
+        [c for c in calls if c.startswith(ti.API)]) and len(report["requests"]["per part"]) == parts, report["requests"])
     new_club, renamed = ("777001", "Brand New FC"), next(iter(world[0]["Dutch Eredivisie"]))[0]
     world2 = fake_world(extra={"Dutch Eredivisie": new_club}, renamed={renamed: "Renamed Eagles"})
     calls, report = run_once(world2, tmp / "two", tmp / "one/teams-cache.json", full=False)
     lookups = sorted(up.parse_qs(up.urlparse(c).query)["id"][0] for c in calls if "lookupteam.php" in c)
-    check("incremental: only the new and the renamed club looked up (after the known ids)",
-          lookups == sorted([new_club[0], renamed] + list(ti.KNOWN)), lookups)
+    check("incremental: only the new and the renamed club looked up (after one probe)",
+          lookups == sorted([new_club[0], renamed] + list(ti.PROBE)), lookups)
     check("incremental: no league or national team searched again",
           not [c for c in calls if "all_leagues.php" in c or "searchteams.php" in c or "searchevents.php" in c],
           [c for c in calls if "search" in c][:4])
@@ -251,7 +253,36 @@ with tempfile.TemporaryDirectory() as tmp:
     out = {t["id"]: t for t in json.loads((tmp / "two/teams.json").read_text(encoding="utf-8"))}
     check("incremental: the new club is in, the renamed one has its new name",
           new_club[0] in out and out[renamed]["en"] == "Renamed Eagles", out.get(renamed))
-    check("incremental: far fewer requests", report["requests"]["made"]["thesportsdb"] < 100, report["requests"])
+    check("incremental: far fewer requests", report["requests"]["thesportsdb"] < 100, report["requests"])
+    # the workflow's way: each part on its own (one runner each), then the merge; the same list as one process
+    (tmp / "split").mkdir()
+    for part in ti.plan():
+        run_once(world2, tmp / "split", tmp / "one/teams-cache.json", False, "collect", "--part", part["name"])
+    check("split: one part file per league and the national teams",
+          len(list((tmp / "split/parts").glob("*.json"))) == parts, sorted(p.name for p in (tmp / "split/parts").glob("*")))
+    _, report = run_once(world2, tmp / "split", tmp / "one/teams-cache.json", False, "merge")
+    check("split: the merge gives the same list as one process",
+          (tmp / "split/teams.json").read_text(encoding="utf-8") == (tmp / "two/teams.json").read_text(encoding="utf-8"))
+    check("split: requests counted per part", set(report["requests"]["per part"]) == {p["name"] for p in ti.plan()},
+          report["requests"])
+    (tmp / "split/parts/spanish-la-liga.json").unlink()
+    _, report = run_once(world2, tmp / "split", tmp / "one/teams-cache.json", False, "merge")
+    check("split: a part that wrote nothing is named in the problems",
+          any(p.startswith("Spanish La Liga: no data") for p in report["problems"]), report["problems"][:3])
+    def broken(url, **kw):
+        raise RuntimeError("no answer: thesportsdb down")
+    ti.fetch, ti.OUT, ti.FULL = broken, tmp / "broken", True
+    code = None
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            ti.main(["collect", "--part", "Qatar Stars League"])
+    except SystemExit as e:
+        code = e.code
+    part = json.loads((tmp / "broken/parts/qatar-stars-league.json").read_text(encoding="utf-8"))
+    check("collect: a crash still writes its part with the reason, and the job fails",
+          code == 1 and "thesportsdb down" in part.get("error", "")
+          and any(p.startswith("Qatar Stars League: the collection stopped") for p in part["report"]["problems"]),
+          (code, part.get("error")))
 ti.fetch = real_fetch
 
 print("\nall clubs collector checks passed" if not failed else f"\n{failed} failed")
