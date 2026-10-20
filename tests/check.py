@@ -81,7 +81,9 @@ shown = [json.dumps(h["parts"], ensure_ascii=False) for h in hadith]
 check("no verse or hadith twice", len({v["text"] for v in verses}) == len(verses) and len(set(shown)) == len(shown))
 raw = json.loads((ROOT / "assets/shared/hadith.json").read_text(encoding="utf-8"))
 sys.path.insert(0, str(ROOT / "src"))
-from build import narration_parts, simple_parts, weak_in_tirmidhi, weak_by_scholars, HADITH_MAX_WORDS, ISNAD_MAX_WORDS   # noqa: E402
+from build import narration_parts, simple_parts, weak_in_tirmidhi, weak_by_scholars, HADITH_MAX_WORDS, ISNAD_MAX_WORDS, js_json   # noqa: E402
+embedded = js_json({"c": "</script><b>"})
+check("embedded JSON cannot end its <script>", "</" not in embedded and json.loads(embedded)["c"] == "</script><b>", embedded)
 sys.path.insert(0, str(ROOT / ".github/tools"))
 from verify_hadith import norm as plain   # noqa: E402  (the six-book check's own matching)
 form = lambda h: json.dumps(simple_parts(narration_parts(h["full"]["text"])), ensure_ascii=False)

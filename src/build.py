@@ -197,18 +197,23 @@ def data_uri(path, mime):
     return f"data:{mime};base64," + base64.b64encode(path.read_bytes()).decode("ascii")
 
 
+def js_json(value):
+    """json.dumps for a <script>: a "</script>" inside a text would end it, "<\\/" is the same string in JSON."""
+    return json.dumps(value, ensure_ascii=False).replace("</", "<\\/")
+
+
 def main():
     html = (ROOT / "src/template.html").read_text(encoding="utf-8")
     # 2 KB, so inlined in both pages
     html = html.replace("__F_MARKS__", data_uri(ROOT / "assets/fonts/NotoNaskhArabic-Marks.woff2", "font/woff2"))
     teams = json.loads((ROOT / "assets/shared/teams-ar.json").read_text(encoding="utf-8"))
-    html = html.replace("__TEAMS_AR__", json.dumps(teams, ensure_ascii=False))
+    html = html.replace("__TEAMS_AR__", js_json(teams))
     # by TheSportsDB id: "Al-Faisaly" and "Al Faisaly" are different clubs under one name key
     clubs = json.loads((ROOT / "assets/shared/teams.json").read_text(encoding="utf-8"))
     by_id = {c["id"]: c["ar"] for c in clubs if c.get("id") and c.get("ar")}
-    html = html.replace("__TEAMS_BY_ID__", json.dumps(by_id, ensure_ascii=False))
-    html = html.replace("__VERSES__", json.dumps(verses_for_screen(), ensure_ascii=False))
-    html = html.replace("__HADITH__", json.dumps(hadith_for_screen(), ensure_ascii=False))   # checked by CI
+    html = html.replace("__TEAMS_BY_ID__", js_json(by_id))
+    html = html.replace("__VERSES__", js_json(verses_for_screen()))
+    html = html.replace("__HADITH__", js_json(hadith_for_screen()))   # checked by CI
 
     bg_dir = ROOT / "assets/backgrounds"
     bgs = json.loads((bg_dir / "backgrounds.json").read_text(encoding="utf-8"))
@@ -220,7 +225,7 @@ def main():
         entries = []
         for bg in bgs:
             u = data_uri(bg_dir / bg["file"], "image/jpeg") if inline else REPO + "assets/backgrounds/" + bg["file"]
-            entries.append(f'  {{u:"{u}", c:{json.dumps(bg["credit"], ensure_ascii=False)}, d:{bg["brightness"]}}}')
+            entries.append(f'  {{u:"{u}", c:{js_json(bg["credit"])}, d:{bg["brightness"]}}}')
         out = ROOT / "dist" / name
         out.parent.mkdir(exist_ok=True)
         out.write_text(page.replace("__BG_SET__", ",\n".join(entries)), encoding="utf-8")
