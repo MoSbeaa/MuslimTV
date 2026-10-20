@@ -119,7 +119,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     | "$PY" -I optimize/tv.py --batch
   # 4. Verify Home really opens the new launcher (a few tries: a slow TV), then disarm the switch.
   ours=no
-  for try in 1 2 3; do
+  for _ in 1 2 3; do
     sleep 6
     if "$PY" -I optimize/tv.py "dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity'" \
          | grep -q sa.urtv.home; then ours=yes; break; fi
