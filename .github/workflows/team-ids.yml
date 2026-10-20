@@ -7,6 +7,11 @@ name: Clubs and their ids
 # One data branch per source branch (data-team-ids-master, data-team-ids-next), so runs on both never overwrite each other.
 on:
   workflow_dispatch:
+    inputs:
+      full:
+        description: 'Check every team again, not only new and renamed ones'
+        type: boolean
+        default: false
   schedule:
     - cron: '17 3 1 * *'
   push:
@@ -14,6 +19,7 @@ on:
     paths:
       - '.github/tools/team_ids.py'
       - '.github/tools/saudi-clubs-ar.json'
+      - '.github/tools/teams-cache.json'
       - '.github/workflows/team-ids.yml'
       - 'assets/shared/teams-ar.json'
       - 'android/app/src/main/java/sa/urtv/screensaver/Prefs.java'
@@ -33,6 +39,8 @@ jobs:
       - uses: actions/checkout@v4
       - id: run
         run: python3 -u .github/tools/team_ids.py
+        env:   # the monthly run checks everything again; a push checks only new and renamed teams
+          RUN_FULL: ${{ (github.event_name == 'schedule' || inputs.full) && '1' || '0' }}
         continue-on-error: true
       - name: Push to data-team-ids-${{ github.ref_name }}
         run: |

@@ -19,12 +19,19 @@ then an Arabic name TheSportsDB lists, and only then a transliteration (marked "
 never share a name: the Saudi club keeps it and the other gets its country ("العين الإماراتي"); a club named like
 a national team becomes «نادي قطر».
 
-Writes teams/teams.json ([{id, en, ar, arFrom, leagues, alt}], the next assets/shared/teams.json), teams/diff.json
-and teams/diff.md (added, removed and renamed against assets/shared/teams.json) and teams/report.json. Exits 1 after
-writing them if a check failed, so the run shows red with its data still there for review.
+Incremental: the matches decide the clubs every run (about 70 requests), but a team already in
+.github/tools/teams-cache.json or assets/shared/teams.json under the same English name skips its id lookup and its
+Wikidata lookups, and known league ids and national teams are reused. RUN_FULL=1 (the monthly run, or a manual run
+with "full") checks everything again.
+
+Writes teams/teams.json ([{id, en, ar, arFrom, leagues, alt}], the next assets/shared/teams.json),
+teams/teams-cache.json (the next .github/tools/teams-cache.json), teams/diff.json and teams/diff.md (added, removed
+and renamed against assets/shared/teams.json) and teams/report.json (with the requests made). Exits 1 after writing
+them if a check failed, so the run shows red with its data still there for review.
 """
 import datetime
 import json
+import os
 import re
 import sys
 import time
@@ -41,7 +48,10 @@ SPARQL = "https://query.wikidata.org/sparql"
 ENWIKI = "https://en.wikipedia.org/w/api.php"
 UA = "UrTV club list (github.com/tshi-dev/UrTV)"
 PREFS = ROOT / "android/app/src/main/java/sa/urtv/screensaver/Prefs.java"
-OUT = Path("teams")
+OUT = Path(os.environ.get("TEAMS_OUT", "teams"))
+CACHE = ROOT / ".github/tools/teams-cache.json"
+FULL = os.environ.get("RUN_FULL") == "1"
+PACE = 2.0   # seconds between TheSportsDB requests: its free key allows 30 a minute
 NATIONAL_LEAGUE = "National teams"
 
 # Every league in Prefs.LEAGUES: its country (Wikidata's ids for it, for checking a found item), the adjective that
@@ -93,20 +103,36 @@ FONT_FIX = str.maketrans({"گ": "ج", "ژ": "ج", "ڨ": "ق", "ی": "ي", "ک": 
 ARABIC_NAME = re.compile(r"[ء-غف-ي٠-٩پچڤ \-]+")
 
 
-# ---------- the network (the free TheSportsDB key allows about 30 requests a minute) ----------
+# ---------- the network (the free TheSportsDB key allows 30 requests a minute) ----------
 
-def fetch(url, data=None, headers=None, pause=2.2, tries=8):
+STATS = {"thesportsdb": 0, "wikidata and wikipedia": 0, "rate limited (429)": 0, "retried": 0, "empty answers": 0}
+
+
+def fetch(url, data=None, headers=None, pause=PACE, tries=6, count="thesportsdb"):
+    """JSON from url; None for an empty or non-JSON answer (TheSportsDB's way of saying "nothing"), which is
+    asked once more, not six times: retrying those used to stretch a run past an hour."""
+    empty = 0
     for attempt in range(tries):
         time.sleep(pause)
+        STATS[count] += 1
         try:
             req = urllib.request.Request(url, data=data, headers={"User-Agent": UA, **(headers or {})})
-            with urllib.request.urlopen(req, timeout=90) as r:
-                return json.load(r)
+            with urllib.request.urlopen(req, timeout=60) as r:
+                body = r.read()
+            try:
+                return json.loads(body)
+            except ValueError:
+                empty += 1
+                if empty >= 2:
+                    STATS["empty answers"] += 1
+                    return None
         except urllib.error.HTTPError as e:
             if e.code not in (429, 500, 502, 503, 504):
                 raise
-            time.sleep(30 * (attempt + 1))
-        except (urllib.error.URLError, TimeoutError, ValueError):
+            STATS["rate limited (429)" if e.code == 429 else "retried"] += 1
+            time.sleep(20 * (attempt + 1))
+        except (urllib.error.URLError, TimeoutError):
+            STATS["retried"] += 1
             time.sleep(10 * (attempt + 1))
     raise RuntimeError("no answer: " + url[:200])
 
@@ -116,10 +142,11 @@ def get(path):
 
 
 def wiki(api, params):
-    d = fetch(api + "?" + urllib.parse.urlencode({**params, "format": "json", "maxlag": "5"}), pause=1)
+    url = api + "?" + urllib.parse.urlencode({**params, "format": "json", "maxlag": "5"})
+    d = fetch(url, pause=0.5, count="wikidata and wikipedia") or {}
     if (d.get("error") or {}).get("code") == "maxlag":
         time.sleep(10)
-        d = fetch(api + "?" + urllib.parse.urlencode({**params, "format": "json", "maxlag": "5"}), pause=1)
+        d = fetch(url, pause=0.5, count="wikidata and wikipedia") or {}
     return d
 
 
@@ -214,6 +241,35 @@ def translit(en):
     return re.sub(r"\s{2,}", " ", "".join(word(w) for w in re.split(r"(\s+)", s))).strip()
 
 
+# ---------- what earlier runs found ----------
+
+def load_cache():
+    """The last run's cache, and the committed list by id; both empty for a full run."""
+    if FULL:
+        return {"leagues": {}, "national": {}, "teams": {}}, {}
+    try:
+        cache = json.loads(CACHE.read_text(encoding="utf-8"))
+    except (FileNotFoundError, ValueError):
+        cache = {}
+    try:
+        listed = {t["id"]: t for t in json.loads((ROOT / "assets/shared/teams.json").read_text(encoding="utf-8"))}
+    except (FileNotFoundError, ValueError, KeyError, TypeError):
+        listed = {}
+    return {k: cache.get(k) or {} for k in ("leagues", "national", "teams")}, listed
+
+
+def known(i, en, cache, listed):
+    """What an earlier run checked about team i, if it still has the same name: else None (look it up again)."""
+    c = cache["teams"].get(i)
+    if c and team_key(c.get("en", "")) == team_key(en):
+        return c
+    t = listed.get(i)
+    if t and team_key(t.get("en", "")) == team_key(en):   # in the committed list: checked when it was added
+        return {"en": t["en"], "checked": "", "lookup": {"name": t["en"], "alt": t.get("alt") or [], "country": "",
+                                                         "gender": ""}}
+    return None
+
+
 # ---------- clubs from their leagues' matches ----------
 
 def seasons_to_try(league, today):
@@ -231,7 +287,9 @@ def sides(events):
                 yield str(i), en.strip()
 
 
-def league_ids(names):
+def league_ids(names, cached=None):
+    if cached and all(n in cached for n in names):
+        return dict(cached)
     ids = {l["strLeague"]: l["idLeague"] for l in get("all_leagues.php").get("leagues") or []}
     for country in dict.fromkeys(LEAGUES[n]["country"] for n in names if n in LEAGUES):
         if all(n in ids for n in names):
@@ -275,10 +333,16 @@ def collect_league(name, lid, today, teams, report, problems):
             problems.append(f"{name} {s}: {len(found)} clubs, at least {LEAGUES[name]['min']} expected")
 
 
-def find_national(en, teams, report):
-    """The men's team named exactly as the country (or a known alias); else from its matches with other teams."""
+def find_national(en, teams, report, cache=None, listed=None):
+    """The men's team named exactly as the country (or a known alias); else from its matches with other teams.
+    One found before is reused."""
     names = [en] + ALIASES.get(en, [])
     wanted = {n.lower() for n in names}
+    if cache and en in cache["national"]:
+        return tuple(cache["national"][en])
+    for i, t in (listed or {}).items():
+        if NATIONAL_LEAGUE in t.get("leagues", []) and t.get("en", "").lower() in wanted:
+            return i, t["en"]
     seen = []
     for q in names:
         for t in get("searchteams.php?" + urllib.parse.urlencode({"t": q})).get("teams") or []:
@@ -298,15 +362,29 @@ def find_national(en, teams, report):
     return None
 
 
-def verify(teams, report):
-    """Look each id up on its own: lookupteam.php if it answers the KNOWN ids right, else the team's own matches."""
+def verify(teams, report, cache=None, listed=None, today=""):
+    """Look each id up on its own: lookupteam.php if it answers the KNOWN ids right, else the team's own matches.
+    A team checked before under the same name keeps that check."""
     def lookup(i):
         hit = (get(f"lookupteam.php?id={i}").get("teams") or [None])[0]
         return hit if hit and str(hit.get("idTeam")) == i else None
+    checks = report["id checks"]
+    need = []
+    for i, t in teams.items():
+        before = known(i, t["en"], cache, listed) if cache is not None else None
+        if before and before.get("lookup") is not None:
+            t["lookup"], t["checked"] = before["lookup"], before.get("checked", "")
+            checks["checked before"] += 1
+        else:
+            need.append(i)
+    if not need:
+        report["ids checked with"] = "nothing new to check"
+        return
     usable = all((lambda t: t and team_key(t.get("strTeam")) == team_key(n))(lookup(i)) for i, n in KNOWN.items())
     report["ids checked with"] = "lookupteam.php" if usable else "the team's own matches"
-    checks = report["id checks"]
-    for i, t in teams.items():
+    for i in need:
+        t = teams[i]
+        t["checked"] = today
         if usable:
             hit = lookup(i)
             if not hit:
@@ -328,6 +406,7 @@ def verify(teams, report):
                 names = [n for j, n in sides(d.get("results") or d.get("events")) if j == i]
                 if names:
                     break
+            t["lookup"] = {"name": names[0] if names else "", "alt": [], "country": "", "gender": ""}
             if not names:
                 checks["no answer"].append(f"{i} {t['en']}")
             elif not any(same_team(t["en"], n) for n in names):
@@ -338,9 +417,21 @@ def verify(teams, report):
 
 # ---------- Arabic names ----------
 
-def wikidata_arabic(teams, report):
-    """{TheSportsDB id: (Arabic label, Arabic Wikipedia title, English label)} from Wikidata, matched by id first."""
+def wikidata_arabic(teams, report, cache=None):
+    """{TheSportsDB id: (Arabic label, Arabic Wikipedia title, English label, how)} from Wikidata, matched by id
+    first. A team looked up before under the same name keeps that answer (none too: a full run asks again)."""
     found, notes = {}, report["wikidata"]
+    need = {}
+    for i, t in teams.items():
+        c = (cache or {}).get("teams", {}).get(i)
+        if c and "wd" in c and team_key(c.get("en", "")) == team_key(t["en"]):
+            if c["wd"]:
+                found[i] = tuple(c["wd"])
+        else:
+            need[i] = t
+    notes["looked up before"] = len(teams) - len(need)
+    if not need:
+        return found
     try:
         d = wiki(WIKIDATA, {"action": "wbgetentities", "sites": "arwiki", "titles": HILAL_ARTICLE, "props": "claims"})
         hilal = next(iter(d.get("entities", {}).values()), {})
@@ -348,7 +439,7 @@ def wikidata_arabic(teams, report):
                  if any(((c.get("mainsnak") or {}).get("datavalue") or {}).get("value") == "136013" for c in claims)]
         notes["TheSportsDB property"] = props
         if len(props) == 1:
-            ids = list(teams)
+            ids = list(need)
             for k in range(0, len(ids), 150):
                 values = " ".join(f'"{i}"' for i in ids[k:k + 150])
                 q = f"""SELECT ?id ?item ?ar ?en ?arTitle ?desc WHERE {{
@@ -358,8 +449,9 @@ def wikidata_arabic(teams, report):
                   OPTIONAL {{ ?item schema:description ?desc FILTER(LANG(?desc) = "en") }}
                   OPTIONAL {{ ?a schema:about ?item; schema:isPartOf <https://ar.wikipedia.org/>; schema:name ?arTitle }}
                 }}"""
-                rows = fetch(SPARQL, data=urllib.parse.urlencode({"query": q}).encode(), pause=2,
-                             headers={"Accept": "application/sparql-results+json"})["results"]["bindings"]
+                rows = (fetch(SPARQL, data=urllib.parse.urlencode({"query": q}).encode(), pause=1, count="wikidata and "
+                              "wikipedia", headers={"Accept": "application/sparql-results+json"}) or {}) \
+                    .get("results", {}).get("bindings", [])
                 by_id = {}
                 for r in rows:
                     by_id.setdefault(r["id"]["value"], {})[r["item"]["value"]] = {k: v["value"] for k, v in r.items()}
@@ -371,11 +463,11 @@ def wikidata_arabic(teams, report):
                                                                        + ", ".join(v.get("en", "?") for v in items.values()))
                         continue
                     found[i] = (good[0].get("ar", ""), good[0].get("arTitle", ""), good[0].get("en", ""), "id")
-        notes["matched by id"] = len(found)
+        notes["matched by id"] = sum(1 for i in need if i in found)
     except Exception as e:  # noqa: BLE001  (Wikidata down: the other sources still give names)
         notes["error (by id)"] = repr(e)[:300]
     try:
-        by_name(teams, found, notes)
+        by_name(need, found, notes)
     except Exception as e:  # noqa: BLE001
         notes["error (by name)"] = repr(e)[:300]
     return found
@@ -430,7 +522,7 @@ def by_name(teams, found, notes):
             found[i] = (((e.get("labels") or {}).get("ar") or {}).get("value", ""),
                         ((e.get("sitelinks") or {}).get("arwiki") or {}).get("title", ""), en, "name")
             break
-    notes["matched by name"] = sum(1 for v in found.values() if v[3] == "name")
+    notes["matched by name"] = sum(1 for i in left if i in found)
 
 
 def curated():
@@ -545,35 +637,53 @@ def alt_names(t):
 
 
 def main():
-    today = datetime.date.today()
+    started, today = time.time(), datetime.date.today()
     club_leagues = re.findall(r'\{"([^"]+)", "[^"]+"\}', PREFS.read_text(encoding="utf-8").split("LEAGUES = {")[1]
                               .split("};")[0])
     problems = [f"{n} is in Prefs.LEAGUES but not in team_ids.py's LEAGUES (country, minimum)"
                 for n in club_leagues if n not in LEAGUES]
-    report = {"date": today.isoformat(), "problems": problems, "clubs per league": {},
-              "national teams found in their matches": [], "national teams not found": [],
-              "id checks": {"same team": 0, "another name": [], "no answer": []},
+    report = {"date": today.isoformat(), "full run": FULL, "problems": problems, "requests": {},
+              "clubs per league": {}, "national teams found in their matches": [], "national teams not found": [],
+              "id checks": {"checked before": 0, "same team": 0, "another name": [], "no answer": []},
               "wikidata": {"ids on several or unlike items": []}, "names told apart": []}
-    ids = league_ids([n for n in club_leagues if n in LEAGUES])
-    problems += [f"league not found on TheSportsDB: {n}" for n in club_leagues if n in LEAGUES and n not in ids]
+    cache, listed = load_cache()
+    leagues = [n for n in club_leagues if n in LEAGUES]
+    first_guess = (0 if all(n in cache["leagues"] for n in leagues) else 15) + 5 * len(leagues) \
+        + 3 * sum(en not in cache["national"] for en in NATIONAL) + (0 if listed or cache["teams"] else 420)
+    report["requests"]["estimated at the start"] = first_guess
+    print(f"{'full' if FULL else 'incremental'} run: about {first_guess} TheSportsDB requests, "
+          f"{first_guess * PACE / 60:.0f} minutes or more", flush=True)
+    ids = league_ids(leagues, cache["leagues"])
     teams = {}   # id -> {"en", "leagues", ...}
-    for name in club_leagues:
-        if name in LEAGUES and name in ids:
+    for name in leagues:
+        if name in ids:
             collect_league(name, ids[name], today, teams, report, problems)
+    short = [n for n in leagues if n in ids and len(report["clubs per league"][n]["seasons"]) < 2]
+    if short and ids == cache["leagues"]:   # a reused league id that no longer answers: find the ids again
+        ids = league_ids(leagues)
+        for name in short:
+            problems[:] = [x for x in problems if not x.startswith(name)]
+            collect_league(name, ids[name], today, teams, report, problems)
+    problems += [f"league not found on TheSportsDB: {n}" for n in leagues if n not in ids]
+    national = {}
     for en, ar in NATIONAL.items():
-        hit = find_national(en, teams, report)
+        hit = find_national(en, teams, report, cache, listed)
         if hit:
+            national[en] = list(hit)
             teams.setdefault(hit[0], {"en": hit[1], "leagues": []})
             teams[hit[0]].update(ar=ar)
             teams[hit[0]]["leagues"].append(NATIONAL_LEAGUE)
-    print(len(NATIONAL) - len(report["national teams not found"]), "of", len(NATIONAL), "national teams", flush=True)
+    print(len(national), "of", len(NATIONAL), "national teams", flush=True)
     problems += [f"national team not found: {x}" for x in report["national teams not found"]]
     wrong = {i: n for i, n in KNOWN.items() if team_key(teams.get(i, {}).get("en", "")) != team_key(n)}
     if wrong:
         problems.append(f"these ids didn't come out right: {wrong}")
-    verify(teams, report)
+    new = sum(1 for i, t in teams.items() if not known(i, t["en"], cache, listed))
+    report["requests"]["teams to look up"] = new
+    print(f"{len(teams)} teams, {new} to look up: about {new + (len(KNOWN) if new else 0)} more requests", flush=True)
+    verify(teams, report, cache, listed, today.isoformat())
     print("ids:", {k: v if isinstance(v, int) else len(v) for k, v in report["id checks"].items()}, flush=True)
-    wd = wikidata_arabic(teams, report)
+    wd = wikidata_arabic(teams, report, cache)
     for i, w in wd.items():
         teams[i]["wd_en"] = w[2]
     arabic_names(teams, wd, report)
@@ -584,7 +694,12 @@ def main():
     out = [{"id": i, "en": t["en"], "ar": t["ar"], "arFrom": t["arFrom"], "leagues": t["leagues"], "alt": alt_names(t)}
            for i, t in teams.items()]
     out.sort(key=lambda t: (order.index(t["leagues"][0]), t["en"]))
+    new_cache = {"leagues": {n: ids[n] for n in leagues if n in ids}, "national": national,
+                 "teams": {i: {"en": t["en"], "checked": t.get("checked", ""), "lookup": t.get("lookup"),
+                               "wd": list(wd[i]) if i in wd else None} for i, t in sorted(teams.items())}}
     report["teams"] = len(out)
+    report["requests"]["made"] = dict(STATS)
+    report["requests"]["minutes"] = round((time.time() - started) / 60, 1)
     try:
         old = json.loads((ROOT / "assets/shared/teams.json").read_text(encoding="utf-8"))
     except (FileNotFoundError, ValueError):
@@ -592,12 +707,14 @@ def main():
     d = diff(old, out)
     OUT.mkdir(exist_ok=True)
     (OUT / "teams.json").write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    (OUT / "teams-cache.json").write_text(json.dumps(new_cache, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
     (OUT / "diff.json").write_text(json.dumps(d, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     (OUT / "diff.md").write_text(diff_md(d, len(old), len(out)), encoding="utf-8")
     (OUT / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(json.dumps({k: v for k, v in report.items() if k not in ("clubs per league", "names told apart")},
                      ensure_ascii=False, indent=1))
     print({k: len(v) for k, v in d.items()})
+    print(f"{STATS['thesportsdb']} TheSportsDB requests in {report['requests']['minutes']} minutes")
     if problems:
         print("\nPROBLEMS:\n- " + "\n- ".join(problems))
         sys.exit(1)
