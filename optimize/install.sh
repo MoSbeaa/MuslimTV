@@ -16,7 +16,9 @@ what="${1:?usage: optimize/install.sh saver|launcher|all|extras}"
 failed=0   # an extra that did not install: the rest are still tried, then run.sh must not count the step as done
 
 push_install() {   # $1 apk name, $2 package
-  curl -fsSL -o "optimize/$1" "$REL/$1"
+  if ! curl -fsSL -o "optimize/$1" "$REL/$1"; then
+    echo "!! Could not download $REL/$1 (tag ${APK_TAG:-apk-latest}): no such build, or no internet"; exit 1
+  fi
   "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
   local out
   out=$("$PY" -I optimize/tv.py "pm install -r /data/local/tmp/$1")
@@ -27,7 +29,8 @@ push_install() {   # $1 apk name, $2 package
       # removing the home app while the stock one is off would leave the TV with no home at all
       [ "$2" = sa.urtv.home ] && "$PY" -I optimize/tv.py "pm enable ${STOCK%%/*}" > /dev/null || true
       "$PY" -I optimize/tv.py "pm uninstall $2" || true
-      "$PY" -I optimize/tv.py "pm install -r /data/local/tmp/$1" | grep Success
+      out=$("$PY" -I optimize/tv.py "pm install -r /data/local/tmp/$1")
+      grep -q Success <<< "$out" || { echo "!! Install of $1 failed again: $out"; exit 1; }
     else
       echo "!! Install of $1 failed: $out"; exit 1
     fi
@@ -36,9 +39,16 @@ push_install() {   # $1 apk name, $2 package
 }
 
 from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV's processor types, best first)
-  local abis url name out
+  local abis url name out code body
   abis=$("$PY" -I optimize/tv.py "getprop ro.product.cpu.abilist" | tr -d '\r')
-  url=$(curl -fsSL "https://api.github.com/repos/$1/releases/latest" | "$PY" -I -c '
+  body=$(curl -sSL -w '\n%{http_code}' "https://api.github.com/repos/$1/releases/latest") || body=$'\n000'
+  code=${body##*$'\n'}; body=${body%$'\n'*}
+  if [ "$code" = 403 ] || [ "$code" = 429 ]; then
+    echo "!! GitHub rate limit, try later: $1 skipped"; failed=1; return 0
+  elif [ "$code" != 200 ]; then
+    echo "!! GitHub did not list the releases of $1 (HTTP $code): skipped"; failed=1; return 0
+  fi
+  url=$("$PY" -I -c '
 import json, re, sys
 assets = {a["name"]: a["browser_download_url"] for a in json.load(sys.stdin)["assets"]}
 for abi in [a for a in sys.argv[2].split(",") if a] + ["universal", ""]:
@@ -46,10 +56,10 @@ for abi in [a for a in sys.argv[2].split(",") if a] + ["universal", ""]:
     hit = sorted(n for n in assets if pat.search(n))
     if hit:
         print(assets[hit[0]]); break
-' "$3" "$abis") || true
+' "$3" "$abis" <<< "$body") || true
   if [ -z "$url" ]; then echo "!! No build of $1 for this TV ($abis): skipped"; return 0; fi
   name=$(basename "$url")
-  curl -fsSL -o "optimize/$name" "$url"
+  if ! curl -fsSL -o "optimize/$name" "$url"; then echo "!! Could not download $url"; failed=1; return 0; fi
   "$PY" -I optimize/tv.py --push-b64 "optimize/$name" "/data/local/tmp/$name"
   out=$("$PY" -I optimize/tv.py "pm install -r /data/local/tmp/$name")
   "$PY" -I optimize/tv.py "rm -f /data/local/tmp/$name" > /dev/null
