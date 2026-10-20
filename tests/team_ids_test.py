@@ -88,6 +88,31 @@ check("Saudi Al-Arabi keeps «العربي», Qatar's gets «العربي الق
 check("two names that differ only in hamza are told apart too", ti.plain_ar(got["7"]) != ti.plain_ar(got["8"]), got)
 check("no names left shared", len({ti.plain_ar(a) for a in got.values()}) == len(got) and not problems, (got, problems))
 
+# every name the committed list calls ours comes back from teams-ar.json, so no run can lose it to the cache,
+# Wikidata or a transliteration
+listed = json.loads((ROOT / "assets/shared/teams.json").read_text(encoding="utf-8"))
+again = {c["id"]: {"en": c["en"], "leagues": c["leagues"], "lookup": {"alt": c.get("alt") or []},
+                   **({"ar": c["ar"]} if "National teams" in c["leagues"] else {})} for c in listed}
+ti.arabic_names(again, {}, {})
+ti.unique_names(again, {"names told apart": []}, [])
+lost = [(c["en"], c["ar"], again[c["id"]]["ar"]) for c in listed if c["arFrom"] == "curated" and again[c["id"]]["ar"] != c["ar"]]
+check(f"all {sum(c['arFrom'] == 'curated' for c in listed)} names of ours in the list come from teams-ar.json",
+      not lost, lost[:6])
+
+# an Arab club with no name of ours or Wikidata's is left without one, for a person to add; a club abroad is
+# transliterated
+gap = {"1": {"en": "Zzq Unknown Club", "leagues": ["Egyptian Premier League"]},
+       "2": {"en": "Zzq Unknown Club", "leagues": ["Italian Serie A"]},
+       "3": {"en": "Zzq Unknown Club", "leagues": ["Saudi First Division League"]}}
+report = {}
+ti.arabic_names(gap, {}, report)
+check("no transliteration for an Arab league's club", gap["1"]["ar"] == "" and gap["1"]["arFrom"] == "missing"
+      and gap["3"]["arFrom"] == "missing", gap)
+check("a club abroad is transliterated, and marked so", gap["2"]["arFrom"] == "translit" and gap["2"]["ar"], gap["2"])
+problems = []
+ti.unique_names(gap, {"names told apart": []}, problems)
+check("two clubs without a name are not a name clash", not problems, problems)
+
 # the monthly diff
 old = [{"id": "1", "en": "Al-Ain", "ar": "العين", "leagues": ["Saudi First Division League"]},
        {"id": "2", "en": "Gone FC", "ar": "غون", "leagues": ["UAE Pro League"]},
@@ -247,7 +272,7 @@ with tempfile.TemporaryDirectory() as tmp:
           not [c for c in calls if "all_leagues.php" in c or "searchteams.php" in c or "searchevents.php" in c],
           [c for c in calls if "search" in c][:4])
     cached = json.loads((tmp / "one/teams-cache.json").read_text(encoding="utf-8"))["teams"]
-    again = sum(1 for i, c in cached.items() if c["arFrom"] == "translit" and i != renamed)
+    again = sum(1 for i, c in cached.items() if c["arFrom"] in ("translit", "missing") and i != renamed)
     check("incremental: Wikidata asked only about the two clubs and the names that are only transliterations",
           report["wikidata"].get("looked up before") == report["teams"] - 2 - again, (report["wikidata"], again))
     out = {t["id"]: t for t in json.loads((tmp / "two/teams.json").read_text(encoding="utf-8"))}

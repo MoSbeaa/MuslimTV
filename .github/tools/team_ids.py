@@ -15,7 +15,9 @@ as the clubs the app already uses, every national team must be found, and each i
 Arabic names, best first: our own (national teams below; Saudi clubs from .github/tools/saudi-clubs-ar.json, by
 their Arabic Wikipedia article, or assets/shared/teams-ar.json), then Wikidata's Arabic label (the item holding the
 club's TheSportsDB id, else its English Wikipedia article, else a search whose description says football club),
-then an Arabic name TheSportsDB lists, and only then a transliteration (marked "arFrom": "translit"). Two clubs
+then an Arabic name TheSportsDB lists, and only then, for a club abroad, a transliteration (marked "arFrom":
+"translit"). An Arab league's club or a national team is never transliterated: without a name it fails the run
+("arFrom": "missing") until someone adds it to teams-ar.json, which wins over everything else on every run. Two clubs
 never share a name: the Saudi club keeps it and the other gets its country ("العين الإماراتي"); a club named like
 a national team becomes «نادي قطر».
 
@@ -459,8 +461,9 @@ def wikidata_arabic(teams, report, cache=None):
     need = {}
     for i, t in teams.items():
         c = (cache or {}).get("teams", {}).get(i)
-        # a name that is only a transliteration is asked about again: Wikidata may have it by now
-        if c and "wd" in c and team_key(c.get("en", "")) == team_key(t["en"]) and c.get("arFrom") != "translit":
+        # a team without a name, or with only a transliteration, is asked about again: Wikidata may have it by now
+        if c and "wd" in c and team_key(c.get("en", "")) == team_key(t["en"]) \
+                and c.get("arFrom") not in ("translit", "missing"):
             if c["wd"]:
                 found[i] = tuple(c["wd"])
         else:
@@ -599,7 +602,17 @@ def is_saudi(t):
     return any(l in LEAGUES and LEAGUES[l]["country"] == "Saudi Arabia" for l in t["leagues"])
 
 
+ARAB = {"Saudi Arabia", "Egypt", "United Arab Emirates", "Qatar"}   # their clubs are never named by transliteration
+
+
+def arabic_speaking(t):
+    return NATIONAL_LEAGUE in t["leagues"] or any(LEAGUES.get(l, {}).get("country") in ARAB for l in t["leagues"])
+
+
 def arabic_names(teams, wd, report):
+    """teams-ar.json first, on every run (nothing in the cache or on Wikidata overrides it), then Wikidata, then
+    TheSportsDB's Arabic name; a transliteration only for clubs abroad. An Arab club or national team with none of
+    these is left without a name ("arFrom": "missing") and fails the run, for someone to add it to teams-ar.json."""
     first, last, saudi = curated()
     for i, t in teams.items():
         w = wd.get(i)
@@ -608,16 +621,17 @@ def arabic_names(teams, wd, report):
         if NATIONAL_LEAGUE in t["leagues"]:
             options.append((t.get("ar", ""), "curated"))
         if is_saudi(t):
-            options += [(saudi.get(w[1], "") if w else "", "curated"), (first.get(team_key(t["en"]), ""), "curated")]
+            options += [(first.get(team_key(t["en"]), ""), "curated"), (saudi.get(w[1], "") if w else "", "curated")]
         else:
             options.append((last.get(team_key(t["en"]), ""), "curated"))
         if w:
             options += [(clean_ar(w[0]), "wikidata"), (clean_ar(w[1]), "wikidata")]
         options += [(a, "thesportsdb") for a in alt_ar]
-        options.append((translit(t["en"]), "translit"))
-        t["ar"], t["arFrom"] = next((a, src) for a, src in options if a)
+        if not arabic_speaking(t):
+            options.append((translit(t["en"]), "translit"))
+        t["ar"], t["arFrom"] = next(((a, src) for a, src in options if a), ("", "missing"))
     report["Arabic names from"] = {src: sum(t["arFrom"] == src for t in teams.values())
-                                   for src in ("curated", "wikidata", "thesportsdb", "translit")}
+                                   for src in ("curated", "wikidata", "thesportsdb", "translit", "missing")}
 
 
 def country_adj(t):
@@ -629,7 +643,8 @@ def unique_names(teams, report, problems):
     def groups():
         g = {}
         for i, t in teams.items():
-            g.setdefault(plain_ar(t["ar"]), []).append(i)
+            if t["ar"]:
+                g.setdefault(plain_ar(t["ar"]), []).append(i)
         return [v for v in g.values() if len(v) > 1]
     for ids in groups():
         national = [i for i in ids if NATIONAL_LEAGUE in teams[i]["leagues"]]
@@ -804,8 +819,8 @@ def merge(parts, today, cache, started=None):
         teams[i]["wd_en"] = w[2]
     arabic_names(teams, wd, report)
     unique_names(teams, report, problems)
-    problems += [f"Saudi club or national team named only by transliteration: {i} {t['en']}"
-                 for i, t in teams.items() if t["arFrom"] == "translit" and (is_saudi(t) or NATIONAL_LEAGUE in t["leagues"])]
+    problems += [f"no Arabic name for {t['en']} ({i}, {', '.join(t['leagues'])}): add it to assets/shared/teams-ar.json"
+                 for i, t in teams.items() if t["arFrom"] == "missing"]
     order = leagues + [NATIONAL_LEAGUE]
     out = [{"id": i, "en": t["en"], "ar": t["ar"], "arFrom": t["arFrom"], "leagues": t["leagues"], "alt": alt_names(t)}
            for i, t in teams.items()]

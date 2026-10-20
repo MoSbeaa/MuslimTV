@@ -124,7 +124,7 @@ missing = sorted({c for c in names if not c.isspace() and ord(c) not in font})
 check("Arabic team names: every character in Thmanyah", not missing, missing)
 
 # ---- the clubs list (assets/shared/teams.json, built by .github/tools/team_ids.py in CI)
-from team_ids import KNOWN, LEAGUES, NATIONAL, NATIONAL_LEAGUE, plain_ar, team_key   # noqa: E402
+from team_ids import ARAB, KNOWN, LEAGUES, NATIONAL, NATIONAL_LEAGUE, plain_ar, team_key   # noqa: E402
 clubs = json.loads((ROOT / "assets/shared/teams.json").read_text(encoding="utf-8"))
 ids = [c["id"] for c in clubs]
 check("clubs: unique ids", len(ids) == len(set(ids)), sorted({i for i in ids if ids.count(i) > 1}))
@@ -144,6 +144,9 @@ ours = [c for c in clubs if NATIONAL_LEAGUE in c["leagues"] or any(LEAGUES.get(l
 check("clubs: every Saudi club and national team has our own or Wikidata's Arabic name, not a transliteration",
       all(c.get("ar") and c.get("arFrom") != "translit" for c in ours),
       [c["en"] for c in ours if not c.get("ar") or c.get("arFrom") == "translit"])
+arab = [c for c in clubs if any(LEAGUES.get(l, {}).get("country") in ARAB for l in c["leagues"])]
+check("clubs: no club of an Arab league is named by transliteration (add it to teams-ar.json)",
+      all(c.get("arFrom") != "translit" for c in arab), [c["en"] for c in arab if c.get("arFrom") == "translit"])
 check("clubs: every team has an Arabic name", all(c.get("ar") for c in clubs), [c["en"] for c in clubs if not c.get("ar")][:10])
 check("clubs: each Arabic name's source is given", all(c.get("arFrom") in ("curated", "wikidata", "thesportsdb", "translit")
                                                       for c in clubs), sorted({str(c.get("arFrom")) for c in clubs}))
