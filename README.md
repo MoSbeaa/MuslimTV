@@ -30,9 +30,17 @@
 
 > ركّب تلفزيوني من https://github.com/tshi-dev/UrTV: انسخ المستودع واتبع `docs/SETUP-PROMPT.md` خطوة بخطوة. أنت على كمبيوتر متصل بنفس شبكة الواي فاي حقت التلفزيون.
 
+#### بعد اللصق
 يسألك عن **مدينتك** و**أنديتك**، والتلفزيون يسألك **Allow** مرة وحدة، وبعدها خلّه يشتغل: 40 دقيقة وكم إعادة تشغيل.
-ترجع التلفزيون مثل ما كان بأي وقت: `optimize/reset.sh`. ونسخة جديدة؟ `optimize/install.sh all` تحدّث التطبيقين وإعداداتك باقية (الشاشة نفسها تتحدّث لحالها).
-ولو تحدّث نظام التلفزيون ورجّع شاشته: `optimize/run.sh again` يعيد الإعداد كله، وإعداداتك باقية.
+
+#### تراجع
+`optimize/reset.sh` يرجّع التلفزيون مثل ما كان، بأي وقت.
+
+#### نسخة جديدة
+`optimize/install.sh all` يحدّث التطبيقين وإعداداتك باقية. الشاشة نفسها تتحدّث لحالها.
+
+#### التلفزيون حدّث نظامه ورجّع شاشته
+`optimize/run.sh again` يعيد الإعداد كله، وإعداداتك باقية.
 
 </div>
 
@@ -55,9 +63,17 @@ Settings → About → press OK on **Build** 7 times. Then go to **Developer opt
 
 > Set up my TV with https://github.com/tshi-dev/UrTV: clone it and follow `docs/SETUP-PROMPT.md` step by step. You are on a computer on the same Wi-Fi as the TV.
 
+#### After pasting
 It asks your **city** and your **clubs**, the TV asks **Allow** once, then leave it: 40 minutes, a few restarts.
-Undo anytime: `optimize/reset.sh`. New version? `optimize/install.sh all` updates both apps and keeps your settings (the screen itself updates on its own).
-TV system update put its own screen back? `optimize/run.sh again` redoes the whole setup, settings kept.
+
+#### Undo
+`optimize/reset.sh` puts the TV back as it came, anytime.
+
+#### New version
+`optimize/install.sh all` updates both apps and keeps your settings. The screen itself updates on its own.
+
+#### The TV updated its system and put its own screen back
+`optimize/run.sh again` redoes the whole setup, settings kept.
 
 **Safe:** nothing is uninstalled; AirPlay, Chromecast and voice are never touched; a 5-minute safety switch puts the
 stock home back if ours doesn't come up. The apps are built and signed by GitHub Actions from this repo (version
