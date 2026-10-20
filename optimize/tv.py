@@ -21,9 +21,9 @@ import sys
 import time
 from pathlib import Path
 
-for _stream in (sys.stdout, sys.stderr):   # Windows writes pipes in its own code page: Arabic would crash
+for _stream in (sys.stdout, sys.stderr):   # Windows writes pipes in its own code page (Arabic would crash) and with \r\n (Git Bash keeps the \r)
     if hasattr(_stream, "reconfigure"):
-        _stream.reconfigure(encoding="utf-8", errors="replace")
+        _stream.reconfigure(encoding="utf-8", errors="replace", newline="\n")
 
 try:
     from adb_shell.adb_device import AdbDeviceTcp

@@ -83,7 +83,9 @@ allow it (Codex on Windows does). The signs are errors like `getaddrinfo() threa
 message 1 is how I allow them (network access and running git, bash and python in this folder, for the whole
 task); if one still appears, send me message 1 again, then go on. On Windows, run every script in Git Bash (they
 find a working Python themselves, past the Microsoft Store shortcut); if `bash` isn't found, use its full path:
-`"C:\Program Files\Git\bin\bash.exe" -lc "cd <this folder> && optimize/find-tv.sh --check"`.
+`"C:\Program Files\Git\bin\bash.exe" -lc "cd <this folder> && optimize/find-tv.sh --check"`. Run the commands
+here exactly as written and add no quotes, `;` or `|` of your own: PowerShell runs those itself before Git Bash
+sees them (that is why every check has its own script).
 
 **Codex on Windows:** its sandbox can never start Git Bash (`0xC0000022`, `NtCreateDirectoryObject`: a known Codex
 bug, openai/codex#54449). So run every Git Bash command **outside the sandbox**: request escalated permissions for
@@ -245,9 +247,7 @@ optimize/shot.sh screensaver
 Look at both screenshots (in `optimize/run/shots/`) and describe them to me. Then check Home from inside an app
 yourself (I may have left): open one, press Home, and the new home must be in front:
 ```
-optimize/venv/bin/python -I optimize/tv.py "monkey -p com.google.android.youtube.tv 1"     # or another app of mine
-optimize/venv/bin/python -I optimize/tv.py "input keyevent KEYCODE_HOME"
-optimize/venv/bin/python -I optimize/tv.py "dumpsys activity activities | grep -m1 -E 'topResumedActivity|mResumedActivity'"
+optimize/check-home.sh          # opens YouTube, presses Home; or: optimize/check-home.sh <another app of mine>
 ```
 
 ## 6. Before you tell me it's done
@@ -255,8 +255,7 @@ optimize/venv/bin/python -I optimize/tv.py "dumpsys activity activities | grep -
 Check each, and fix or report what fails:
 ```
 optimize/keep.sh                                  # must end with «Protected features: all on.»
-optimize/run.sh status                            # every step ✓
-grep '!!' optimize/run/report.md || echo none     # must print «none»
+optimize/run.sh status                            # every step ✓, and «report: no !! lines»
 ```
 - `report.md` shows Home as `sa.urtv.home` (or the stock home if we used `SKIP_LAUNCHER=1`) and the screensaver
   as `sa.urtv.screensaver`.

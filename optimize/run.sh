@@ -37,6 +37,9 @@ title() {
 
 if [ "${1:-}" = status ]; then
   for s in "${STEPS[@]}"; do printf '%s %s\n' "$([ -f "$RUN/.done-$s" ] && echo '✓' || echo '·')" "$(title "$s")"; done
+  if [ -f "$RUN/report.md" ]; then   # the report's !! lines, so nobody has to grep it by hand
+    grep '!!' "$RUN/report.md" | sed 's/^/report: /' || echo "report: no !! lines"
+  fi
   exit 0
 fi
 

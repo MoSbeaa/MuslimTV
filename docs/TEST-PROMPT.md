@@ -13,8 +13,8 @@ nothing disabled, no settings, no reset. Talk to me in Arabic; keep commands in 
 
 - Windows: run every command in Git Bash: `"C:\Program Files\Git\bin\bash.exe" -lc "cd <folder> && <command>"`.
   Codex: run Git Bash outside the sandbox (its sandbox can't start it).
-- One command at a time. If one fails, note its output and go on to the next. Don't fix anything, and don't write
-  your own scripts.
+- One command at a time, exactly as written: no extra quotes, `;` or `|` (on Windows PowerShell would run those
+  itself). If one fails, note its output and go on to the next. Don't fix anything or write your own scripts.
 
 In the UrTV folder:
 
@@ -22,32 +22,16 @@ In the UrTV folder:
 2. `optimize/find-tv.sh --check`, then `optimize/find-tv.sh`.
 3. Tell me to watch the TV and press Allow (tick «Always allow»), then without waiting for my reply:
    `optimize/venv/bin/python -I optimize/tv.py --probe`
-4. An upload through Git Bash:
-   ```
-   echo urtv-test > optimize/urtv-test.txt
-   optimize/venv/bin/python -I optimize/tv.py --push-b64 optimize/urtv-test.txt /data/local/tmp/urtv-test.txt
-   optimize/venv/bin/python -I optimize/tv.py "cat /data/local/tmp/urtv-test.txt; rm /data/local/tmp/urtv-test.txt"
-   rm optimize/urtv-test.txt
-   ```
-5. Arabic output: `optimize/venv/bin/python -I optimize/tv.py "echo مرحبا"`
-6. Club search, one call each: `optimize/saver.sh find-team الهلال`, then `السعودية`, `النصر`, `ريال مدريد`.
-7. The screensaver from ADB: `optimize/start-saver.sh` (prints «dream» or «not started»), then
-   `optimize/venv/bin/python -I optimize/tv.py "input keyevent KEYCODE_HOME"`.
-8. `optimize/shot.sh home`, and look at the picture.
-9. The apps a home screen can list (read only):
-   ```
-   optimize/venv/bin/python -I optimize/tv.py "cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.LEANBACK_LAUNCHER"
-   optimize/venv/bin/python -I optimize/tv.py "cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.LAUNCHER"
-   optimize/venv/bin/python -I optimize/tv.py "cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME"
-   ```
+4. `optimize/selftest.sh`: an upload, Arabic text, the screensaver from ADB, and the apps a home screen can list.
+   Copy all its output into the report.
+5. Club search, one call each: `optimize/saver.sh find-team الهلال`, then `السعودية`, `النصر`, `ريال مدريد`.
+6. `optimize/shot.sh home`, and look at the picture.
 
 Then write one report, in English, that I can paste to the developer:
 - you (agent and model), the computer's system, and how long the whole test took;
 - the TV's maker, model and Android version from step 3;
-- each step 1–9: OK or FAILED, with the output lines that matter: every `!!` line and error, «dream» or «not
-  started», the find-team results;
-- step 9: the packages in the LAUNCHER list that are not in the LEANBACK_LAUNCHER one (the home screen will show
-  them too), and the HOME list;
+- each step 1–6: OK or FAILED, with the output lines that matter: every `!!` line and error, all of step 4's
+  output, the find-team results;
 - anything slow, confusing, or that you had to retry.
 
 Leave out the TV's IP address, my user name and folder paths. Save it as `optimize/run/test-report.md` and show it
