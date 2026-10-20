@@ -204,7 +204,8 @@
 "وولفرهامبتون واندررز",
 "Wolverhampton Wanderers F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133600": {
 "en": "Fulham",
@@ -220,7 +221,8 @@
 "نادي فولهام",
 "Fulham F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133601": {
 "en": "Aston Villa",
@@ -236,7 +238,8 @@
 "أستون فيلا",
 "Aston Villa F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133602": {
 "en": "Liverpool",
@@ -252,7 +255,8 @@
 "نادي ليفربول",
 "Liverpool F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133603": {
 "en": "Sunderland",
@@ -268,7 +272,8 @@
 "نادي سندرلاند",
 "Sunderland A.F.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133604": {
 "en": "Arsenal",
@@ -284,7 +289,8 @@
 "نادي أرسنال",
 "Arsenal F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133610": {
 "en": "Chelsea",
@@ -300,7 +306,8 @@
 "نادي تشيلسي",
 "Chelsea F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133612": {
 "en": "Manchester United",
@@ -316,7 +323,8 @@
 "مانشستر يونايتد",
 "Manchester United F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133613": {
 "en": "Manchester City",
@@ -332,7 +340,8 @@
 "مانشستر سيتي",
 "Manchester City F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133615": {
 "en": "Everton",
@@ -348,7 +357,8 @@
 "نادي إيفرتون",
 "Everton F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133616": {
 "en": "Tottenham Hotspur",
@@ -364,7 +374,8 @@
 "توتنهام هوتسبير",
 "Tottenham Hotspur F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133617": {
 "en": "Hull City",
@@ -383,7 +394,8 @@
 "هال سيتي",
 "Hull City A.F.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133619": {
 "en": "Brighton and Hove Albion",
@@ -399,7 +411,8 @@
 "برايتون أند هوف ألبيون",
 "Brighton & Hove Albion F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133622": {
 "en": "Ipswich Town",
@@ -417,7 +430,8 @@
 "إيبسويتش تاون",
 "Ipswich Town F.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133623": {
 "en": "Burnley",
@@ -433,7 +447,8 @@
 "نادي بيرنلي",
 "Burnley F.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133625": {
 "en": "Coventry City",
@@ -449,7 +464,8 @@
 "كوفنتري سيتي",
 "Coventry City F.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133632": {
 "en": "Crystal Palace",
@@ -465,7 +481,8 @@
 "كريستال بالاس",
 "Crystal Palace F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133635": {
 "en": "Leeds United",
@@ -481,7 +498,8 @@
 "ليدز يونايتد",
 "Leeds United F.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133636": {
 "en": "West Ham United",
@@ -497,7 +515,8 @@
 "وست هام يونايتد",
 "West Ham United F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133650": {
 "en": "Borussia Dortmund",
@@ -508,7 +527,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133651": {
 "en": "Hamburg",
@@ -524,7 +544,8 @@
 "نادي هامبورغ",
 "Hamburger SV",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133652": {
 "en": "FC Augsburg",
@@ -540,7 +561,8 @@
 "نادي آوغسبورغ",
 "FC Augsburg",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133653": {
 "en": "Freiburg",
@@ -551,7 +573,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133654": {
 "en": "FC Köln",
@@ -567,7 +590,8 @@
 "نادي كولن",
 "1. FC Köln",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133655": {
 "en": "Wolfsburg",
@@ -583,7 +607,8 @@
 "نادي فولفسبورغ",
 "VfL Wolfsburg",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133657": {
 "en": "Hoffenheim",
@@ -594,7 +619,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133660": {
 "en": "Stuttgart",
@@ -605,7 +631,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133661": {
 "en": "Schalke 04",
@@ -624,7 +651,8 @@
 "شالكه 04",
 "Schalke 04",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133662": {
 "en": "Werder Bremen",
@@ -640,7 +668,8 @@
 "فيردر بريمن",
 "SV Werder Bremen",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133664": {
 "en": "Bayern Munich",
@@ -656,7 +685,8 @@
 "بايرن ميونخ",
 "FC Bayern Munich",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133665": {
 "en": "Mainz",
@@ -667,7 +697,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "translit"
 },
 "133666": {
 "en": "Bayer Leverkusen",
@@ -683,7 +714,8 @@
 "باير 04 ليفركوزن",
 "Bayer 04 Leverkusen",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133667": {
 "en": "AC Milan",
@@ -699,7 +731,8 @@
 "إيه سي ميلان",
 "AC Milan",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133668": {
 "en": "Lazio",
@@ -715,7 +748,8 @@
 "نادي لاتسيو",
 "SS Lazio",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133670": {
 "en": "Napoli",
@@ -731,7 +765,8 @@
 "نادي نابولي",
 "SSC Napoli",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133674": {
 "en": "Fiorentina",
@@ -747,7 +782,8 @@
 "فيورنتينا",
 "ACF Fiorentina",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133675": {
 "en": "Genoa",
@@ -758,7 +794,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133676": {
 "en": "Juventus",
@@ -774,7 +811,8 @@
 "يوفنتوس",
 "Juventus FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133678": {
 "en": "Lecce",
@@ -785,7 +823,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133679": {
 "en": "Udinese",
@@ -801,7 +840,8 @@
 "نادي أودينيزي",
 "Udinese Calcio",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133681": {
 "en": "Inter Milan",
@@ -817,7 +857,8 @@
 "إنتر ميلان",
 "Inter Milan",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133682": {
 "en": "Roma",
@@ -828,7 +869,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "translit"
 },
 "133687": {
 "en": "Torino",
@@ -844,7 +886,8 @@
 "نادي تورينو",
 "Torino FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133701": {
 "en": "Sassuolo",
@@ -855,7 +898,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133703": {
 "en": "Toulouse",
@@ -871,7 +915,8 @@
 "نادي تولوز",
 "Toulouse FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133704": {
 "en": "Brest",
@@ -882,7 +927,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133707": {
 "en": "Marseille",
@@ -893,7 +939,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133711": {
 "en": "Lille",
@@ -904,7 +951,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133712": {
 "en": "Nice",
@@ -915,7 +963,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133713": {
 "en": "Lyon",
@@ -931,7 +980,8 @@
 "أولمبيك ليون",
 "Olympique Lyonnais",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133714": {
 "en": "Paris SG",
@@ -947,7 +997,8 @@
 "باريس سان جيرمان",
 "Paris Saint-Germain FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133715": {
 "en": "Lorient",
@@ -963,7 +1014,8 @@
 "نادي لوريون",
 "F.C. Lorient",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133719": {
 "en": "Rennes",
@@ -974,7 +1026,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133720": {
 "en": "Nottingham Forest",
@@ -990,7 +1043,8 @@
 "نوتينغهام فورست",
 "Nottingham Forest F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133722": {
 "en": "Real Betis",
@@ -1006,7 +1060,8 @@
 "ريال بيتيس",
 "Real Betis Balompié",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133724": {
 "en": "Real Sociedad",
@@ -1022,7 +1077,8 @@
 "ريال سوسيداد",
 "Real Sociedad",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133725": {
 "en": "Valencia",
@@ -1038,7 +1094,8 @@
 "نادي فالنسيا",
 "Valencia CF",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133726": {
 "en": "Racing de Santander",
@@ -1057,7 +1114,8 @@
 "راسينغ سانتاندير",
 "Racing de Santander",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133727": {
 "en": "Athletic Bilbao",
@@ -1073,7 +1131,8 @@
 "أثلتيك بلباو",
 "Athletic Club",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133728": {
 "en": "Rayo Vallecano",
@@ -1089,7 +1148,8 @@
 "رايو فايكانو",
 "Rayo Vallecano",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133729": {
 "en": "Atlético Madrid",
@@ -1105,7 +1165,8 @@
 "أتلتيكو مدريد",
 "Atlético Madrid",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133730": {
 "en": "Osasuna",
@@ -1121,7 +1182,8 @@
 "أوساسونا",
 "Club Atlético Osasuna",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133731": {
 "en": "Getafe",
@@ -1137,7 +1199,8 @@
 "نادي خيتافي",
 "Getafe CF",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133732": {
 "en": "Levante",
@@ -1153,7 +1216,8 @@
 "",
 "Levante FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133733": {
 "en": "Mallorca",
@@ -1164,7 +1228,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133734": {
 "en": "Espanyol",
@@ -1175,7 +1240,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "translit"
 },
 "133735": {
 "en": "Sevilla",
@@ -1191,7 +1257,8 @@
 "نادي إشبيلية",
 "Sevilla FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133736": {
 "en": "Málaga",
@@ -1209,7 +1276,8 @@
 "نادي مالقة",
 "Málaga CF",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133738": {
 "en": "Real Madrid",
@@ -1225,7 +1293,8 @@
 "ريال مدريد",
 "Real Madrid Club de Fútbol",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133739": {
 "en": "Barcelona",
@@ -1241,7 +1310,8 @@
 "نادي برشلونة",
 "FC Barcelona",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133740": {
 "en": "Villarreal",
@@ -1257,7 +1327,8 @@
 "نادي فياريال",
 "Villarreal CF",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133757": {
 "en": "Excelsior",
@@ -1268,7 +1339,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133758": {
 "en": "Feyenoord",
@@ -1284,7 +1356,8 @@
 "فاينورد",
 "Feyenoord Rotterdam",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133759": {
 "en": "Heerenveen",
@@ -1295,7 +1368,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133760": {
 "en": "NEC Nijmegen",
@@ -1311,7 +1385,8 @@
 "إن إي سي نيميخن",
 "N.E.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133762": {
 "en": "Groningen",
@@ -1322,7 +1397,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133764": {
 "en": "Utrecht",
@@ -1338,7 +1414,8 @@
 "نادي أوترخت",
 "FC Utrecht",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133766": {
 "en": "Heracles Almelo",
@@ -1354,7 +1431,8 @@
 "هيراكليس ألميلو",
 "Heracles Almelo",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133767": {
 "en": "AZ Alkmaar",
@@ -1370,7 +1448,8 @@
 "إيه زد ألكمار",
 "AZ Alkmaar",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133768": {
 "en": "PSV Eindhoven",
@@ -1381,7 +1460,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133769": {
 "en": "ADO Den Haag",
@@ -1399,7 +1479,8 @@
 "أدو دين هاغ",
 "ADO Den Haag",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133772": {
 "en": "Ajax",
@@ -1415,7 +1496,8 @@
 "أياكس أمستردام",
 "AFC Ajax",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133773": {
 "en": "NAC Breda",
@@ -1431,7 +1513,8 @@
 "ناك بريدا",
 "NAC Breda",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133774": {
 "en": "Twente",
@@ -1447,7 +1530,8 @@
 "تفينتي",
 "FC Twente",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133794": {
 "en": "Beşiktaş",
@@ -1458,7 +1542,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133796": {
 "en": "Trabzonspor",
@@ -1474,7 +1559,8 @@
 "طرابزون سبور",
 "Trabzonspor",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133797": {
 "en": "Samsunspor",
@@ -1490,7 +1576,8 @@
 "سامسون سبور",
 "Samsunspor FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133798": {
 "en": "Gençlerbirliği",
@@ -1506,7 +1593,8 @@
 "غنتشلربيرليغي",
 "Gençlerbirliği S.K.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133799": {
 "en": "Antalyaspor",
@@ -1522,7 +1610,8 @@
 "أنطاليا سبور",
 "Antalyaspor",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133802": {
 "en": "Kayserispor",
@@ -1538,7 +1627,8 @@
 "قيصرية سبور",
 "Kayserispor",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133804": {
 "en": "Galatasaray",
@@ -1554,7 +1644,8 @@
 "غلطة سراي",
 "Galatasaray S.K.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133807": {
 "en": "Fenerbahçe",
@@ -1570,7 +1661,8 @@
 "نادي فنار باغجه",
 "Fenerbahçe Istanbul",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133813": {
 "en": "St Pauli",
@@ -1581,7 +1673,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "translit"
 },
 "133814": {
 "en": "Eintracht Frankfurt",
@@ -1592,7 +1685,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133816": {
 "en": "Deportivo de A Coruña",
@@ -1614,7 +1708,8 @@
 "ديبورتيفو لاكورونيا",
 "Deportivo de A Coruña",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133818": {
 "en": "Frosinone",
@@ -1630,7 +1725,8 @@
 "نادي فروسينوني",
 "Frosinone Calcio",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133822": {
 "en": "Lens",
@@ -1641,7 +1737,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133823": {
 "en": "Monaco",
@@ -1652,7 +1749,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133827": {
 "en": "Willem II",
@@ -1668,7 +1766,8 @@
 "فيلم 2 تيلبورخ",
 "Willem II",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "133834": {
 "en": "Kasımpaşa",
@@ -1684,7 +1783,8 @@
 "نادي قاسم باشا",
 "Kasımpaşa S.K.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133835": {
 "en": "Konyaspor",
@@ -1695,7 +1795,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133848": {
 "en": "Le Mans",
@@ -1713,7 +1814,8 @@
 "نادي لومان",
 "Le Mans F.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133859": {
 "en": "Pisa",
@@ -1729,7 +1831,8 @@
 "نادي بيزا",
 "Pisa SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133861": {
 "en": "Nantes",
@@ -1740,7 +1843,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133862": {
 "en": "Le Havre",
@@ -1751,7 +1855,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133866": {
 "en": "Sparta Rotterdam",
@@ -1767,7 +1872,8 @@
 "سبارتا روتردام",
 "Sparta Rotterdam",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133867": {
 "en": "FC Volendam",
@@ -1783,7 +1889,8 @@
 "نادي فولندام",
 "FC Volendam",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133870": {
 "en": "Kocaelispor",
@@ -1799,7 +1906,8 @@
 "كوجالي سبور",
 "Kocaelispor",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133882": {
 "en": "Strasbourg",
@@ -1810,7 +1918,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133883": {
 "en": "Metz",
@@ -1826,7 +1935,8 @@
 "نادي ميتز",
 "FC Metz",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133885": {
 "en": "Rizespor",
@@ -1837,7 +1947,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133905": {
 "en": "Netherlands",
@@ -1848,7 +1959,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133907": {
 "en": "Germany",
@@ -1859,7 +1971,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133908": {
 "en": "Portugal",
@@ -1870,7 +1983,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133909": {
 "en": "Spain",
@@ -1881,7 +1995,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133910": {
 "en": "Italy",
@@ -1892,7 +2007,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133912": {
 "en": "Croatia",
@@ -1903,7 +2019,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133913": {
 "en": "France",
@@ -1914,7 +2031,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133914": {
 "en": "England",
@@ -1925,7 +2043,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "133936": {
 "en": "PEC Zwolle",
@@ -1941,7 +2060,8 @@
 "بي إي سي زفوله",
 "PEC Zwolle",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "133937": {
 "en": "Celta Vigo",
@@ -1957,7 +2077,8 @@
 "سيلتا فيغو",
 "RC Celta de Vigo",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134023": {
 "en": "Marítimo",
@@ -1973,7 +2094,8 @@
 "نادي ماريتيمو",
 "C.S. Marítimo",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134098": {
 "en": "Braga",
@@ -1989,7 +2111,8 @@
 "سبورتينغ براغا",
 "S.C. Braga",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134106": {
 "en": "Estoril Praia",
@@ -2000,7 +2123,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134107": {
 "en": "Rio Ave",
@@ -2016,7 +2140,8 @@
 "نادي ريو أفي",
 "Rio Ave F.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134108": {
 "en": "Benfica",
@@ -2032,7 +2157,8 @@
 "نادي بنفيكا",
 "S.L. Benfica",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "134109": {
 "en": "Nacional de Madeira",
@@ -2048,7 +2174,8 @@
 "ناسيونال ماديرا",
 "C.D. Nacional",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134112": {
 "en": "Moreirense",
@@ -2064,7 +2191,8 @@
 "موريرينسي",
 "Moreirense F.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134113": {
 "en": "Gil Vicente",
@@ -2080,7 +2208,8 @@
 "نادي جل فيسنتي",
 "Gil Vicente F.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134114": {
 "en": "FC Porto",
@@ -2096,7 +2225,8 @@
 "نادي بورتو",
 "FC Porto",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "134115": {
 "en": "Vitória de Guimarães",
@@ -2112,7 +2242,8 @@
 "فيتوريا غيمارايش",
 "Vitória S.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134142": {
 "en": "Philadelphia Union",
@@ -2128,7 +2259,8 @@
 "فيلادلفيا يونيون",
 "Philadelphia Union",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134143": {
 "en": "Sporting Kansas City",
@@ -2147,7 +2279,8 @@
 "سبورتينغ كانساس سيتي",
 "Sporting Kansas City",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134144": {
 "en": "Houston Dynamo",
@@ -2163,7 +2296,8 @@
 "هيوستن دينامو",
 "Houston Dynamo FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134145": {
 "en": "DC United",
@@ -2179,7 +2313,8 @@
 "دي.سي. يونايتد",
 "D.C. United",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134146": {
 "en": "FC Dallas",
@@ -2195,7 +2330,8 @@
 "نادي دالاس",
 "FC Dallas",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134147": {
 "en": "Vancouver Whitecaps",
@@ -2211,7 +2347,8 @@
 "فانكوفر وايتكابس",
 "Vancouver Whitecaps FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134148": {
 "en": "Toronto FC",
@@ -2227,7 +2364,8 @@
 "نادي تورنتو",
 "Toronto FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134149": {
 "en": "Seattle Sounders FC",
@@ -2245,7 +2383,8 @@
 "سياتل ساوندرز",
 "Seattle Sounders FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134150": {
 "en": "CF Montréal",
@@ -2264,7 +2403,8 @@
 "نادي مونتريال",
 "CF Montréal",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134152": {
 "en": "Columbus Crew",
@@ -2280,7 +2420,8 @@
 "كولومبوس كرو",
 "Columbus Crew",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134153": {
 "en": "LA Galaxy",
@@ -2298,7 +2439,8 @@
 "لوس أنجلوس غلاكسي",
 "LA Galaxy",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "134154": {
 "en": "Chicago Fire",
@@ -2314,7 +2456,8 @@
 "شيكاغو فاير",
 "Chicago Fire FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134155": {
 "en": "Portland Timbers",
@@ -2332,7 +2475,8 @@
 "بورتلاند تيمبرز",
 "Portland Timbers",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134156": {
 "en": "New York Red Bulls",
@@ -2350,7 +2494,8 @@
 "نيويورك ريد بولز",
 "Red Bull New York",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134157": {
 "en": "San Jose Earthquakes",
@@ -2366,7 +2511,8 @@
 "سان خوسيه إيرثكويكس",
 "San Jose Earthquakes",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134158": {
 "en": "Real Salt Lake",
@@ -2382,7 +2528,8 @@
 "ريال سالت ليك",
 "Real Salt Lake",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134159": {
 "en": "New England Revolution",
@@ -2400,7 +2547,8 @@
 "نيو إنغلاند ريفولوشن",
 "New England Revolution",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134221": {
 "en": "Deportivo Alavés",
@@ -2416,7 +2564,8 @@
 "ديبورتيفو ألافيس",
 "Deportivo Alavés",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134224": {
 "en": "Cremonese",
@@ -2427,7 +2576,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134234": {
 "en": "Venezia",
@@ -2443,7 +2593,8 @@
 "نادي فينيزيا",
 "Venezia F.C.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134243": {
 "en": "Como",
@@ -2459,7 +2610,8 @@
 "كومو 1907",
 "Como 1907",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134264": {
 "en": "Fortuna Sittard",
@@ -2475,7 +2627,8 @@
 "فورتونا سيتارد",
 "Fortuna Sittard",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134270": {
 "en": "Monza",
@@ -2486,7 +2639,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "translit"
 },
 "134272": {
 "en": "Erzurumspor",
@@ -2505,7 +2659,8 @@
 "",
 "Erzurumspor",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134301": {
 "en": "Bournemouth",
@@ -2521,7 +2676,8 @@
 "",
 "Bournemouth F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "134303": {
 "en": "Cambuur",
@@ -2540,7 +2696,8 @@
 "نادي كامبور",
 "SC Cambuur",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134304": {
 "en": "Go Ahead Eagles",
@@ -2556,7 +2713,8 @@
 "غو أهد إيغلز",
 "Go Ahead Eagles",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134355": {
 "en": "Brentford",
@@ -2572,7 +2730,8 @@
 "نادي برينتفورد",
 "Brentford F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "134384": {
 "en": "Elche",
@@ -2588,7 +2747,8 @@
 "نادي إلتشي",
 "Elche CF",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134387": {
 "en": "Arouca",
@@ -2604,7 +2764,8 @@
 "أروكا دا سيلفا",
 "Arouca",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134496": {
 "en": "Brazil",
@@ -2615,7 +2776,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134497": {
 "en": "Mexico",
@@ -2626,7 +2788,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134498": {
 "en": "Cameroon",
@@ -2637,7 +2800,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134500": {
 "en": "Australia",
@@ -2648,7 +2812,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134501": {
 "en": "Colombia",
@@ -2659,7 +2824,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134503": {
 "en": "Japan",
@@ -2670,7 +2836,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134504": {
 "en": "Uruguay",
@@ -2681,7 +2848,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134509": {
 "en": "Argentina",
@@ -2692,7 +2860,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134511": {
 "en": "Iran",
@@ -2703,7 +2872,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134512": {
 "en": "Nigeria",
@@ -2714,7 +2884,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134514": {
 "en": "USA",
@@ -2737,7 +2908,8 @@
 "country": "United States",
 "gender": "Male"
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134515": {
 "en": "Belgium",
@@ -2748,7 +2920,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134516": {
 "en": "Algeria",
@@ -2759,7 +2932,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134517": {
 "en": "South Korea",
@@ -2770,7 +2944,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134551": {
 "en": "Paderborn",
@@ -2789,7 +2964,8 @@
 "بادربورن 07",
 "SC Paderborn 07",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134579": {
 "en": "China",
@@ -2800,7 +2976,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134589": {
 "en": "İstanbul Başakşehir",
@@ -2816,7 +2993,8 @@
 "نادي إسطنبول بشاق شهر",
 "İstanbul Başakşehir F.K.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134630": {
 "en": "New York City FC",
@@ -2836,7 +3014,8 @@
 "نادي نيويورك سيتي",
 "New York City FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134690": {
 "en": "Union Berlin",
@@ -2852,7 +3031,8 @@
 "يونيون برلين",
 "1. FC Union Berlin",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134695": {
 "en": "RB Leipzig",
@@ -2868,7 +3048,8 @@
 "آر بي لايبزيغ",
 "RB Leipzig",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "134696": {
 "en": "FC Heidenheim",
@@ -2884,7 +3065,8 @@
 "نادي هايدنهايم",
 "1. FC Heidenheim 1846",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134700": {
 "en": "Girona",
@@ -2900,7 +3082,8 @@
 "نادي جيرونا",
 "Girona FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "134709": {
 "en": "Angers",
@@ -2911,7 +3094,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134777": {
 "en": "Newcastle United",
@@ -2927,7 +3111,8 @@
 "نيوكاسل يونايتد",
 "Newcastle United F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "134779": {
 "en": "Borussia Mönchengladbach",
@@ -2943,7 +3128,8 @@
 "بوروسيا مونشنغلادباخ",
 "Borussia Mönchengladbach",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "134781": {
 "en": "Bologna",
@@ -2959,7 +3145,8 @@
 "نادي بولونيا",
 "Bologna F.C. 1909",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134782": {
 "en": "Atalanta",
@@ -2970,7 +3157,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134783": {
 "en": "Cagliari",
@@ -2986,7 +3174,8 @@
 "نادي كلياري",
 "Cagliari Calcio",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134784": {
 "en": "Hellas Verona",
@@ -3002,7 +3191,8 @@
 "هيلاس فيرونا",
 "Hellas Verona FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134788": {
 "en": "Auxerre",
@@ -3013,7 +3203,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "134789": {
 "en": "Troyes",
@@ -3032,7 +3223,8 @@
 "نادي تروا",
 "ES Troyes AC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "134794": {
 "en": "Colorado Rapids",
@@ -3048,7 +3240,8 @@
 "كولورادو رابيدز",
 "Colorado Rapids",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "135292": {
 "en": "Orlando City",
@@ -3066,7 +3259,8 @@
 "أورلاندو سيتي",
 "Orlando City SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "135455": {
 "en": "Real Oviedo",
@@ -3082,7 +3276,8 @@
 "ريال أوفييدو",
 "Real Oviedo",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "135465": {
 "en": "Paris FC",
@@ -3098,7 +3293,8 @@
 "باريس إف سي",
 "Paris FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "135502": {
 "en": "Tondela",
@@ -3109,7 +3305,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "135676": {
 "en": "Alanyaspor",
@@ -3125,7 +3322,8 @@
 "ألانيا سبور",
 "Alanyaspor",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "135708": {
 "en": "Sporting CP",
@@ -3136,7 +3334,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "135728": {
 "en": "Parma",
@@ -3152,7 +3351,8 @@
 "نادي بارما",
 "Parma Calcio 1913",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "135851": {
 "en": "Atlanta United",
@@ -3170,7 +3370,8 @@
 "أتلانتا يونايتد",
 "Atlanta United FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "135852": {
 "en": "Minnesota United",
@@ -3188,7 +3389,8 @@
 "منيسوتا يونايتد",
 "Minnesota United FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "135891": {
 "en": "Göztepe",
@@ -3199,7 +3401,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "135946": {
 "en": "Al-Arabi",
@@ -3210,7 +3413,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "135985": {
 "en": "Turkey",
@@ -3221,7 +3425,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "136011": {
 "en": "Al-Fateh",
@@ -3237,7 +3442,8 @@
 "نادي الفتح (السعودية)",
 "Al Fateh SC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "136012": {
 "en": "Al-Taawoun",
@@ -3248,7 +3454,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "136013": {
 "en": "Al-Hilal",
@@ -3264,7 +3471,8 @@
 "نادي الهلال (السعودية)",
 "Al Hilal SFC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "136014": {
 "en": "Al-Fayha",
@@ -3275,7 +3483,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "136015": {
 "en": "Al-Qadsiah",
@@ -3291,7 +3500,8 @@
 "نادي القادسية (السعودية)",
 "Al Qadsiah FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "136016": {
 "en": "Al-Raed",
@@ -3307,7 +3517,8 @@
 "نادي الرائد",
 "Al-Raed FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "136017": {
 "en": "Al-Ettifaq",
@@ -3323,7 +3534,8 @@
 "نادي الاتفاق",
 "Al-Ettifaq FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "136018": {
 "en": "Al-Ittihad",
@@ -3334,7 +3546,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "136019": {
 "en": "Al-Batin",
@@ -3350,7 +3563,8 @@
 "نادي الباطن",
 "Al-Batin",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "136020": {
 "en": "Al-Shabab",
@@ -3366,7 +3580,8 @@
 "نادي الشباب (السعودية)",
 "Al-Shabab Football Club",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "136021": {
 "en": "Al-Faisaly",
@@ -3382,7 +3597,8 @@
 "النادي الفيصلي (السعودية)",
 "Al-Faisaly FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "136022": {
 "en": "Al-Nassr",
@@ -3398,7 +3614,8 @@
 "نادي النصر (السعودية)",
 "Al-Nassr",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "136050": {
 "en": "Los Angeles FC",
@@ -3416,7 +3633,8 @@
 "نادي لوس أنجلوس",
 "Los Angeles FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "136137": {
 "en": "Saudi Arabia",
@@ -3427,7 +3645,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "136138": {
 "en": "Egypt",
@@ -3438,7 +3657,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "136139": {
 "en": "Morocco",
@@ -3449,7 +3669,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "136142": {
 "en": "Tunisia",
@@ -3460,7 +3681,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "136143": {
 "en": "Senegal",
@@ -3471,7 +3693,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "136192": {
 "en": "Santa Clara",
@@ -3482,7 +3705,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "translit"
 },
 "136199": {
 "en": "Al-Wehda",
@@ -3498,7 +3722,8 @@
 "نادي الوحدة (السعودية)",
 "Al Wehda FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "136200": {
 "en": "Al-Hazem",
@@ -3514,7 +3739,8 @@
 "نادي الحزم",
 "Al Hazem SC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "136472": {
 "en": "Qatar",
@@ -3525,7 +3751,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "136489": {
 "en": "Libya",
@@ -3536,7 +3763,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "136495": {
 "en": "Sudan",
@@ -3547,7 +3775,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "136688": {
 "en": "FC Cincinnati",
@@ -3563,7 +3792,8 @@
 "نادي سينسيناتي",
 "FC Cincinnati",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "136854": {
 "en": "Famalicao",
@@ -3574,7 +3804,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "translit"
 },
 "137648": {
 "en": "Al-Sadd",
@@ -3585,7 +3816,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "137679": {
 "en": "Al-Duhail",
@@ -3596,7 +3828,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "137699": {
 "en": "Inter Miami",
@@ -3615,7 +3848,8 @@
 "إنتر ميامي",
 "Inter Miami CF",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "137700": {
 "en": "Nashville SC",
@@ -3631,7 +3865,8 @@
 "ناشفيل إس سي",
 "Nashville SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "137721": {
 "en": "Al-Ahli",
@@ -3647,7 +3882,8 @@
 "النادي الأهلي (السعودية)",
 "Al Ahli FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "137828": {
 "en": "Shabab Al-Ahli Dubai",
@@ -3663,7 +3899,8 @@
 "نادي شباب الأهلي",
 "Shabab AlAhli Dubai Club",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "137829": {
 "en": "Sharjah",
@@ -3679,7 +3916,8 @@
 "نادي الشارقة",
 "Sharjah FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "137830": {
 "en": "Al Jazira",
@@ -3695,7 +3933,8 @@
 "نادي الجزيرة (الإمارات)",
 "Al Jazira Club",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "137831": {
 "en": "Al Nasr",
@@ -3706,7 +3945,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "137832": {
 "en": "Al Ain",
@@ -3722,7 +3962,8 @@
 "نادي العين",
 "Al Ain FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "137834": {
 "en": "Al Dhafra",
@@ -3738,7 +3979,8 @@
 "نادي الظفرة",
 "Al Dhafra Club",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "137835": {
 "en": "Al Wasl",
@@ -3754,7 +3996,8 @@
 "نادي الوصل",
 "Al Wasl FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "137836": {
 "en": "Al Wahda",
@@ -3770,7 +4013,8 @@
 "نادي الوحدة (الإمارات)",
 "Al-Wahda S.C.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "137837": {
 "en": "Ittihad Kalba",
@@ -3786,7 +4030,8 @@
 "نادي كلباء",
 "Kalba FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "137838": {
 "en": "Ajman",
@@ -3797,7 +4042,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "137839": {
 "en": "Baniyas",
@@ -3813,7 +4059,8 @@
 "نادي بني ياس",
 "Baniyas SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "137841": {
 "en": "Hatta",
@@ -3826,7 +4073,8 @@
 "country": "United Arab Emirates",
 "gender": "Male"
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "137842": {
 "en": "Khorfakkan",
@@ -3837,7 +4085,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "137852": {
 "en": "Damac",
@@ -3853,7 +4102,8 @@
 "نادي ضمك",
 "Damac Club",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "137854": {
 "en": "Al-Adalah",
@@ -3864,7 +4114,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "137855": {
 "en": "Abha",
@@ -3875,7 +4126,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "137994": {
 "en": "Al-Wakrah",
@@ -3891,7 +4143,8 @@
 "نادي الوكرة",
 "Al-Wakrah Sports Club",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "137995": {
 "en": "Qatar SC",
@@ -3902,7 +4155,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "138004": {
 "en": "Telstar",
@@ -3913,7 +4167,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "translit"
 },
 "138029": {
 "en": "Al-Gharafa",
@@ -3924,7 +4179,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "138030": {
 "en": "Al-Shahaniya",
@@ -3935,7 +4191,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "138035": {
 "en": "Al-Sailiya",
@@ -3951,7 +4208,8 @@
 "نادي السيلية",
 "Al-Sailiya Sports Club",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "138049": {
 "en": "Al-Ahli Doha",
@@ -3962,7 +4220,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "138050": {
 "en": "Al-Rayyan",
@@ -3978,7 +4237,8 @@
 "نادي الريان",
 "Al-Rayyan",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "138052": {
 "en": "Umm-Salal",
@@ -3994,7 +4254,8 @@
 "نادي أم صلال",
 "Umm Salal SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "138092": {
 "en": "Gaziantep",
@@ -4005,7 +4266,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "138411": {
 "en": "Elversberg",
@@ -4024,7 +4286,8 @@
 "نادي إلفرسبيرغ",
 "SV Elversberg",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "138856": {
 "en": "Académico de Viseu",
@@ -4042,7 +4305,8 @@
 "أكاديميكو فيزيو إف سي",
 "Académico de Viseu FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "138864": {
 "en": "Casa Pia",
@@ -4053,7 +4317,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "translit"
 },
 "138951": {
 "en": "Çorum",
@@ -4072,7 +4337,8 @@
 "",
 "Çorum FK",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "138959": {
 "en": "Amed",
@@ -4086,7 +4352,8 @@
 "country": "Turkey",
 "gender": "Male"
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "138977": {
 "en": "Eyüpspor",
@@ -4102,7 +4369,8 @@
 "أيوب سبور",
 "Eyüpspor",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "138983": {
 "en": "Fatih Karagümrük",
@@ -4118,7 +4386,8 @@
 "نادي فاتح قره جمرك",
 "Fatih Karagümrük S.K.",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "138995": {
 "en": "Al Ahly",
@@ -4134,7 +4403,8 @@
 "النادي الأهلي (مصر)",
 "Al Ahly SC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "138997": {
 "en": "Zamalek",
@@ -4145,7 +4415,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "139080": {
 "en": "Al-Khaleej",
@@ -4156,7 +4427,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "139837": {
 "en": "Al-Mokawloon al-Arab",
@@ -4167,7 +4439,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "139838": {
 "en": "Pyramids",
@@ -4183,7 +4456,8 @@
 "نادي بيراميدز",
 "Pyramids FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "139839": {
 "en": "Al Ittihad Alexandria",
@@ -4199,7 +4473,8 @@
 "الاتحاد السكندري",
 "Al Ittihad Alexandria Club",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "139840": {
 "en": "Smouha",
@@ -4210,7 +4485,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "139841": {
 "en": "ENPPI",
@@ -4226,7 +4502,8 @@
 "نادي إنبي",
 "ENPPI SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "139843": {
 "en": "Ismaily",
@@ -4242,7 +4519,8 @@
 "النادي الإسماعيلي",
 "Ismaily SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "139844": {
 "en": "Al Masry",
@@ -4258,7 +4536,8 @@
 "النادي المصري",
 "Al Masry SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "139845": {
 "en": "El Gouna",
@@ -4274,7 +4553,8 @@
 "نادي الجونة",
 "El Gouna FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "139846": {
 "en": "Haras El Hodoud",
@@ -4290,7 +4570,8 @@
 "نادي حرس الحدود",
 "Haras El-Hodood SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "139848": {
 "en": "Tala'ea El Gaish",
@@ -4301,7 +4582,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "139850": {
 "en": "Wadi Degla",
@@ -4317,7 +4599,8 @@
 "نادي وادي دجلة",
 "Wadi Degla SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "139852": {
 "en": "ZED",
@@ -4333,7 +4616,8 @@
 "نادي زد",
 "ZED FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "140008": {
 "en": "Estrela Amadora",
@@ -4349,7 +4633,8 @@
 "نادي إستريلا دا أمادورا",
 "C.F. Estrela da Amadora",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "140032": {
 "en": "Syria",
@@ -4360,7 +4645,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "140078": {
 "en": "Charlotte FC",
@@ -4378,7 +4664,8 @@
 "نادي شارلوت",
 "Charlotte FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "140079": {
 "en": "Austin FC",
@@ -4396,7 +4683,8 @@
 "نادي أوستن",
 "Austin FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "140144": {
 "en": "Kuwait",
@@ -4407,7 +4695,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "140145": {
 "en": "Jordan",
@@ -4425,7 +4714,8 @@
 "country": "Jordan",
 "gender": "Male"
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "140148": {
 "en": "Iraq",
@@ -4436,7 +4726,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "140149": {
 "en": "Bahrain",
@@ -4447,7 +4738,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "140151": {
 "en": "Uzbekistan",
@@ -4458,7 +4750,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "140153": {
 "en": "Yemen",
@@ -4469,7 +4762,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "140154": {
 "en": "Palestine",
@@ -4480,7 +4774,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "140155": {
 "en": "Oman",
@@ -4491,7 +4786,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "140163": {
 "en": "United Arab Emirates",
@@ -4502,7 +4798,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "140166": {
 "en": "Lebanon",
@@ -4513,7 +4810,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "140794": {
 "en": "Ghazl El Mahalla",
@@ -4529,7 +4827,8 @@
 "نادي غزل المحلة",
 "Ghazl El Mahalla SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "140795": {
 "en": "Ceramica Cleopatra",
@@ -4545,7 +4844,8 @@
 "نادي سيراميكا كليوباترا",
 "Ceramica Cleopatra FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "140796": {
 "en": "National Bank of Egypt",
@@ -4556,7 +4856,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "141174": {
 "en": "Al-Shamal",
@@ -4572,7 +4873,8 @@
 "نادي الشمال",
 "Al-Shamal Sports Club",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "143173": {
 "en": "Al-Tai",
@@ -4588,7 +4890,8 @@
 "نادي الطائي",
 "Al-Tai FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "143704": {
 "en": "Alverca",
@@ -4604,7 +4907,8 @@
 "ألفيركا",
 "F.C. Alverca",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "144159": {
 "en": "Pharco",
@@ -4620,7 +4924,8 @@
 "نادي فاركو",
 "Pharco FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "144160": {
 "en": "Modern Sport",
@@ -4636,7 +4941,8 @@
 "نادي مودرن سبورت",
 "Modern SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "146536": {
 "en": "Dibba Al-Fujairah",
@@ -4647,7 +4953,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "146537": {
 "en": "Al Bataeh",
@@ -4658,7 +4965,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "147062": {
 "en": "St. Louis City SC",
@@ -4679,7 +4987,8 @@
 "سانت لويس سيتي",
 "St. Louis City SC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "147444": {
 "en": "Al-Okhdood",
@@ -4690,7 +4999,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "147445": {
 "en": "Al-Riyadh",
@@ -4706,7 +5016,8 @@
 "نادي الرياض",
 "Al-Riyadh SC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "147479": {
 "en": "AVS",
@@ -4717,7 +5028,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "149111": {
 "en": "Al-Orobah",
@@ -4733,7 +5045,8 @@
 "نادي العروبة (السعودية)",
 "Al-Orobah F.C.",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "149112": {
 "en": "Al-Kholood",
@@ -4749,7 +5062,8 @@
 "نادي الخلود",
 "Al-Kholood",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "149410": {
 "en": "Petrojet",
@@ -4760,7 +5074,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "150091": {
 "en": "Al-Jabalain",
@@ -4776,7 +5091,8 @@
 "نادي الجبلين",
 "Al Jabalain",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "150261": {
 "en": "San Diego FC",
@@ -4794,7 +5110,8 @@
 "نادي سان دييغو",
 "San Diego FC",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "150637": {
 "en": "Neom",
@@ -4810,7 +5127,8 @@
 "نادي نيوم",
 "Neom SC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "150638": {
 "en": "Al-Najma Unaizah",
@@ -4821,7 +5139,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "150639": {
 "en": "Al-Arabi Al-Saudi",
@@ -4832,7 +5151,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "150640": {
 "en": "Al-Bukiryah",
@@ -4848,7 +5168,8 @@
 "نادي البكيرية",
 "Al-Bukiryah FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "150641": {
 "en": "Jeddah Club",
@@ -4864,7 +5185,8 @@
 "نادي جدة",
 "Jeddah Club",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "150643": {
 "en": "Al-Zulfi",
@@ -4880,7 +5202,8 @@
 "نادي الزلفي",
 "Al-Zulfi FC",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "150644": {
 "en": "Al-Jandal",
@@ -4896,7 +5219,8 @@
 "نادي الجندل",
 "Al Jandal Club",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "150645": {
 "en": "Al-Jubail",
@@ -4907,7 +5231,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "152473": {
 "en": "Al-Ula",
@@ -4923,7 +5248,8 @@
 "نادي العلا",
 "Al-Ula Club",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "152917": {
 "en": "Al-Diriyah",
@@ -4939,7 +5265,8 @@
 "نادي الدرعية",
 "Al-Diriyah Club",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "152918": {
 "en": "Al-Anwar",
@@ -4950,7 +5277,8 @@
 "country": "",
 "gender": ""
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "153475": {
 "en": "Kahrabaa Ismailia",
@@ -4966,7 +5294,8 @@
 "نادي كهرباء الإسماعيلية",
 "Kahrbaa Ismailia",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "155255": {
 "en": "Lusail",
@@ -4985,7 +5314,8 @@
 "نادي لوسيل",
 "Lusail Sports Club",
 "name"
-]
+],
+"arFrom": "wikidata"
 },
 "156157": {
 "en": "United FC Dubai",
@@ -4999,7 +5329,8 @@
 "country": "United Arab Emirates",
 "gender": "Male"
 },
-"wd": null
+"wd": null,
+"arFrom": "thesportsdb"
 },
 "156329": {
 "en": "Al-Saqer",
@@ -5013,7 +5344,8 @@
 "country": "Saudi Arabia",
 "gender": "Male"
 },
-"wd": null
+"wd": null,
+"arFrom": "curated"
 },
 "156330": {
 "en": "Hajer",
@@ -5032,7 +5364,8 @@
 "نادي هجر",
 "Hajer Club",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "156331": {
 "en": "Al-Jeel",
@@ -5051,7 +5384,8 @@
 "نادي الجيل",
 "Al-Jeel",
 "name"
-]
+],
+"arFrom": "curated"
 },
 "156494": {
 "en": "El Qanah",
@@ -5065,7 +5399,8 @@
 "country": "Egypt",
 "gender": "Male"
 },
-"wd": null
+"wd": null,
+"arFrom": "thesportsdb"
 },
 "156495": {
 "en": "Asyut Petroleum",
@@ -5080,7 +5415,8 @@
 "country": "Egypt",
 "gender": "Male"
 },
-"wd": null
+"wd": null,
+"arFrom": "thesportsdb"
 },
 "156496": {
 "en": "Abou Qir Fertilizers",
@@ -5095,7 +5431,8 @@
 "country": "Egypt",
 "gender": "Male"
 },
-"wd": null
+"wd": null,
+"arFrom": "thesportsdb"
 }
 }
 }

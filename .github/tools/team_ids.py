@@ -199,7 +199,8 @@ def clean_ar(label):
     s = re.sub(r"[ً-ٰٟـ]", "", str(label or "")).translate(FONT_FIX)
     s = re.sub(r"\s*\([^)]*\)\s*", " ", s).strip()
     s = re.sub(r"^(?:(?:ال)?ناد[يى]|فريق)(?:\s+|$)", "", s)
-    s = re.sub("[0-9]", lambda m: chr(0x0660 + int(m.group())), s)   # «بادربورن 07» -> «بادربورن ٠٧»
+    s = re.sub(r"\s+[0-9٠-٩]+$", "", s)   # a founding year: «بولونيا 1909», «بادربورن 07» -> «بولونيا», «بادربورن»
+    s = re.sub("[0-9]", lambda m: chr(0x0660 + int(m.group())), s)   # «فلم 2 تيلبورخ» -> «فلم ٢ تيلبورخ»
     s = re.sub(r"\s+(?:لكرة القدم|الرياضي|للألعاب الرياضية)$", "", s).strip()
     return s if ARABIC_NAME.fullmatch(s) and len(s.replace(" ", "")) >= 2 else ""
 
