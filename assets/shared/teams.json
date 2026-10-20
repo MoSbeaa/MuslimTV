@@ -806,8 +806,8 @@
  {
   "id": "133733",
   "en": "Mallorca",
-  "ar": "مالوركا",
-  "arFrom": "translit",
+  "ar": "مايوركا",
+  "arFrom": "curated",
   "leagues": [
    "Spanish La Liga"
   ],
@@ -993,8 +993,8 @@
  {
   "id": "134224",
   "en": "Cremonese",
-  "ar": "كرمونس",
-  "arFrom": "translit",
+  "ar": "كريمونيزي",
+  "arFrom": "curated",
   "leagues": [
    "Italian Serie A"
   ],
@@ -1027,8 +1027,8 @@
  {
   "id": "133675",
   "en": "Genoa",
-  "ar": "جنوا",
-  "arFrom": "translit",
+  "ar": "جنوى",
+  "arFrom": "curated",
   "leagues": [
    "Italian Serie A"
   ],
@@ -1079,8 +1079,8 @@
  {
   "id": "133678",
   "en": "Lecce",
-  "ar": "لس",
-  "arFrom": "translit",
+  "ar": "ليتشي",
+  "arFrom": "curated",
   "leagues": [
    "Italian Serie A"
   ],
@@ -1143,8 +1143,8 @@
  {
   "id": "133701",
   "en": "Sassuolo",
-  "ar": "ساسوولو",
-  "arFrom": "translit",
+  "ar": "ساسولو",
+  "arFrom": "curated",
   "leagues": [
    "Italian Serie A"
   ],
@@ -1286,8 +1286,8 @@
  {
   "id": "133653",
   "en": "Freiburg",
-  "ar": "فريبورج",
-  "arFrom": "translit",
+  "ar": "فرايبورغ",
+  "arFrom": "curated",
   "leagues": [
    "German Bundesliga"
   ],
@@ -1308,8 +1308,8 @@
  {
   "id": "133657",
   "en": "Hoffenheim",
-  "ar": "هوفنهيم",
-  "arFrom": "translit",
+  "ar": "هوفنهايم",
+  "arFrom": "curated",
   "leagues": [
    "German Bundesliga"
   ],
@@ -1373,8 +1373,8 @@
  {
   "id": "133660",
   "en": "Stuttgart",
-  "ar": "ستوتجارت",
-  "arFrom": "translit",
+  "ar": "شتوتغارت",
+  "arFrom": "curated",
   "leagues": [
    "German Bundesliga"
   ],
@@ -1419,8 +1419,8 @@
  {
   "id": "134709",
   "en": "Angers",
-  "ar": "أنجرس",
-  "arFrom": "translit",
+  "ar": "أنجيه",
+  "arFrom": "curated",
   "leagues": [
    "French Ligue 1"
   ],
@@ -1429,8 +1429,8 @@
  {
   "id": "134788",
   "en": "Auxerre",
-  "ar": "أوكسر",
-  "arFrom": "translit",
+  "ar": "أوكسير",
+  "arFrom": "curated",
   "leagues": [
    "French Ligue 1"
   ],
@@ -1439,8 +1439,8 @@
  {
   "id": "133704",
   "en": "Brest",
-  "ar": "برست",
-  "arFrom": "translit",
+  "ar": "بريست",
+  "arFrom": "curated",
   "leagues": [
    "French Ligue 1"
   ],
@@ -1449,8 +1449,8 @@
  {
   "id": "133862",
   "en": "Le Havre",
-  "ar": "ل هافر",
-  "arFrom": "translit",
+  "ar": "لوهافر",
+  "arFrom": "curated",
   "leagues": [
    "French Ligue 1"
   ],
@@ -1472,8 +1472,8 @@
  {
   "id": "133822",
   "en": "Lens",
-  "ar": "لنس",
-  "arFrom": "translit",
+  "ar": "لانس",
+  "arFrom": "curated",
   "leagues": [
    "French Ligue 1"
   ],
@@ -1546,8 +1546,8 @@
  {
   "id": "133861",
   "en": "Nantes",
-  "ar": "نانتس",
-  "arFrom": "translit",
+  "ar": "نانت",
+  "arFrom": "curated",
   "leagues": [
    "French Ligue 1"
   ],
@@ -1588,8 +1588,8 @@
  {
   "id": "133719",
   "en": "Rennes",
-  "ar": "رنس",
-  "arFrom": "translit",
+  "ar": "رين",
+  "arFrom": "curated",
   "leagues": [
    "French Ligue 1"
   ],
@@ -1598,8 +1598,8 @@
  {
   "id": "133882",
   "en": "Strasbourg",
-  "ar": "ستراسبورج",
-  "arFrom": "translit",
+  "ar": "ستراسبورغ",
+  "arFrom": "curated",
   "leagues": [
    "French Ligue 1"
   ],
@@ -1632,8 +1632,8 @@
  {
   "id": "147479",
   "en": "AVS",
-  "ar": "إيه في إس",
-  "arFrom": "translit",
+  "ar": "آفس",
+  "arFrom": "curated",
   "leagues": [
    "Portuguese Primeira Liga"
   ],
@@ -1710,8 +1710,8 @@
  {
   "id": "134106",
   "en": "Estoril Praia",
-  "ar": "إستوريل برايا",
-  "arFrom": "translit",
+  "ar": "إستوريل",
+  "arFrom": "curated",
   "leagues": [
    "Portuguese Primeira Liga"
   ],
@@ -1832,8 +1832,8 @@
  {
   "id": "135502",
   "en": "Tondela",
-  "ar": "توندلا",
-  "arFrom": "translit",
+  "ar": "تونديلا",
+  "arFrom": "curated",
   "leagues": [
    "Portuguese Primeira Liga"
   ],
@@ -1899,8 +1899,8 @@
  {
   "id": "133757",
   "en": "Excelsior",
-  "ar": "إكسسلسيور",
-  "arFrom": "translit",
+  "ar": "إكسلسيور",
+  "arFrom": "curated",
   "leagues": [
    "Dutch Eredivisie"
   ],
@@ -1951,8 +1951,8 @@
  {
   "id": "133762",
   "en": "Groningen",
-  "ar": "جرونينجن",
-  "arFrom": "translit",
+  "ar": "خرونينغن",
+  "arFrom": "curated",
   "leagues": [
    "Dutch Eredivisie"
   ],
@@ -1961,8 +1961,8 @@
  {
   "id": "133759",
   "en": "Heerenveen",
-  "ar": "هرنفن",
-  "arFrom": "translit",
+  "ar": "هيرنفين",
+  "arFrom": "curated",
   "leagues": [
    "Dutch Eredivisie"
   ],
@@ -2063,8 +2063,8 @@
  {
   "id": "133827",
   "en": "Willem II",
-  "ar": "ويلم آي آي",
-  "arFrom": "translit",
+  "ar": "فيليم الثاني",
+  "arFrom": "curated",
   "leagues": [
    "Dutch Eredivisie"
   ],
@@ -2083,8 +2083,8 @@
  {
   "id": "138959",
   "en": "Amed",
-  "ar": "أمد",
-  "arFrom": "translit",
+  "ar": "آمد",
+  "arFrom": "curated",
   "leagues": [
    "Turkish Super Lig"
   ],
@@ -2175,8 +2175,8 @@
  {
   "id": "138092",
   "en": "Gaziantep",
-  "ar": "جازيانتب",
-  "arFrom": "translit",
+  "ar": "غازي عنتاب",
+  "arFrom": "curated",
   "leagues": [
    "Turkish Super Lig"
   ],
@@ -2197,8 +2197,8 @@
  {
   "id": "135891",
   "en": "Göztepe",
-  "ar": "جزتب",
-  "arFrom": "translit",
+  "ar": "غوزتبه",
+  "arFrom": "curated",
   "leagues": [
    "Turkish Super Lig"
   ],
@@ -2239,8 +2239,8 @@
  {
   "id": "133835",
   "en": "Konyaspor",
-  "ar": "كونياسبور",
-  "arFrom": "translit",
+  "ar": "قونيا سبور",
+  "arFrom": "curated",
   "leagues": [
    "Turkish Super Lig"
   ],
@@ -2249,8 +2249,8 @@
  {
   "id": "133885",
   "en": "Rizespor",
-  "ar": "ريزسبور",
-  "arFrom": "translit",
+  "ar": "ريزه سبور",
+  "arFrom": "curated",
   "leagues": [
    "Turkish Super Lig"
   ],
@@ -2279,8 +2279,8 @@
  {
   "id": "138951",
   "en": "Çorum",
-  "ar": "وروم",
-  "arFrom": "translit",
+  "ar": "تشوروم",
+  "arFrom": "curated",
   "leagues": [
    "Turkish Super Lig"
   ],
@@ -2348,8 +2348,8 @@
  {
   "id": "139837",
   "en": "Al-Mokawloon al-Arab",
-  "ar": "الموكاولون الأراب",
-  "arFrom": "translit",
+  "ar": "المقاولون العرب",
+  "arFrom": "curated",
   "leagues": [
    "Egyptian Premier League"
   ],
@@ -2469,8 +2469,8 @@
  {
   "id": "140796",
   "en": "National Bank of Egypt",
-  "ar": "ناتيونال بانك أوف إجيبت",
-  "arFrom": "translit",
+  "ar": "البنك الأهلي المصري",
+  "arFrom": "curated",
   "leagues": [
    "Egyptian Premier League"
   ],
@@ -2480,7 +2480,7 @@
   "id": "149410",
   "en": "Petrojet",
   "ar": "بتروجت",
-  "arFrom": "translit",
+  "arFrom": "curated",
   "leagues": [
    "Egyptian Premier League"
   ],
@@ -2509,8 +2509,8 @@
  {
   "id": "139840",
   "en": "Smouha",
-  "ar": "سموها",
-  "arFrom": "translit",
+  "ar": "سموحة",
+  "arFrom": "curated",
   "leagues": [
    "Egyptian Premier League"
   ],
@@ -2519,8 +2519,8 @@
  {
   "id": "139848",
   "en": "Tala'ea El Gaish",
-  "ar": "تالاا إل جايش",
-  "arFrom": "translit",
+  "ar": "طلائع الجيش",
+  "arFrom": "curated",
   "leagues": [
    "Egyptian Premier League"
   ],
@@ -2559,8 +2559,8 @@
  {
   "id": "137838",
   "en": "Ajman",
-  "ar": "أجمان",
-  "arFrom": "translit",
+  "ar": "عجمان",
+  "arFrom": "curated",
   "leagues": [
    "UAE Pro League"
   ],
@@ -2579,8 +2579,8 @@
  {
   "id": "146537",
   "en": "Al Bataeh",
-  "ar": "الباتاه",
-  "arFrom": "translit",
+  "ar": "البطائح",
+  "arFrom": "curated",
   "leagues": [
    "UAE Pro League"
   ],
@@ -2609,8 +2609,8 @@
  {
   "id": "137831",
   "en": "Al Nasr",
-  "ar": "الناسر",
-  "arFrom": "translit",
+  "ar": "النصر الإماراتي",
+  "arFrom": "curated",
   "leagues": [
    "UAE Pro League"
   ],
@@ -2651,8 +2651,8 @@
  {
   "id": "146536",
   "en": "Dibba Al-Fujairah",
-  "ar": "ديبا الفوجايراه",
-  "arFrom": "translit",
+  "ar": "دبا الفجيرة",
+  "arFrom": "curated",
   "leagues": [
    "UAE Pro League"
   ],
@@ -2661,8 +2661,8 @@
  {
   "id": "137841",
   "en": "Hatta",
-  "ar": "هاتا",
-  "arFrom": "translit",
+  "ar": "حتا",
+  "arFrom": "curated",
   "leagues": [
    "UAE Pro League"
   ],
@@ -2683,8 +2683,8 @@
  {
   "id": "137842",
   "en": "Khorfakkan",
-  "ar": "خورفاكان",
-  "arFrom": "translit",
+  "ar": "خورفكان",
+  "arFrom": "curated",
   "leagues": [
    "UAE Pro League"
   ],
@@ -2727,8 +2727,8 @@
  {
   "id": "138049",
   "en": "Al-Ahli Doha",
-  "ar": "الأهلي دوها",
-  "arFrom": "translit",
+  "ar": "الأهلي القطري",
+  "arFrom": "curated",
   "leagues": [
    "Qatar Stars League"
   ],
@@ -2799,8 +2799,8 @@
  {
   "id": "138030",
   "en": "Al-Shahaniya",
-  "ar": "الشاهانييا",
-  "arFrom": "translit",
+  "ar": "الشحانية",
+  "arFrom": "curated",
   "leagues": [
    "Qatar Stars League"
   ],
