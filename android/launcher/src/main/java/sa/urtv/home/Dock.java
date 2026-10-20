@@ -58,10 +58,11 @@ final class Dock {
     }
 
     /**
-     * Shows what the TV's own home screen would: next to a Google home (which lists only TV apps), apps with only an
-     * ordinary launcher activity stay out, as they are mostly the maker's helpers; next to a maker's own home (CVTE,
-     * MediaTek sets) they come in, as its store and settings are among them. On top of that rule: the hidden apps in
-     * config.xml, other home screens, and what was hidden or shown from ADB (optimize/dock.sh hide / show).
+     * Shows what the TV's own home screen would: next to a Google home (which lists only TV apps; counted if it is
+     * installed, even disabled by install.sh), apps with only an ordinary launcher activity stay out, as they are
+     * mostly the maker's helpers; next to a maker's own home (CVTE, MediaTek sets) they come in, as its store and
+     * settings are among them. On top of that rule: the hidden apps in config.xml, other home screens, and what was
+     * hidden or shown from ADB (optimize/dock.sh hide / show).
      */
     private static List<ResolveInfo> scan(Context c, Map<String, String> why) {
         PackageManager pm = c.getPackageManager();
@@ -74,7 +75,13 @@ final class Dock {
         }
         homes.remove(c.getPackageName());
         boolean googleHome = false;
-        for (String g : GOOGLE_HOMES) googleHome |= homes.contains(g);
+        for (String g : GOOGLE_HOMES) {   // installed, enabled or not: the HOME query above skips a disabled stock home
+            try {
+                pm.getPackageInfo(g, 0);
+                googleHome = true;
+            } catch (PackageManager.NameNotFoundException ignored) {
+            }
+        }
         Map<String, ResolveInfo> out = new LinkedHashMap<>();
         for (String category : new String[] {Intent.CATEGORY_LEANBACK_LAUNCHER, Intent.CATEGORY_LAUNCHER}) {
             Intent q = new Intent(Intent.ACTION_MAIN).addCategory(category);
