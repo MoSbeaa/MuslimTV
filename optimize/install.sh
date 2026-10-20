@@ -13,6 +13,7 @@ cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
 REL=https://github.com/tshi-dev/UrTV/releases/download/${APK_TAG:-apk-latest}   # APK_TAG=v3.N: that numbered build
 what="${1:?usage: optimize/install.sh saver|launcher|all|extras}"
+failed=0   # an extra that did not install: the rest are still tried, then run.sh must not count the step as done
 
 push_install() {   # $1 apk name, $2 package
   curl -fsSL -o "optimize/$1" "$REL/$1"
@@ -56,12 +57,13 @@ for abi in [a for a in sys.argv[2].split(",") if a] + ["universal", ""]:
   if grep -q Success <<< "$out"; then echo "Installed $name"
   elif grep -qE 'UPDATE_INCOMPATIBLE|signatures do not match' <<< "$out"; then
     echo "$2 is already installed from somewhere else: left as it is (with its settings)."   # never removed
-  else echo "!! Install of $name failed: $out"; fi
+  else echo "!! Install of $name failed: $out"; failed=1; fi
 }
 
 if [ "$what" = extras ]; then
   from_github truefedex/tv-bro com.phlox.tvwebbrowser 'tvbro-[0-9.]+-generic-geckoExcluded\.apk'   # light: the TV's WebView
   from_github yuliskov/SmartTube org.smarttube.stable 'SmartTube_stable_[0-9.]+_{abi}\.apk'
+  [ "$failed" = 0 ] || exit 1
 fi
 
 if [ "$what" = saver ] || [ "$what" = all ]; then

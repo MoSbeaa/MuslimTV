@@ -118,6 +118,15 @@ do_step() {
   esac
 }
 
+# The .done-* marks belong to one TV: a different one (its serial, else its address) starts from the top.
+tv_id=$(tv "getprop ro.serialno" 2> /dev/null | tr -d '\r\n ' || true)
+[ -n "$tv_id" ] || tv_id="${TV_HOST:-$(cat optimize/.tv_host 2> /dev/null || true)}"
+if [ -n "$tv_id" ] && [ "$(cat "$RUN/.tv" 2> /dev/null || true)" != "$tv_id" ]; then
+  [ -f "$RUN/.tv" ] && echo "A different TV than the last run: starting from the first step."
+  rm -f "$RUN"/.done-* "$RUN/steps.log"
+  echo "$tv_id" > "$RUN/.tv"
+fi
+
 # when each step started, ended or stopped: optimize/share.sh turns it into how long each took
 stamp() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$RUN/steps.log"; }
 trap 'rc=$?; [ "$rc" -eq 0 ] || stamp "stopped ${current:-?} (exit $rc)"' EXIT
@@ -131,5 +140,13 @@ for s in "${STEPS[@]}"; do
   touch "$RUN/.done-$s"
   stamp "done $s"
 done
+if grep -q '!!' "$RUN/report.md"; then
+  current=report-check   # the stop below is no step's fault
+  echo
+  echo "Done, with problems:"
+  grep '!!' "$RUN/report.md"
+  rm -f "$RUN/.done-report"   # the next run writes the report again, so a fixed problem stops showing
+  exit 1
+fi
 echo
 echo "All steps done. Next: settings (optimize/saver.sh), favourites (optimize/dock.sh), photos (optimize/shot.sh)."
