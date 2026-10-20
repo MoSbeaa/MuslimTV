@@ -35,7 +35,7 @@ def tracked(*globs):
 before = {n: (ROOT / "dist" / n).read_bytes() for n in ("urtv.html", "tv.html") if (ROOT / "dist" / n).is_file()}
 r = subprocess.run([sys.executable, "src/build.py"], cwd=ROOT, capture_output=True, text=True)
 check("src/build.py runs", r.returncode == 0, r.stderr[-400:])
-for page, limit in (("urtv.html", 4_000_000), ("tv.html", 300_000)):
+for page, limit in (("urtv.html", 4_000_000), ("tv.html", 600_000)):   # tv.html: about 1000 verses and hadith
     html = (ROOT / "dist" / page).read_text(encoding="utf-8")
     left = sorted(set(re.findall(r"__[A-Z][A-Z_]+__", html)))
     check(f"{page}: every build token replaced", not left, left)
@@ -81,7 +81,7 @@ shown = [json.dumps(h["parts"], ensure_ascii=False) for h in hadith]
 check("no verse or hadith twice", len({v["text"] for v in verses}) == len(verses) and len(set(shown)) == len(shown))
 raw = json.loads((ROOT / "assets/shared/hadith.json").read_text(encoding="utf-8"))
 sys.path.insert(0, str(ROOT / "src"))
-from build import narration_parts, simple_parts, weak_in_tirmidhi, weak_by_scholars, HADITH_MAX_WORDS, ISNAD_MAX_WORDS, js_json   # noqa: E402
+from build import narration_parts, simple_parts, weak_in_tirmidhi, weak_by_scholars, albani_accepts, HADITH_MAX_WORDS, ISNAD_MAX_WORDS, js_json   # noqa: E402
 embedded = js_json({"c": "</script><b>"})
 check("embedded JSON cannot end its <script>", "</" not in embedded and json.loads(embedded)["c"] == "</script><b>", embedded)
 sys.path.insert(0, str(ROOT / ".github/tools"))
@@ -105,7 +105,10 @@ check("no hadith al-Tirmidhi grades only غريب/ضعيف, or as a companion's 
 long_chain = {form(h) for h in raw if h.get("full") and (lambda w: w and w[0][0] == "n" and len(w[0][1].split()) > ISNAD_MAX_WORDS)(narration_parts(h["full"]["text"]))}
 check(f"no hadith with an isnad over {ISNAD_MAX_WORDS} words is shown", not (long_chain & set(shown)), len(long_chain & set(shown)))
 graded_weak = {form(h) for h in raw if h.get("full") and weak_by_scholars(h["full"].get("grades"))}
-check("no hadith the scholars grade weak (Al-Albani first) is shown", graded_weak and not (graded_weak & set(shown)), len(graded_weak & set(shown)))
+check("no hadith the scholars grade weak (Al-Albani first) is shown", not (graded_weak & set(shown)), len(graded_weak & set(shown)))
+not_albani = [f"{h['full']['book']} {h['full']['number']}" for h in raw if h.get("found")
+              and not (h.get("full") and albani_accepts(h["full"]["book"], h["full"].get("grades")))]
+check("no hadith in the data unless Bukhari, Muslim, or Al-Albani grades it Sahih/Hasan/Hasan Sahih", not not_albani, not_albani)
 sunan = [h for h in raw if h.get("full") and h["full"]["book"] not in ("صحيح البخاري", "صحيح مسلم")]
 check("every narration from the four Sunan carries the scholars' grades", all(h["full"].get("grades") for h in sunan),
       [h["text"][:30] for h in sunan if not h["full"].get("grades")])
