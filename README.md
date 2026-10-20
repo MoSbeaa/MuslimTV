@@ -68,8 +68,8 @@ Everything is scriptable over ADB, made for slow Wi-Fi (retries, resumable uploa
 |---|---|
 | `optimize/find-tv.sh` | `--check`: can this terminal reach the home network at all (not from a cloud or sandbox) · then finds the TV (Windows, Mac, Linux) |
 | `optimize/run.sh` | the whole setup; run again after any failure to continue · `status` |
-| `optimize/saver.sh` | screensaver settings: `city`, `teams`, `find-team`, `card`, `home-card`, `update`, `show` |
-| `optimize/dock.sh` | favourites row: `apps`, `set`, `show`, `reset` |
+| `optimize/saver.sh` | screensaver settings: `show`, `cities`, `city`, `find-team`, `teams`, `card`, `home-card`, `genres`, `langs`, `minrating`, `update` |
+| `optimize/dock.sh` | favourites row: `show`, `apps`, `set`, `reset`; `hidden`, `hide PKG`, `show PKG` for apps left off the home screen |
 | `optimize/measure.sh` · `shot.sh` | memory before/after (restart + settle) · screenshots without navigating |
 | `optimize/keep.sh` | turn back on anything protected (AirPlay, casting, voice, updates…) that something turned off |
 | `optimize/reset.sh` | back to stock: lists re-enabled, stock home and screensaver back, our apps removed |
@@ -84,7 +84,7 @@ What we learned on real TCL sets, and what must stay on: [docs/OPTIMIZE.md](docs
 src/template.html     the screen (HTML/CSS/JS, no framework); edit this, then run src/build.py
 src/build.py          builds the two pages in dist/
 dist/urtv.html        stand-alone page, fonts and photos inlined: open in any browser (F = full screen), works offline
-dist/tv.html          light page the Android app loads (0.1 MB); the app serves fonts and photos from disk
+dist/tv.html          light page the Android app loads (0.3 MB); the app serves fonts and photos from disk
 android/app           the screensaver app (sa.urtv.screensaver): DreamService, settings, auto-update
 android/launcher      the home screen (sa.urtv.home)
 assets/               fonts, bundled photos, Arabic team names, verse and hadith texts
@@ -95,8 +95,9 @@ docs/                 the agent prompts (setup, recreate), what we learned on re
 tests/run.sh          every check: build, data, fonts, scripts, private data, flaky-ADB upload, the screen in a browser
 ```
 
-Every push builds both APKs in GitHub Actions and publishes them to the `apk-latest` release; `tests/run.sh` runs
-on every push too. Local Android build (needs the SDK): `python3 src/build.py && gradle -p android assembleRelease`
+A push to `master` builds both APKs in GitHub Actions and publishes them to `apk-latest` and a numbered `v3.N`
+release; a push to `next` publishes `apk-next` instead (a test build). `tests/run.sh` runs on `master`, `next`,
+`content` and pull requests. Local Android build (needs the SDK): `python3 src/build.py && gradle -p android assembleRelease`
 (signed with the debug key; the release key lives only in the repository's secrets).
 
 **Screen settings** come from the URL fragment (works on `file://` and in WebView):
