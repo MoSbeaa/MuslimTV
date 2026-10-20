@@ -25,7 +25,7 @@ def check(name, ok, detail=""):
 # transliteration: the same as the screen's, on every English name in the list and a few hard ones
 names = [c["en"] for c in json.loads((ROOT / "assets/shared/teams.json").read_text(encoding="utf-8"))]
 names += ["Al-Hilal", "PSG", "St. Louis City SC", "Brighton & Hove Albion", "1. FC Köln", "Schalke 04", "AC Milan",
-          "Ceará", "Cercle Brugge", "Al Ain", "  Two  Spaces ", "Queens Park Rangers", "Chelsea"]
+          "Ceará", "Cercle Brugge", "Beşiktaş", "Fenerbahçe", "İstanbul Başakşehir", "Kasımpaşa", "Atlético Madrid", "Al Ain", "  Two  Spaces ", "Queens Park Rangers", "Chelsea"]
 node = shutil.which("node")
 if not node:
     print("SKIP translit against the screen: no node here")
@@ -42,6 +42,25 @@ else:
         screen = json.loads(r.stdout)
         differ = [(n, s, ti.translit(n)) for n, s in zip(names, screen) if s != ti.translit(n)]
         check(f"translit: the screen's on all {len(names)} names", not differ, differ[:6])
+
+# the name key: the collector's team_key() is the screen's teamKey(), accents folded, so teams-ar.json's
+# "Atletico Madrid" names TheSportsDB's "Atlético Madrid"
+for name, want in [("Atlético Madrid", "atletico madrid"), ("Borussia Mönchengladbach", "borussia monchengladbach"),
+                   ("Beşiktaş", "besiktas"), ("Fenerbahçe", "fenerbahce"), ("İstanbul Başakşehir", "istanbul basaksehir"),
+                   ("Kasımpaşa", "kasimpasa"), ("Al-Hilal SFC", "alhilal sfc"), ("Al Hilal FC", "alhilal")]:
+    check(f"team_key({name!r}) = {want!r}", ti.team_key(name) == want, ti.team_key(name))
+if node:
+    key_js = page[page.index("const teamKey ="):page.index("\n", page.index(".replace(/^al /,'al');"))]
+    r = subprocess.run([node, "-e", key_js + "\nprocess.stdout.write(JSON.stringify(JSON.parse(require('fs')"
+                        ".readFileSync(0, 'utf8')).map(teamKey)));"], input=json.dumps(names), capture_output=True,
+                       text=True, encoding="utf-8")
+    differ = [(n, s, ti.team_key(n)) for n, s in zip(names, json.loads(r.stdout or "[]")) if s != ti.team_key(n)]
+    check(f"team_key: the screen's teamKey() on all {len(names)} names", r.returncode == 0 and not differ,
+          differ[:6] or r.stderr[-300:])
+first, last, _ = ti.curated()
+for name, want in [("Atlético Madrid", "أتلتيكو مدريد"), ("Borussia Mönchengladbach", "بوروسيا مونشنغلادباخ"),
+                   ("Beşiktaş", "بشكتاش"), ("Fenerbahçe", "فنربخشة")]:
+    check(f"curated name for {name}: {want}", last.get(ti.team_key(name)) == want, last.get(ti.team_key(name)))
 
 for label, want in [("نادي العين (الإمارات)", "العين"), ("النادي الأهلي (قطر)", "الأهلي"), ("فريق الوصل", "الوصل"),
                     ("نادي ريال مدريد لكرة القدم", "ريال مدريد"), ("ريَال", "ريال"), ("گوتنبرغ", "جوتنبرغ"),

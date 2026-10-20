@@ -608,8 +608,10 @@ function tickRamadan(){
 }
 
 const TEAM_AR = __TEAMS_AR__;   // assets/shared/teams-ar.json
-// match "Al-Adalah", "Al Adalah", "Al-Adalah FC" and "AL ADALAH" to the same entry
-const teamKey = s => String(s).toLowerCase().replace(/\b(fc|sc|cf|afc|club|saudi club)\b/g,'')
+// match "Al-Adalah", "Al Adalah", "Al-Adalah FC" and "AL ADALAH" to the same entry, and "Atlético" to "Atletico"
+// (the same key as team_key() in .github/tools/team_ids.py and Arabic.key(); tests/team_ids_test.py compares them)
+const teamKey = s => String(s).replace(/ı/g,'i').replace(/ß/g,'ss').normalize('NFKD').replace(/[\u0300-\u036f]+/g,'')
+  .toLowerCase().replace(/\b(fc|sc|cf|afc|club|saudi club)\b/g,'')
   .replace(/[^a-z0-9]+/g,' ').trim().replace(/^al /,'al');
 const TEAM_BY_ID = __TEAMS_BY_ID__;   // assets/shared/teams.json: TheSportsDB id -> Arabic
 const TEAM_KEYS = {};

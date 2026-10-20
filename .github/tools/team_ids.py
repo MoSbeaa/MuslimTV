@@ -125,14 +125,18 @@ def wiki(api, params):
 
 # ---------- names ----------
 
-def team_key(name):   # the screen's teamKey(): "Al-Hilal", "Al Hilal SFC" and "AL HILAL" are one club
-    s = re.sub(r"\b(fc|sc|cf|afc|club|saudi club)\b", "", str(name).lower())
+def fold(name):   # "Atlético", "Beşiktaş", "Kasımpaşa" -> "atletico", "besiktas", "kasimpasa"
+    s = unicodedata.normalize("NFKD", str(name).replace("ı", "i").replace("ß", "ss"))
+    return "".join(c for c in s if not unicodedata.combining(c)).lower()
+
+
+def team_key(name):   # the screen's teamKey(): "Al-Hilal", "Al Hilal SFC", "AL HILAL" are one club; so are accents
+    s = re.sub(r"\b(fc|sc|cf|afc|club|saudi club)\b", "", fold(name))
     return re.sub(r"^al ", "al", re.sub(r"[^a-z0-9]+", " ", s).strip())
 
 
 def latin(name):   # "Atlético" -> "atletico", for comparing names
-    s = unicodedata.normalize("NFKD", str(name).replace("ı", "i").replace("ß", "ss"))
-    return re.sub(r"[^a-z0-9]+", " ", "".join(c for c in s if not unicodedata.combining(c)).lower()).strip()
+    return re.sub(r"[^a-z0-9]+", " ", fold(name)).strip()
 
 
 GENERIC = {"fc", "sc", "cf", "afc", "club", "al", "el", "de", "the", "and", "city", "united", "real", "sporting",

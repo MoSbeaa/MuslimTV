@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Look up clubs by name on TheSportsDB (run in CI; the API is unreachable from the dev container).
 Writes teams/found.json: every match with its id, league and country, for review.
-Used to add clubs the league listing misses (Prefs.LEAGUE_EXTRA)."""
+For a one-off look; the app's clubs come from team_ids.py, which collects every club of its leagues."""
 import json
 import time
 import urllib.error

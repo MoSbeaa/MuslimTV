@@ -36,8 +36,11 @@ final class Arabic {
         return known.get(key(en));
     }
 
-    /** Same normalisation as teamKey() in the page: "Al-Adalah FC" == "al adalah" == "AL ADALAH". */
+    /** Same normalisation as teamKey() in the page: "Al-Adalah FC" == "al adalah" == "AL ADALAH", "Atlético" ==
+     *  "Atletico". */
     static String key(String s) {
+        s = java.text.Normalizer.normalize(s.replace("\u0131", "i").replace("ß", "ss"), java.text.Normalizer.Form.NFKD)
+            .replaceAll("\\p{M}+", "");
         return s.toLowerCase(Locale.ROOT).replaceAll("\\b(fc|sc|cf|afc|club|saudi club)\\b", "")
             .replaceAll("[^a-z0-9]+", " ").trim().replaceFirst("^al ", "al");
     }
