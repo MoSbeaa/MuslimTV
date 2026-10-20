@@ -104,8 +104,9 @@ me exactly what was refused. Don't port the scripts to PowerShell or look for an
 `winget install -e --id Python.Python.3.12 --accept-source-agreements --accept-package-agreements`. Then run the
 same command again: the scripts find the new Python without a new terminal. Don't stop and hand me the install.
 ```
-git clone https://github.com/tshi-dev/UrTV; cd UrTV && git pull     # always the latest; on Windows into a short
-                                                                    # folder such as C:/UrTV (a deep one breaks Python)
+git clone https://github.com/tshi-dev/UrTV     # on Windows into a short folder such as C:/UrTV (a deep one breaks Python)
+cd UrTV
+git pull                               # always the latest (a command of its own, not joined with the others)
 optimize/find-tv.sh --check            # Windows: always through Git Bash (below), never plain `python`
 ```
 - `OK: this terminal can reach the home network` → go on with step 1.
@@ -172,6 +173,9 @@ Lines starting with `!!` are the scripts telling you to stop and act. These are 
 | `Unknown package` or `not installed` while disabling | that package is not on this model | nothing, normal |
 | `An older … signed with another key is installed` | an older build of our app | nothing, it reinstalls; redo step 4 for that app |
 | `!! Install of … failed` | usually storage, or a very old Android | stop and show me |
+| `!! Could not download …` (install.sh) | no such build at that tag, or no internet on this computer | check `APK_TAG` (unset = the latest) and the releases page https://github.com/tshi-dev/UrTV/releases, and that the computer is online; then the same command |
+| `!! GitHub rate limit, try later` (install.sh extras) | GitHub allows only a few anonymous requests an hour | wait a few minutes, then `optimize/run.sh` again (it redoes the extras step) |
+| `Done, with problems:` and `optimize/run.sh` exits 1 | every step ran, but `report.md` has `!!` lines (printed under it) | read them, fix what each says (this table), then `optimize/run.sh` again: only the report step is redone |
 | `!! The safety switch put the stock home back` | ADB was slower than the 5-minute switch | nothing is broken: the same command again |
 | `!! Home did not open the new launcher` | slow ADB, or firmware that pins its own home | leave the TV 5 minutes; `optimize/run.sh` once more; if again, `SKIP_LAUNCHER=1 optimize/run.sh` |
 | the TV has no home at all (black screen, Home does nothing) | our home app is gone while the stock home is off | `optimize/restore.sh` (no list: only the home screen), then `optimize/install.sh launcher`; more in `docs/OPTIMIZE.md`, «Home screen problems» |
@@ -201,7 +205,7 @@ out, tell me again and run it once more.
 > تتركني، أكمّل لحالي حوالي ٤٠ دقيقة.
 Tell me the model and Android version. Look at `optimize/run/shots/my-apps.png` and write down the first **6 apps**
 of my apps / favourites row, left to right, by name: they become the favourites of the new home screen in step 4.
-Only then, if this TV was set up with these tools before (also older versions, whose apps are `sa.yourtv.*` or `com.abdullah.*`),
+Only then, if this TV was set up with these tools before (also an older version of it),
 run `optimize/reset.sh` so we start like new.
 
 ## 2. Before you run it: how to undo
@@ -232,7 +236,7 @@ itself) and tell me. Some TCL firmware keeps its own home: then `SKIP_LAUNCHER=1
 optimize/saver.sh cities                          # find my city, then: optimize/saver.sh city <name>   (not listed: city <name> <lat> <lon>)
 optimize/saver.sh find-team <club as I wrote it>  # Arabic is fine (الهلال): one call per club, Saudi clubs first;
                                                   # then: optimize/saver.sh teams <id:Name> <id:Name> ...  (my order)
-optimize/saver.sh card <verse|shows|prayers|forecast|matches|none>        # beside the clock (verse unless I said otherwise)
+optimize/saver.sh card <one of: verse, shows, prayers, forecast, matches, none>   # beside the clock (verse unless I said otherwise)
 optimize/saver.sh home-card none                  # home screen: no card
 optimize/dock.sh apps                             # match my 6 apps to packages, then: optimize/dock.sh set <pkg> ... (in that order)
 optimize/dock.sh hidden                           # apps the home screen leaves out, and why
@@ -259,7 +263,7 @@ optimize/shot.sh screensaver
 Look at both screenshots (in `optimize/run/shots/`) and describe them to me. Then check Home from inside an app
 yourself (I may have left): open one, press Home, and the new home must be in front:
 ```
-optimize/check-home.sh          # opens YouTube, presses Home; or: optimize/check-home.sh <another app of mine>
+optimize/check-home.sh          # opens YouTube (else my first favourite), presses Home; or: optimize/check-home.sh <another app of mine>
 ```
 
 ## 6. Before you tell me it's done
@@ -299,6 +303,9 @@ plain lines, with no names, addresses or paths:
 ```
 optimize/share.sh --agent "<you and your model>" --owner "<my words, or leave it out>" "<your notes>"
 ```
+This is the one command here that needs quotes: the agent name and the notes are several words (no apostrophes
+in them). On Windows, inside the Git Bash `-lc "…"` string use single quotes for each:
+`-lc "cd <this folder> && optimize/share.sh --agent '<you and your model>' --owner '<my words>' '<your notes>'"`.
 It sends the summary to the author by itself (anonymously, no account) and prints `Sent to the author`: show me the
 text and tell me it went. If it couldn't send it, it opens a QR code on this computer's screen instead
 (`optimize/run/share-qr.png`; if it didn't open, open it for me): tell me to scan it with my phone's camera, and the
