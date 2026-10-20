@@ -38,8 +38,9 @@ PAGE = "https://tshi-dev.github.io/UrTV/share/"
 def scrub(text):   # in case a note or an output carries something personal
     text = re.sub(r"\b\d{1,3}(\.\d{1,3}){3}(:\d+)?\b", "<ip>", text)
     text = re.sub(r"\b([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}\b", "<mac>", text)
-    text = re.sub(r"(?i)\b[A-Z]:[\\/]+Users[\\/]+[^\\/\s]+", "<home>", text)
-    text = re.sub(r"(?i)(/c)?/Users/[^/\s]+|/home/[^/\s]+", "<home>", text)
+    # the user folder may hold spaces ("Ann Lee"): it runs to the next separator or the end of the line
+    text = re.sub(r"(?i)\b[A-Z]:[\\/]+(Users|Documents and Settings)[\\/]+[^\\/\r\n]+", "<home>", text)
+    text = re.sub(r"(?i)(/c)?/Users/[^/\r\n]+|/home/[^/\r\n]+", "<home>", text)
     return text
 
 
@@ -150,9 +151,29 @@ def packages(lines):   # what our lists turned off, what they left on, and what 
             out += [f"  on: {', '.join(on)}"] if on else []
     if state.get(("off", "keep")):
         out.append(f"!! protected but off: {', '.join(state[('off', 'keep')])}")
-    hides = [l[len("- home hides: "):] for l in lines if l.startswith("- home hides: ")]
-    if hides:
-        out.append("Home screen leaves out: " + "; ".join(hides))
+    out += hidden(lines)
+    return out
+
+
+def hidden(lines):   # the home screen's "package | reason" lines: the owner's own apps only as counts per reason
+    ours = {l.split()[0] for f in (Path(__file__).resolve().parent / "lists").glob("*.txt")
+            for l in f.read_text(encoding="utf-8").splitlines() if l.strip() and not l.lstrip().startswith("#")}
+    reasons, named = {}, []
+    for l in lines:
+        if not l.startswith("- home hides: "):
+            continue
+        pkg, _, why = l[len("- home hides: "):].partition(" | ")
+        if not why:
+            continue
+        if pkg.strip() in ours:
+            named.append(f"{pkg.strip()} ({why.strip()})")
+        else:
+            reasons[why.strip()] = reasons.get(why.strip(), 0) + 1
+    out = []
+    if reasons:
+        out.append("home hides: " + ", ".join(f"{n} {why}" for why, n in reasons.items()))
+    if named:
+        out.append("home hides, from our lists: " + ", ".join(named))
     return out
 
 
@@ -215,7 +236,7 @@ def qr(link):
     try:
         import segno
     except ImportError:
-        print("(no QR code: run optimize/setup.sh once to install segno)")
+        print("(no QR code: optimize/share.sh installs segno when it runs, and that did not work: no internet for pip?)")
         return False
     try:
         segno.make(link, error="l").save(str(QR), scale=6, border=4)
