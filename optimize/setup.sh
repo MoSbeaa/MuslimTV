@@ -13,5 +13,14 @@ if [ ! -e venv/bin/python ] && [ -e venv/Scripts/python.exe ]; then
   printf '#!/usr/bin/env bash\nexec "$(dirname "$0")/../Scripts/python.exe" "$@"\n' > venv/bin/python
   chmod +x venv/bin/python
 fi
-venv/bin/python -m pip install -q --no-cache-dir -r requirements.txt
+if ! venv/bin/python -m pip install -q --no-cache-dir -r requirements.txt; then
+  echo "!! Couldn't install the Python packages into optimize/venv (pip's error is above). If it is a network"
+  echo "   error, allow this terminal network access (pypi.org), then run optimize/setup.sh again."
+  exit 1
+fi
+if ! venv/bin/python -c "import adb_shell" 2>/dev/null; then   # pip said yes: make sure tv.py will really start
+  echo "!! The ADB package is still missing from optimize/venv. Delete the folder optimize/venv, then run"
+  echo "   optimize/setup.sh again."
+  exit 1
+fi
 echo "✓ Python ADB client in optimize/venv"

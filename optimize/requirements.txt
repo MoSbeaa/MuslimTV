@@ -1,4 +1,3 @@
 adb-shell
 rsa
 cryptography
-segno

@@ -21,13 +21,17 @@ import sys
 import time
 from pathlib import Path
 
-from adb_shell.adb_device import AdbDeviceTcp
-from adb_shell.auth.keygen import keygen
-from adb_shell.auth.sign_pythonrsa import PythonRSASigner
-
 for _stream in (sys.stdout, sys.stderr):   # Windows writes pipes in its own code page: Arabic would crash
     if hasattr(_stream, "reconfigure"):
         _stream.reconfigure(encoding="utf-8", errors="replace")
+
+try:
+    from adb_shell.adb_device import AdbDeviceTcp
+    from adb_shell.auth.keygen import keygen
+    from adb_shell.auth.sign_pythonrsa import PythonRSASigner
+except ModuleNotFoundError:
+    sys.exit("!! The Python packages aren't in optimize/venv. Run optimize/setup.sh: it must end with "
+             "«✓ Python ADB client», else it says why. Then the same command again.")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HOST_FILE = os.path.join(HERE, ".tv_host")  # written by find-tv.sh, git-ignored
