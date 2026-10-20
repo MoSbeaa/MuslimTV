@@ -44,7 +44,7 @@ android {
 
     // the page is built by ../../src/build.py into dist/
     sourceSets {
-        main { assets.srcDirs = ['../../dist', '../../assets/shared', '../launcher/src/main/assets', '../../assets'] }   // page, teams-ar.json, Thmanyah fonts, backgrounds/
+        main { assets.srcDirs = ['../../dist', '../launcher/src/main/assets', '../../assets'] }   // page, Thmanyah fonts, backgrounds/, shared/ (the club lists)
     }
 
     compileOptions {

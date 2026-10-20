@@ -31,7 +31,7 @@ final class Teams {
     static synchronized List<TeamSearch.Team> all(Context c) {
         if (all != null) return all;
         List<TeamSearch.Team> v = new ArrayList<>();
-        try (InputStream in = c.getAssets().open("teams.json")) {
+        try (InputStream in = c.getAssets().open("shared/teams.json")) {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             byte[] buf = new byte[8192];
             int n;

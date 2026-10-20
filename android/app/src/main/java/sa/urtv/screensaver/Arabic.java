@@ -24,7 +24,7 @@ final class Arabic {
     static synchronized String known(android.content.Context c, String en) {
         if (known == null) {
             known = new HashMap<>();
-            try (InputStream in = c.getAssets().open("teams-ar.json")) {
+            try (InputStream in = c.getAssets().open("shared/teams-ar.json")) {
                 ByteArrayOutputStream b = new ByteArrayOutputStream();
                 byte[] buf = new byte[8192];
                 int n;
