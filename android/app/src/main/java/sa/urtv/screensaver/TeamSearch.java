@@ -126,10 +126,14 @@ final class TeamSearch {
 
     private static final int[] GROUP = {0, 0, 1, 2};   // a misspelt name still ranks as the same name: Saudi first
 
+    private static final Set<String> ARTICLES = set("ال", "al", "el");   // a query of nothing else finds nothing
+
     static List<String> queryWords(String query) {
         List<String> q = normalize(query), stripped = new ArrayList<>();
         for (String w : q) if (!KIND_AR.contains(w)) stripped.add(w);
-        return stripped.isEmpty() ? q : stripped;
+        if (!stripped.isEmpty()) q = stripped;
+        for (String w : q) if (!ARTICLES.contains(w)) return q;
+        return new ArrayList<>();
     }
 
     /** The teams matching query, best first; empty for an empty or silly query. Never throws. */

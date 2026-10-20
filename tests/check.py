@@ -123,6 +123,39 @@ names = "".join(v for v in (team_ar.values() if isinstance(team_ar, dict) else [
 missing = sorted({c for c in names if not c.isspace() and ord(c) not in font})
 check("Arabic team names: every character in Thmanyah", not missing, missing)
 
+# ---- the clubs list (assets/shared/teams.json, built by .github/tools/team_ids.py in CI)
+from team_ids import KNOWN, LEAGUES, NATIONAL, NATIONAL_LEAGUE, plain_ar, team_key   # noqa: E402
+clubs = json.loads((ROOT / "assets/shared/teams.json").read_text(encoding="utf-8"))
+ids = [c["id"] for c in clubs]
+check("clubs: unique ids", len(ids) == len(set(ids)), sorted({i for i in ids if ids.count(i) > 1}))
+by_id = {c["id"]: c for c in clubs}
+check("clubs: the known ids are the clubs the app uses",
+      all(team_key(by_id.get(i, {}).get("en", "")) == team_key(n) for i, n in KNOWN.items()),
+      {i: by_id.get(i, {}).get("en") for i, n in KNOWN.items() if team_key(by_id.get(i, {}).get("en", "")) != team_key(n)})
+prefs_leagues = re.findall(r'\{"([^"]+)", "[^"]+"\}', (ROOT / "android/app/src/main/java/sa/urtv/screensaver/Prefs.java")
+                           .read_text(encoding="utf-8").split("LEAGUES = {")[1].split("};")[0])
+count = {l: sum(l in c["leagues"] for c in clubs) for l in prefs_leagues}
+check("clubs: every league of the app has at least its minimum", all(count[l] >= LEAGUES.get(l, {}).get("min", 1)
+      for l in prefs_leagues), {l: (n, LEAGUES.get(l, {}).get("min")) for l, n in count.items() if n < LEAGUES.get(l, {}).get("min", 1)})
+national = [c for c in clubs if NATIONAL_LEAGUE in c["leagues"]]
+check(f"clubs: all {len(NATIONAL)} national teams", len(national) == len(NATIONAL), len(national))
+ours = [c for c in clubs if NATIONAL_LEAGUE in c["leagues"] or any(LEAGUES.get(l, {}).get("country") == "Saudi Arabia"
+                                                                     for l in c["leagues"])]
+check("clubs: every Saudi club and national team has our own or Wikidata's Arabic name, not a transliteration",
+      all(c.get("ar") and c.get("arFrom") != "translit" for c in ours),
+      [c["en"] for c in ours if not c.get("ar") or c.get("arFrom") == "translit"])
+check("clubs: every team has an Arabic name", all(c.get("ar") for c in clubs), [c["en"] for c in clubs if not c.get("ar")][:10])
+check("clubs: each Arabic name's source is given", all(c.get("arFrom") in ("curated", "wikidata", "thesportsdb", "translit")
+                                                      for c in clubs), sorted({str(c.get("arFrom")) for c in clubs}))
+names = {}
+for c in clubs:
+    if c.get("ar"):
+        names.setdefault(plain_ar(c["ar"]), []).append(c["en"])
+check("clubs: no two teams share an Arabic name", all(len(v) == 1 for v in names.values()),
+      {k: v for k, v in names.items() if len(v) > 1})
+missing = sorted({ch for c in clubs for ch in c.get("ar", "") if not ch.isspace() and ord(ch) not in font})
+check("clubs: every character of the Arabic names in Thmanyah", not missing, missing)
+
 # ---- launcher config
 cfg = ET.parse(ROOT / "android/launcher/src/main/res/values/config.xml").getroot()
 arr = {a.get("name"): [i.text for i in a] for a in cfg.findall("string-array")}

@@ -78,10 +78,14 @@ def tier(q, name):
 GROUP = {0: 0, 1: 0, 2: 1, 3: 2}   # a misspelt name still ranks as the same name, so the Saudi club wins
 
 
+ARTICLES = {"ال", "al", "el"}   # a query of nothing else finds nothing
+
+
 def query_words(query):
     q = normalize(query)
     stripped = [w for w in q if w not in KIND_AR]
-    return stripped or q
+    q = stripped or q
+    return [] if all(w in ARTICLES for w in q) else q
 
 
 def names_of(club):

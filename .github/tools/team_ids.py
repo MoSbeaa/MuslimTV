@@ -102,7 +102,7 @@ NOT_A_CLUB = re.compile(r"women|female|ladies|futsal|basketball|handball|volleyb
 # letters Thmanyah (the screen's font) lacks, as Arabic writes them
 FONT_FIX = str.maketrans({"گ": "ج", "ژ": "ج", "ڨ": "ق", "ی": "ي", "ک": "ك", "ۀ": "ه", "ہ": "ه", "ھ": "ه", "ە": "ه",
                           "ۆ": "و", "ٱ": "ا"})
-ARABIC_NAME = re.compile(r"[ء-غف-ي٠-٩پچڤ \-]+")
+ARABIC_NAME = re.compile(r"[\u0621-\u063A\u0641-\u064A\u0660-\u0669\u067E\u0686\u06A4 .'\-]+")
 
 
 # ---------- the network (the free TheSportsDB key allows 30 requests a minute) ----------
@@ -192,7 +192,8 @@ def clean_ar(label):
     """Wikidata's «نادي العين (الإمارات)» -> «العين»; '' if it isn't plain Arabic the screen's font can draw."""
     s = re.sub(r"[ً-ٰٟـ]", "", str(label or "")).translate(FONT_FIX)
     s = re.sub(r"\s*\([^)]*\)\s*", " ", s).strip()
-    s = re.sub(r"^(?:(?:ال)?نادي|فريق)(?:\s+|$)", "", s)
+    s = re.sub(r"^(?:(?:ال)?ناد[يى]|فريق)(?:\s+|$)", "", s)
+    s = re.sub("[0-9]", lambda m: chr(0x0660 + int(m.group())), s)   # «بادربورن 07» -> «بادربورن ٠٧»
     s = re.sub(r"\s+(?:لكرة القدم|الرياضي|للألعاب الرياضية)$", "", s).strip()
     return s if ARABIC_NAME.fullmatch(s) and len(s.replace(" ", "")) >= 2 else ""
 
@@ -338,6 +339,17 @@ def collect_league(name, lid, today, teams, report, problems):
     clubs_in = {s: {**found, **(rounds if k == 0 else {})} for k, (s, found) in enumerate(seasons.items())}
     without = {s: sorted((nameless[s] | (round_nameless if k == 0 else set())) - set(clubs_in[s].values()))
                for k, s in enumerate(seasons)}
+    if len(seasons) == 2:   # the current season short of a club: last season's missing ones, by their own matches
+        now, before = list(seasons)
+        if len(clubs_in[now]) + len(without[now]) < LEAGUES[name]["min"]:
+            for i, en in [(i, en) for i, en in seasons[before].items() if i not in clubs_in[now]][:6]:
+                for path in (f"eventslast.php?id={i}", f"eventsnext.php?id={i}"):
+                    d = get(path)
+                    if any(str(e.get("idLeague")) == str(lid) and e.get("strSeason") == now
+                           for e in d.get("results") or d.get("events") or []):
+                        clubs_in[now][i] = en
+                        report.setdefault("found in their own matches", []).append(f"{name} {now}: {i} {en}")
+                        break
     report["clubs per league"][name] = {"clubs": len(every), "seasons": {s: len(f) for s, f in clubs_in.items()},
                                         "last and next rounds": len(rounds)}
     if any(without.values()):
@@ -443,7 +455,8 @@ def wikidata_arabic(teams, report, cache=None):
     need = {}
     for i, t in teams.items():
         c = (cache or {}).get("teams", {}).get(i)
-        if c and "wd" in c and team_key(c.get("en", "")) == team_key(t["en"]):
+        # a name that is only a transliteration is asked about again: Wikidata may have it by now
+        if c and "wd" in c and team_key(c.get("en", "")) == team_key(t["en"]) and c.get("arFrom") != "translit":
             if c["wd"]:
                 found[i] = tuple(c["wd"])
         else:
@@ -519,22 +532,39 @@ def by_name(teams, found, notes):
             props = pages.get(final) or {}
             if props.get("wikibase_item") and "disambiguation" not in props:
                 qid[title] = props["wikibase_item"]
-    candidates = {}   # club id -> [Wikidata ids], article first, then search hits
-    for i in left:
-        candidates[i] = list(dict.fromkeys(qid[x] for x in titles[i] if x in qid))
-        if not candidates[i]:
-            d = wiki(WIKIDATA, {"action": "wbsearchentities", "search": teams[i]["en"], "language": "en",
-                                "type": "item", "limit": 7})
-            candidates[i] = [h["id"] for h in d.get("search", []) if FOOTBALL.search(h.get("description", ""))]
-    every = list(dict.fromkeys(q for v in candidates.values() for q in v))
+    candidates = {i: list(dict.fromkeys(qid[x] for x in titles[i] if x in qid)) for i in left}
     entities = {}
+    accept(teams, left, candidates, entities, found)
+    # no club behind its article («Roma» is the city): Wikidata's football clubs (Q476028) of that name, then any
+    # item whose description says football
+    for search in ("clubs", "items"):
+        rest = [i for i in left if i not in found]
+        for i in rest:
+            if search == "clubs":
+                d = wiki(WIKIDATA, {"action": "query", "list": "search", "srnamespace": 0, "srlimit": 5,
+                                    "srsearch": f'{teams[i]["en"]} haswbstatement:P31=Q476028'})
+                candidates[i] = [h["title"] for h in d.get("query", {}).get("search", [])]
+            else:
+                d = wiki(WIKIDATA, {"action": "wbsearchentities", "search": teams[i]["en"], "language": "en",
+                                    "type": "item", "limit": 7})
+                candidates[i] = [h["id"] for h in d.get("search", []) if FOOTBALL.search(h.get("description", ""))]
+        accept(teams, rest, candidates, entities, found)
+        notes[f"matched by a search of {search}"] = sum(1 for i in rest if i in found)
+    notes["matched by name"] = sum(1 for i in left if i in found)
+
+
+def accept(teams, ids, candidates, entities, found):
+    """The first candidate item that is a men's football club of the club's country, with its name, and has an
+    Arabic label or article."""
+    every = [q for i in ids for q in candidates.get(i, []) if q not in entities]
+    every = list(dict.fromkeys(every))
     for k in range(0, len(every), 50):
         d = wiki(WIKIDATA, {"action": "wbgetentities", "ids": "|".join(every[k:k + 50]),
                             "props": "labels|descriptions|claims|sitelinks", "languages": "ar|en", "sitefilter": "arwiki"})
         entities.update(d.get("entities", {}))
-    for i in left:
+    for i in ids:
         country = set().union(*(LEAGUES[l]["wd"] for l in teams[i]["leagues"] if l in LEAGUES))
-        for q in candidates[i]:
+        for q in candidates.get(i, []):
             e = entities.get(q) or {}
             desc = ((e.get("descriptions") or {}).get("en") or {}).get("value", "")
             en = ((e.get("labels") or {}).get("en") or {}).get("value", "")
@@ -543,10 +573,11 @@ def by_name(teams, found, notes):
             if not FOOTBALL.search(desc) or NOT_A_CLUB.search(desc) or (where and country and not where & country) \
                     or not same_team(teams[i]["en"], en):
                 continue
-            found[i] = (((e.get("labels") or {}).get("ar") or {}).get("value", ""),
-                        ((e.get("sitelinks") or {}).get("arwiki") or {}).get("title", ""), en, "name")
-            break
-    notes["matched by name"] = sum(1 for i in left if i in found)
+            ar = ((e.get("labels") or {}).get("ar") or {}).get("value", "")
+            title = ((e.get("sitelinks") or {}).get("arwiki") or {}).get("title", "")
+            if clean_ar(ar) or clean_ar(title):
+                found[i] = (ar, title, en, "name")
+                break
 
 
 def curated():
@@ -720,7 +751,8 @@ def main():
     out.sort(key=lambda t: (order.index(t["leagues"][0]), t["en"]))
     new_cache = {"leagues": {n: ids[n] for n in leagues if n in ids}, "national": national,
                  "teams": {i: {"en": t["en"], "checked": t.get("checked", ""), "lookup": t.get("lookup"),
-                               "wd": list(wd[i]) if i in wd else None} for i, t in sorted(teams.items())}}
+                               "wd": list(wd[i]) if i in wd else None, "arFrom": t["arFrom"]}
+                           for i, t in sorted(teams.items())}}
     report["teams"] = len(out)
     report["requests"]["made"] = dict(STATS)
     report["requests"]["minutes"] = round((time.time() - started) / 60, 1)

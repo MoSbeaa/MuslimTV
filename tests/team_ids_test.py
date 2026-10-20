@@ -190,6 +190,26 @@ def fake_get(path):
                        for a, b in zip(names[::2], names[1::2])]}
 
 
+def short_get(path):   # 2026-27 lists 19 of La Liga's 20: Club 19 is in last season's and in its own matches
+    now, before = ti.seasons_to_try(ti.LEAGUES["Spanish La Liga"], datetime.date.today())[:2]
+    if path.startswith("eventsseason.php"):
+        names = [(str(500 + k), f"Club {k}") for k in range(20 if path.endswith(before) else 19)]
+        names += [] if path.endswith(before) else [("518", "Club 18")]
+        return {"events": [{"idHomeTeam": a[0], "strHomeTeam": a[1], "idAwayTeam": b[0], "strAwayTeam": b[1]}
+                           for a, b in zip(names[::2], names[1::2])]}
+    if path == "eventslast.php?id=519":
+        return {"results": [{"idLeague": "4335", "strSeason": now, "idHomeTeam": "519", "strHomeTeam": "Club 19"}]}
+    return {"events": None}
+
+
+real_get, ti.get = ti.get, short_get
+report, problems, teams = {"clubs per league": {}}, [], {}
+with contextlib.redirect_stdout(io.StringIO()):
+    ti.collect_league("Spanish La Liga", "4335", datetime.date.today(), teams, report, problems)
+check("a club missing from the current season's list is found in its own matches", not problems
+      and any("519" in x for x in report.get("found in their own matches", [])), (problems, report))
+ti.get = real_get
+
 real_get, ti.get = ti.get, fake_get
 report, problems, teams = {"clubs per league": {}}, [], {}
 with contextlib.redirect_stdout(io.StringIO()):
@@ -224,8 +244,10 @@ with tempfile.TemporaryDirectory() as tmp:
     check("incremental: no league or national team searched again",
           not [c for c in calls if "all_leagues.php" in c or "searchteams.php" in c or "searchevents.php" in c],
           [c for c in calls if "search" in c][:4])
-    check("incremental: Wikidata asked about the two clubs only", report["wikidata"].get("looked up before") ==
-          report["teams"] - 2, report["wikidata"])
+    cached = json.loads((tmp / "one/teams-cache.json").read_text(encoding="utf-8"))["teams"]
+    again = sum(1 for i, c in cached.items() if c["arFrom"] == "translit" and i != renamed)
+    check("incremental: Wikidata asked only about the two clubs and the names that are only transliterations",
+          report["wikidata"].get("looked up before") == report["teams"] - 2 - again, (report["wikidata"], again))
     out = {t["id"]: t for t in json.loads((tmp / "two/teams.json").read_text(encoding="utf-8"))}
     check("incremental: the new club is in, the renamed one has its new name",
           new_club[0] in out and out[renamed]["en"] == "Renamed Eagles", out.get(renamed))

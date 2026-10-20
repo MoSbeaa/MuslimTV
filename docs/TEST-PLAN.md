@@ -34,7 +34,7 @@ Navigate with the remote, or `adb shell input keyevent DPAD_DOWN|DPAD_UP|DPAD_CE
 | A6 | المدينة → search → type `zzzzqq` | Toast «لا توجد نتائج» |
 | A7 | الفرق المتابعة → «تصفح الدوريات…» → each league one by one, and «المنتخبات» | Each opens at once, even offline, with every club of the last two seasons in Arabic (MLS: 30). **Record any league that is short or shows «لا توجد نتائج»** |
 | A8 | الفرق المتابعة → «تصفح الدوريات…» → دوري روشن → pick «النصر» | Toast «تمت متابعة النصر» right away (no network needed), row shows «النصر» |
-| A9 | الفرق المتابعة → «بحث عن أي فريق أو منتخب…» → `Real Madrid`, then `الاهلي`, `العين`, `atletico` | Results at once: «ريال مدريد»; the Saudi «الأهلي» first, then «الأهلي المصري»; the Saudi «العين» before «العين الإماراتي»; «أتلتيكو مدريد». Pick one → row shows its Arabic name |
+| A9 | الفرق المتابعة → «بحث عن أي فريق أو منتخب…» → `Real Madrid`, then `الاهلي`, `العربي`, `atletico` | Results at once: «ريال مدريد»; the Saudi «الأهلي» first, then «الأهلي المصري»; the Saudi «العربي» before «العربي القطري»; «أتلتيكو مدريد». Pick one → row shows its Arabic name |
 | A10 | الفرق المتابعة → دوري يلو | Every club of the league, «الزلفي» among them |
 | A11 | التصنيفات → tick دراما + كوميديا → حفظ | Row lists both |
 | A12 | اللغات → tick الإنجليزية → حفظ | Row shows it |
