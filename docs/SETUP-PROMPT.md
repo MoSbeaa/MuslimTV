@@ -162,7 +162,7 @@ Lines starting with `!!` are the scripts telling you to stop and act. These are 
 | `resuming upload at 40%` | an earlier upload was cut off | nothing, it continues and checks the file |
 | no output for several minutes | a restart, or the 3-minute settle before measuring | wait; don't interrupt |
 | the first connection hangs for up to 2 minutes | the TV is showing «Allow USB debugging?» | ask me to press Allow and tick «Always allow» |
-| `--probe` silent for 5 minutes and the TV shows no «Allow USB debugging?» | the TV's debugging service is stuck (seen on a TCL) | stop it; ask me to turn USB debugging off and on again on the TV; the same command again |
+| `--probe` silent for 5 minutes and the TV shows no «Allow USB debugging?» | the first connection to a TCL sometimes just hangs | stop it and run the same command again: the second time it connects at once |
 | `reset.sh`: `mv: cannot move 'optimize/run' … Permission denied` (Windows) | something holds a file open inside `optimize/run` (a log you write there, an editor, an image viewer) | close it, never write your own logs into `optimize/run`; the same command again (the apps are already removed, it carries on) |
 | `!! This terminal cannot reach the home network` | your commands run in a cloud, sandbox or virtual machine | stop, tell me (step 0) |
 | `Don't know your TV's IP` | `find-tv.sh` was not run or found nothing | `optimize/find-tv.sh`, or ask me for the IP (TV: Settings → Network → the Wi-Fi) and save it: `echo <ip> > optimize/.tv_host` |
