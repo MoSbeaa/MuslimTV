@@ -104,6 +104,8 @@ PROBE = {"133738": "Real Madrid"}   # does lookupteam.php answer by id? (one req
 HILAL_ARTICLE = "نادي الهلال (السعودية)"   # Al-Hilal's Arabic Wikipedia article: finds Wikidata's TheSportsDB property
 
 FOOTBALL = re.compile(r"football|soccer", re.I)
+# a club's second side, not the club: "RCD Espanyol B", "Real Madrid Castilla", "Bayern Munich II", "Ajax U19"
+SIDE = re.compile(r"\s(?:B|C|II|III|Castilla|Atlètic|U-?\d{2}|Reserves?|Youth|Women|Femen\w*)$", re.I)
 NOT_A_CLUB = re.compile(r"women|female|ladies|futsal|basketball|handball|volleyball|youth|under-\d|reserve", re.I)
 # letters Thmanyah (the screen's font) lacks, as Arabic writes them
 FONT_FIX = str.maketrans({"گ": "ج", "ژ": "ج", "ڨ": "ق", "ی": "ي", "ک": "ك", "ۀ": "ه", "ہ": "ه", "ھ": "ه", "ە": "ه",
@@ -579,7 +581,7 @@ def accept(teams, ids, candidates, entities, found):
             where = {((c.get("mainsnak") or {}).get("datavalue") or {}).get("value", {}).get("id")
                      for c in (e.get("claims") or {}).get("P17", [])}
             if not FOOTBALL.search(desc) or NOT_A_CLUB.search(desc) or (where and country and not where & country) \
-                    or not same_team(teams[i]["en"], en):
+                    or not same_team(teams[i]["en"], en) or (SIDE.search(en) and not SIDE.search(teams[i]["en"])):
                 continue
             ar = ((e.get("labels") or {}).get("ar") or {}).get("value", "")
             title = ((e.get("sitelinks") or {}).get("arwiki") or {}).get("title", "")

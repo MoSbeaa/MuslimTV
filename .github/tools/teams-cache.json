@@ -697,8 +697,13 @@
 "country": "",
 "gender": ""
 },
-"wd": null,
-"arFrom": "translit"
+"wd": [
+"ماينتس 05",
+"ماينتس 05",
+"1. FSV Mainz 05",
+"name"
+],
+"arFrom": "wikidata"
 },
 "133666": {
 "en": "Bayer Leverkusen",
@@ -869,8 +874,13 @@
 "country": "",
 "gender": ""
 },
-"wd": null,
-"arFrom": "translit"
+"wd": [
+"نادي روما",
+"نادي روما",
+"AS Roma",
+"name"
+],
+"arFrom": "wikidata"
 },
 "133687": {
 "en": "Torino",
@@ -2639,8 +2649,13 @@
 "country": "",
 "gender": ""
 },
-"wd": null,
-"arFrom": "translit"
+"wd": [
+"نادي مونزا",
+"نادي مونزا",
+"AC Monza",
+"name"
+],
+"arFrom": "wikidata"
 },
 "134272": {
 "en": "Erzurumspor",
@@ -3705,8 +3720,13 @@
 "country": "",
 "gender": ""
 },
-"wd": null,
-"arFrom": "translit"
+"wd": [
+"نادي سانتا كلارا",
+"نادي سانتا كلارا",
+"C.D. Santa Clara",
+"name"
+],
+"arFrom": "wikidata"
 },
 "136199": {
 "en": "Al-Wehda",
@@ -3804,8 +3824,13 @@
 "country": "",
 "gender": ""
 },
-"wd": null,
-"arFrom": "translit"
+"wd": [
+"نادي فاماليكاو",
+"نادي فاماليكاو",
+"FC Famalicão",
+"name"
+],
+"arFrom": "wikidata"
 },
 "137648": {
 "en": "Al-Sadd",
@@ -4167,8 +4192,13 @@
 "country": "",
 "gender": ""
 },
-"wd": null,
-"arFrom": "translit"
+"wd": [
+"نادي تلستار",
+"نادي تلستار",
+"SC Telstar",
+"name"
+],
+"arFrom": "wikidata"
 },
 "138029": {
 "en": "Al-Gharafa",
@@ -4317,8 +4347,13 @@
 "country": "",
 "gender": ""
 },
-"wd": null,
-"arFrom": "translit"
+"wd": [
+"نادي كاسا بيا",
+"نادي كاسا بيا",
+"Casa Pia A.C.",
+"name"
+],
+"arFrom": "wikidata"
 },
 "138951": {
 "en": "Çorum",

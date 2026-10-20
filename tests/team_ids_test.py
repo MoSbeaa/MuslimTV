@@ -69,6 +69,12 @@ for label, want in [("نادي العين (الإمارات)", "العين"), ("
                     ("Al Ain", ""), ("", ""), ("ا", ""), ("نادي (قطر)", "")]:
     check(f"clean_ar({label!r}) = {want!r}", ti.clean_ar(label) == want, ti.clean_ar(label))
 
+for club, label, want in [("Espanyol", "RCD Espanyol B", True), ("Willem II", "Willem II", False),
+                          ("Bayern Munich", "FC Bayern Munich II", True), ("Ajax", "AFC Ajax", False),
+                          ("Real Madrid", "Real Madrid Castilla", True), ("Barcelona", "FC Barcelona Femení", True)]:
+    side = bool(ti.SIDE.search(label) and not ti.SIDE.search(club))
+    check(f"{label!r} for {club!r}: {'another side, not the club' if want else 'the club'}", side == want, side)
+
 # names told apart: the Saudi club and the national team keep theirs
 teams = {
     "1": {"en": "Al-Ain", "ar": "العين", "leagues": ["Saudi First Division League"], "arFrom": "curated"},
