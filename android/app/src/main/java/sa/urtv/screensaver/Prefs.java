@@ -99,8 +99,8 @@ final class Prefs {
         {"matches", "مباريات فرقك القادمة"}, {"verse", "آية أو حديث اليوم"}, {"none", "لا شيء"},
     };
 
-    /** Older builds had an on/off switch for the shows card; off becomes "none". */
-    String panel() { return sp.getString("panel", sp.getBoolean("showWeek", true) ? "shows" : "none"); }
+    /** Older builds had an on/off switch for the card; off becomes "none", otherwise the verse card. */
+    String panel() { return sp.getString("panel", sp.getBoolean("showWeek", true) ? "verse" : "none"); }
     void setPanel(String v) { sp.edit().putString("panel", v).apply(); }
 
     static String panelLabel(String v) {

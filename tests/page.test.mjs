@@ -125,8 +125,8 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
 }
 
 // ---- old settings links and «لا شيء»
-for (const [hash, panel, shown] of [['', 'shows', true], ['week=0', 'none', false], ['week=1', 'shows', true],
-                                     ['panel=none', 'none', false], ['panel=bogus', 'shows', true]]) {
+for (const [hash, panel, shown] of [['', 'verse', true], ['week=0', 'none', false], ['week=1', 'verse', true],
+                                     ['panel=none', 'none', false], ['panel=bogus', 'verse', true]]) {
   const { p, ctx, errors } = await open('tv.html', hash);
   const r = await p.evaluate(() => [CONFIG.panel, getComputedStyle(document.querySelector('.week')).display !== 'none']);
   check(`link #${hash || '(empty)'} → ${panel}, card ${shown ? 'shown' : 'hidden'}`,
