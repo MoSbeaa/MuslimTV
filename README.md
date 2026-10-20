@@ -13,57 +13,35 @@
 
 ## ركّبه بمساعد الذكاء الاصطناعي
 
-1. **على التلفزيون:** الإعدادات ← النظام ← حول ← اضغط OK على **Build** سبع مرات ← خيارات المطوّر ← شغّل
-   **USB debugging** (و**Network debugging** إن وُجد).
-2. **على كمبيوتر في نفس شبكة الواي فاي**، افتح مساعد ذكاء اصطناعي يشغّل الأوامر على هذا الكمبيوتر نفسه (مثل Claude Code
-   مثبّتاً عليه؛ المحادثة في المتصفح أو الجلسة السحابية ما توصل لتلفزيونك)، والصق:
+1. **على التلفزيون:** الإعدادات ← النظام ← حول ← اضغط OK على **Build** سبع مرات، ثم من **خيارات المطوّر** شغّل
+   **USB debugging**.
+2. **على كمبيوتر في نفس الواي فاي:** افتح مساعد يشغّل الأوامر على جهازك، مثل **Codex** أو **Claude Code**، والصق:
 
    > ركّب تلفزيوني من https://github.com/tshi-dev/UrTV: انسخ المستودع واتبع `docs/SETUP-PROMPT.md` خطوة بخطوة. أنت على كمبيوتر متصل بنفس شبكة الواي فاي حقت التلفزيون.
 
-   على ويندوز: في PowerShell الصق الأسطر الثلاثة تحت (في القسم الإنجليزي)، ثم افتح PowerShell جديد واكتب `claude`،
-   أو استخدم تبويب Code في تطبيق Claude على سطح المكتب مع مجلد على جهازك (مو بيئة سحابية).
-   وإذا تستخدم Codex: اختر «Approve for me» للموافقات من القائمة تحت خانة الكتابة (المساعد يذكّرك أول شي).
-   وأول ما يسويه المساعد أنه يتأكد أنه يقدر يوصل لشبكة بيتك؛ وإذا ما قدر يقولك بوضوح.
+   في Codex اختر «Approve for me» للموافقات من القائمة تحت خانة الكتابة.
 
-وبس. المساعد يتصل بالتلفزيون، ويحفظ أول 6 تطبيقات مفضلة من واجهتك الحالية، ويسألك سؤالين: مدينتك، والأندية اللي
-تتابع مبارياتها. والباقي يقولك وش افتراضيه وتقدر تغيّره: جنب الساعة «آية وحديث اليوم»، ويركّب TV Bro (متصفح) وSmartTube
-(يوتيوب بدون إعلانات). بعدها يكمل الباقي في حوالي 40 دقيقة، ويقيس الذاكرة
-قبل وبعد. وأي شي ثاني تقدر تغيّره بعدين. وفي الآخر يسألك إذا تبغى ترسل لصاحب المشروع ملخص كيف مشى
-التركيب (بدون أي شي شخصي)، عشان يحسّنه للكل.
+يسألك عن مدينتك والأندية اللي تتابعها، وبعدها يكمل لحاله في حوالي 40 دقيقة.
 
-**آمن:** ما يحذف أي تطبيق، وما يلمس AirPlay ولا Chromecast ولا عرض الشاشة ولا الصوت ولا المداخل، وتبديل الواجهة
-فيه رجوع تلقائي بعد 5 دقائق، و`optimize/reset.sh` يرجّع التلفزيون مثل ما كان.
+**آمن:** ما يحذف أي تطبيق، وما يلمس AirPlay ولا Chromecast ولا الصوت، و`optimize/reset.sh` يرجّع التلفزيون مثل ما كان.
 
 </div>
 
 ## Set it up with your AI agent
 
-1. **On the TV:** Settings → System → About → press OK on **Build** 7 times → Developer options → turn on
-   **USB debugging** (and **Network debugging** if listed).
-2. **On a computer on the same Wi-Fi**, open an AI agent that runs commands on that computer itself (for example
-   Claude Code installed on it; a browser chat or a cloud session can't reach your TV), and paste:
+1. **On the TV:** Settings → System → About → press OK on **Build** 7 times, then in **Developer options** turn on
+   **USB debugging**.
+2. **On a computer on the same Wi-Fi:** open an agent that runs commands on that computer, such as **Codex** or
+   **Claude Code**, and paste:
 
    > Set up my TV with https://github.com/tshi-dev/UrTV: clone it and follow `docs/SETUP-PROMPT.md` step by step. You are on a computer on the same Wi-Fi as the TV.
 
-   Windows, in PowerShell, then a new PowerShell window and `claude` (or the desktop app's Code tab on a local folder):
-   ```
-   winget install -e --id Git.Git
-   winget install -e --id Python.Python.3.12
-   irm https://claude.ai/install.ps1 | iex
-   ```
-   Codex: choose «Approve for me» for approvals in the menu under the chat box (the agent reminds you first).
-   The agent's first step checks that it can reach your home network, and says so plainly if it can't.
+   In Codex, choose «Approve for me» for approvals in the menu under the chat box.
 
-That's it. The agent connects, keeps your 6 favourite apps from the current home screen, asks two questions (your
-city, the clubs whose games you follow) and tells you the defaults you can change: verse and hadith beside the
-clock, and TV Bro (a browser) and SmartTube (YouTube without ads) installed, free from their own GitHub. Then it does
-the rest in about 40 minutes, measuring memory before and after. Anything else can be changed later.
-At the end it asks whether you'd like to send the author a summary of how it went (nothing personal), so it
-gets better for everyone.
-The full prompt is in [docs/SETUP-PROMPT.md](docs/SETUP-PROMPT.md) if you want to read or adapt it.
+It asks for your city and the clubs you follow, then does the rest on its own in about 40 minutes.
 
-**Safe by design:** nothing is uninstalled; AirPlay, Chromecast, mirroring, voice and inputs are never touched;
-the home-screen switch has a 5-minute automatic fallback, and `optimize/reset.sh` puts the TV back as it came.
+**Safe:** nothing is uninstalled; AirPlay, Chromecast and voice are never touched; `optimize/reset.sh` puts the TV
+back as it came. The full prompt: [docs/SETUP-PROMPT.md](docs/SETUP-PROMPT.md).
 
 **Make your own:** to build a different screen or port it to another TV, give your agent this repo and
 [docs/RECREATE-PROMPT.md](docs/RECREATE-PROMPT.md) (the full design and behaviour spec).
