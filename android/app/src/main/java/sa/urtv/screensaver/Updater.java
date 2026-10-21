@@ -9,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** Pulls the latest page from GitHub so screen changes reach the TV without a new APK. */
 final class Updater {
@@ -16,17 +18,28 @@ final class Updater {
         PhotoCache.REPO + "dist/tv.html";
     static final long INTERVAL_MS = 6L * 3600 * 1000;
 
+    private static final String OFF = "التحديث التلقائي متوقف";
+    private static final String RECENT = "تم الفحص مؤخراً";
+    private static final String LATEST_URL = "https://github.com/tshi-dev/UrTV/releases/latest";
+    private static final Pattern TAG = Pattern.compile("v(\\d+\\.\\d+)$");
+
     private Updater() {}
 
     static File pageFile(Context c) { return new File(c.getFilesDir(), "web/tv.html"); }
 
     /** Blocking; call off the main thread. Returns an Arabic status line for the settings screen. */
     static synchronized String check(Context c, boolean force) {
+        String msg = checkPage(c, force);
+        if (!OFF.equals(msg) && !RECENT.equals(msg)) checkLatest(c);
+        return msg;
+    }
+
+    private static String checkPage(Context c, boolean force) {
         Prefs prefs = new Prefs(c);
         SharedPreferences sp = prefs.raw();
-        if (!prefs.autoUpdate() && !force) return "التحديث التلقائي متوقف";
+        if (!prefs.autoUpdate() && !force) return OFF;
         long now = System.currentTimeMillis();
-        if (!force && now - sp.getLong("lastCheck", 0) < INTERVAL_MS) return "تم الفحص مؤخراً";
+        if (!force && now - sp.getLong("lastCheck", 0) < INTERVAL_MS) return RECENT;
 
         File out = pageFile(c);
         new File(out.getParentFile(), "urtv.html").delete();   // the old, heavier page
@@ -61,6 +74,58 @@ final class Updater {
         } finally {
             if (con != null) con.disconnect();
         }
+    }
+
+    /** Newest release tag, from the redirect of /releases/latest (no body read). Keeps the old value on any failure. */
+    private static void checkLatest(Context c) {
+        HttpURLConnection con = null;
+        try {
+            con = (HttpURLConnection) new URL(LATEST_URL).openConnection();
+            con.setInstanceFollowRedirects(false);
+            con.setConnectTimeout(10000);
+            con.setReadTimeout(10000);
+            con.getResponseCode();
+            String loc = con.getHeaderField("Location");
+            if (loc == null) return;
+            Matcher m = TAG.matcher(loc.trim());
+            if (!m.find()) return;
+            new Prefs(c).raw().edit().putString("latestVersion", m.group(1))
+                .putLong("latestCheck", System.currentTimeMillis()).apply();
+        } catch (Exception e) {
+            // keep the stored value
+        } finally {
+            if (con != null) con.disconnect();
+        }
+    }
+
+    /** The minor number N of "3.N", or -1 when it does not parse. */
+    private static int minor(String v) {
+        try {
+            return v == null ? -1 : Integer.parseInt(v.substring(v.indexOf('.') + 1));
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    private static String arabic(String v) {
+        StringBuilder b = new StringBuilder();
+        for (char ch : v.toCharArray()) {
+            if (ch >= '0' && ch <= '9') b.append((char) ('٠' + (ch - '0')));
+            else if (ch == '.') b.append('٫');
+            else b.append(ch);
+        }
+        return b.toString();
+    }
+
+    /** Arabic line for the settings row: this app's version and whether a newer release exists. */
+    static String versionNote(Context c) {
+        String mine = BuildConfig.VERSION_NAME;
+        String latest = new Prefs(c).raw().getString("latestVersion", null);
+        String head = "الإصدار " + arabic(mine);
+        if (latest == null || minor(latest) < 0) return head + ".";
+        if (minor(latest) <= minor(mine)) return head + "، وهو الأحدث.";
+        return head + ". يوجد إصدار جديد " + arabic(latest)
+            + ": اطلب من مساعدك «حدّث تلفزيوني»، وإعداداتك تبقى.";
     }
 
     private static byte[] readAll(InputStream in) throws java.io.IOException {

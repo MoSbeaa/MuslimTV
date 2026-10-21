@@ -43,6 +43,7 @@ Navigate with the remote, or `adb shell input keyevent DPAD_DOWN|DPAD_UP|DPAD_CE
 | A15 | أقل تقييم → 8 | Row shows 8 |
 | A16 | التحديث التلقائي → press | Toggles يعمل/متوقف; set back to يعمل |
 | A17 | تحديث الشاشة الآن | Toast «تم التحديث» or «الصفحة محدثة» (not «لا يوجد اتصال») |
+| A17b | تحديث الشاشة الآن → read the row text | Starts «الإصدار 3.N»; after A17, if a newer release exists, also «يوجد إصدار جديد» with the new number and «حدّث تلفزيوني» |
 | A18 | إعدادات شاشة التوقف في التلفاز | TV screensaver settings open |
 | A19 | Force-close and reopen: `adb shell am force-stop sa.urtv.screensaver` then A1 | All choices from A4–A15 kept |
 

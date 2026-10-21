@@ -38,7 +38,7 @@
 <sub>`optimize/reset.sh`</sub>
 
 #### نزلت نسخة جديدة؟
-حدّث التطبيقين وإعداداتك كلها باقية. الشاشة نفسها تتحدّث لحالها.
+حدّث التطبيقين وإعداداتك كلها باقية. الشاشة نفسها تتحدّث لحالها. وصف «تحديث الشاشة الآن» في الإعدادات يخبرك متى يوجد إصدار جديد.
 <sub>`optimize/install.sh all`</sub>
 
 #### نزل تحديث للنظام وقفل تطبيقنا؟
@@ -74,7 +74,7 @@ Yes, anytime: our apps are removed, what we turned off comes back on, the TV's o
 <sub>`optimize/reset.sh`</sub>
 
 #### A new version came out?
-Update both apps; all your settings stay. The screen itself updates on its own.
+Update both apps; all your settings stay. The screen itself updates on its own. The settings row tells you when one exists.
 <sub>`optimize/install.sh all`</sub>
 
 #### The TV updated its system and locked our app out?
