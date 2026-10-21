@@ -32,4 +32,13 @@ leaks = [w for w in ("192.168", "aa:bb", "AA-BB", "Ann", "Lee", "/ann", "secreta
 counts = "2 no TV activity" in text and "1 config.xml" in text and ours in text
 print("share: " + ("nothing personal left, counts kept" if not leaks and counts else "WRONG")
       + (f", leaked {leaks}" if leaks else ""))
-sys.exit(1 if leaks or not counts else 0)
+
+def keep_off(*pkgs):   # report lines naming these keep packages as off
+    return share.packages([f"- pkg off: {p} (keep)" for p in pkgs])
+
+
+by_design = [l for l in keep_off("com.google.android.apps.tv.launcherx") if l.startswith("!!")]
+real = [l for l in keep_off("com.google.android.tungsten.setupwraith", "com.tcl.airplay2") if l.startswith("!!")]
+alarm = not by_design and real == ["!! protected but off: com.tcl.airplay2"]
+print("share: " + ("off-by-design keep packages not flagged, others still are" if alarm else f"WRONG alarm {by_design} {real}"))
+sys.exit(1 if leaks or not counts or not alarm else 0)

@@ -135,6 +135,11 @@ def report_checks():
     return out + packages(lines)
 
 
+# in keep.txt but off by design once our home is in: install.sh launcher turns them off; keep.sh leaves them too
+OFF_BY_DESIGN = {"com.google.android.apps.tv.launcherx", "com.google.android.tvlauncher",
+                 "com.google.android.tungsten.setupwraith", "com.tcl.keycustomfunctionservice"}
+
+
 def packages(lines):   # what our lists turned off, what they left on, and what the home screen hides
     state = {}   # (state, list) -> packages
     for l in lines:
@@ -149,8 +154,9 @@ def packages(lines):   # what our lists turned off, what they left on, and what 
             out.append(f"{lst}: {len(off)} off, {len(on)} still on, {absent} not on this TV")
             out += [f"  off: {', '.join(off)}"] if off else []
             out += [f"  on: {', '.join(on)}"] if on else []
-    if state.get(("off", "keep")):
-        out.append(f"!! protected but off: {', '.join(state[('off', 'keep')])}")
+    protected = [p for p in state.get(("off", "keep"), []) if p not in OFF_BY_DESIGN]
+    if protected:
+        out.append(f"!! protected but off: {', '.join(protected)}")
     out += hidden(lines)
     return out
 
