@@ -65,6 +65,12 @@ public class SettingsActivity extends Activity {
         render();
     }
 
+    @Override
+    protected void onResume() {   // back in front (from the TV's settings, or opened again over itself): show what is set now
+        super.onResume();
+        render();
+    }
+
     private void render() {
         list.removeAllViews();
         TextView title = new TextView(this);
