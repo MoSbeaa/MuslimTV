@@ -185,6 +185,7 @@ Lines starting with `!!` are the scripts telling you to stop and act. These are 
 | the TV has no home at all (black screen, Home does nothing) | our home app is gone while the stock home is off | `optimize/restore.sh` (no list: only the home screen), then `optimize/install.sh launcher`; more in `docs/OPTIMIZE.md`, «Home screen problems» |
 | `!! The stock home is not on screen` (reset) | the stock home was slow to start | ask me to press Home, then `optimize/reset.sh` again |
 | `!! still off` (keep.sh) | a protected feature would not turn back on | **stop**, show me; don't continue |
+| `left off by the TV itself` (keep.sh) | a protected package was already off before UrTV and the TV won't turn it on (TCL ships Alexa off outside its regions) | nothing to do: go on |
 | the TV's own screensaver screenshot is black | Android hides it from screenshots | expected; ours can be shot |
 | our screensaver shot has no weather or matches yet | data still loading | `optimize/saver.sh update`, wait a minute, shoot again |
 | `find-team` finds nothing | a spelling our list doesn't have, or a club outside the app's leagues | once with the English name; or `optimize/saver.sh find-team --list <league word>` (e.g. `Saudi`, `Premier`) and pick it from there |
