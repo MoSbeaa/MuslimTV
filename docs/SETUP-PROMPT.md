@@ -211,10 +211,15 @@ out, tell me again and run it once more.
 
 > الحين بتطلع لك على التلفزيون رسالة «Allow USB debugging?»: اضغط Allow وعلّم «Always allow». بعدها تقدر
 > تتركني، أكمّل لحالي حوالي ٤٠ دقيقة.
-Tell me the model and Android version. Look at `optimize/run/shots/my-apps-small.png` (the 960 px copy; the full-size `my-apps.png` is often too large to attach) and write down the first **6 apps**
-of my apps / favourites row, left to right, by name: they become the favourites of the new home screen in step 4.
-Only then, if this TV was set up with these tools before (also an older version of it),
-run `optimize/reset.sh` so we start like new.
+
+- Tell me the model and Android version.
+- Read the row for this TV model in `docs/TVS.md` before going on: it says what was seen on that model (ADB port,
+  what to watch out for).
+- Look at `optimize/run/shots/my-apps-small.png` (the 960 px copy; the full-size `my-apps.png` is often too large
+  to attach) and write down the first **6 apps** of my apps / favourites row, left to right, by name: they become
+  the favourites of the new home screen in step 4.
+- Only then, if this TV was set up with these tools before (also an older version of it), run
+  `optimize/reset.sh` so we start like new.
 
 ## 2. Before you run it: how to undo
 
