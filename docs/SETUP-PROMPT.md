@@ -211,7 +211,7 @@ out, tell me again and run it once more.
 
 > الحين بتطلع لك على التلفزيون رسالة «Allow USB debugging?»: اضغط Allow وعلّم «Always allow». بعدها تقدر
 > تتركني، أكمّل لحالي حوالي ٤٠ دقيقة.
-Tell me the model and Android version. Look at `optimize/run/shots/my-apps.png` and write down the first **6 apps**
+Tell me the model and Android version. Look at `optimize/run/shots/my-apps-small.png` (the 960 px copy; the full-size `my-apps.png` is often too large to attach) and write down the first **6 apps**
 of my apps / favourites row, left to right, by name: they become the favourites of the new home screen in step 4.
 Only then, if this TV was set up with these tools before (also an older version of it),
 run `optimize/reset.sh` so we start like new.
@@ -268,7 +268,7 @@ If I said «لا شي» to clubs, skip `find-team` and `teams`. `optimize/saver.
 optimize/shot.sh home
 optimize/shot.sh screensaver
 ```
-Look at both screenshots (in `optimize/run/shots/`) and describe them to me. Then check Home from inside an app
+Look at both screenshots (in `optimize/run/shots/`; open the `-small.png` ones, 960 px wide: the full-size files are often too large for an agent to attach) and describe them to me. Then check Home from inside an app
 yourself (I may have left): open one, press Home, and the new home must be in front:
 ```
 optimize/check-home.sh          # opens YouTube (else my first favourite), presses Home; or: optimize/check-home.sh <another app of mine>
