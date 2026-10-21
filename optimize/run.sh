@@ -4,7 +4,8 @@
 #   optimize/run.sh            do the next steps
 #   optimize/run.sh status     what is done
 #   optimize/run.sh again      redo every step on the same TV, as after a TV system update put things back
-#                              (the apps' settings stay: installing over keeps them)
+#                              (the apps' settings stay: installing over keeps them; the old summary.md
+#                              becomes summary-<n>.md so the new run's before/after starts clean)
 #   SKIP_LAUNCHER=1 optimize/run.sh   keep the TV's own home screen (firmware that won't let another app be Home)
 #   SKIP_EXTRAS=1 optimize/run.sh     without TV Bro and SmartTube
 # Before: optimize/setup.sh and optimize/find-tv.sh. Optional packages the household gave up go in
@@ -39,7 +40,12 @@ title() {
 
 if [ "${1:-}" = again ]; then   # a TV system update can re-enable what we turned off and take Home back
   rm -f "$RUN"/.done-* "$RUN/steps.log"
-  echo "Marks cleared: every step runs again (the backup from the first run is kept)."
+  kept=
+  if [ -f "$RUN/summary.md" ]; then   # measure.sh appends: a second run's before/after lines would double up
+    n=1; while [ -e "$RUN/summary-$n.md" ]; do n=$((n + 1)); done
+    mv "$RUN/summary.md" "$RUN/summary-$n.md"; kept=" The last run's summary.md is now summary-$n.md."
+  fi
+  echo "Marks cleared: every step runs again (the backup from the first run is kept).$kept"
   shift
 fi
 if [ "${1:-}" = status ]; then
