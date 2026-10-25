@@ -192,8 +192,17 @@ final class AdhanEngine {
     private void report(String message) {
         try {Bundle extra=new Bundle();extra.putString("status",message);service.getContentResolver().call(CONFIG,"ADHAN_STATUS",null,extra);}catch(Exception ignored){}
     }
+    private boolean allowedVoice(String id) {
+        if (id == null || !id.matches("[A-Za-z0-9_-]{1,64}")) return false;
+        JSONArray voices = config.optJSONArray("voices");
+        if (voices != null) {
+            for (int i = 0; i < voices.length(); i++) if (id.equals(voices.optString(i))) return true;
+            return false;
+        }
+        return id.matches("makkah|quds|madinah|alafasy|fajr_makkah|fajr_madinah");
+    }
     private void play(String id) {
-        if(!inside() || !awake() || !id.matches("makkah|quds|madinah|alafasy|fajr_makkah|fajr_madinah"))return;
+        if(!inside() || !awake() || !allowedVoice(id))return;
         stopAudio();
         if(audio==null || audio.requestAudioFocus(focus,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)return;
         try {

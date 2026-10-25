@@ -44,7 +44,7 @@ public final class AdhanSettingsActivity extends Activity {
         row("إيقاف الاستماع للصوت", () -> stopPreview());
         row("معاينة التنبيه الصامت", () -> sendPreview());
         label("حالة الخدمة: " + prefs.getString("status", "بانتظار تحميل الجدول من خدمة MuslimTV Bridge"), 14, 0xFFC6BBA4);
-        label("مصادر التسجيلات وتسمياتها: مكتبة Kiwifu/adhan-mp3. الملفات داخل التطبيق؛ المعاينة والتشغيل لا يحتاجان الإنترنت.", 13, 0xFFC6BBA4);
+        label("مصادر التسجيلات: مكتبة Kiwifu/adhan-mp3 وروابط YouTube التي أضافها المستخدم. الملفات داخل التطبيق؛ المعاينة والتشغيل لا يحتاجان الإنترنت.", 13, 0xFFC6BBA4);
         setContentView(scroll);
         body.getChildAt(3).requestFocus();
     }

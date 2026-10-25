@@ -28,7 +28,7 @@ public class ConfigProvider extends ContentProvider {
     @Override public android.content.res.AssetFileDescriptor openAssetFile(Uri uri, String mode) throws java.io.FileNotFoundException {
         if (!"r".equals(mode)) throw new java.io.FileNotFoundException();
         String path = uri.getPath();
-        if (path != null && (path.equals("/adhan/timetable.json") || path.matches("/adhan/(makkah|quds|madinah|alafasy|fajr_makkah|fajr_madinah)\\.mp3"))) {
+        if (path != null && (path.equals("/adhan/timetable.json") || (path.startsWith("/adhan/") && path.endsWith(".mp3") && AdhanOptions.hasVoice(path.substring(7, path.length() - 4))))) {
             try { return getContext().getAssets().openFd(path.substring(1)); }
             catch (java.io.IOException e) { throw new java.io.FileNotFoundException(path); }
         }

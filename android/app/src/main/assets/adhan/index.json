@@ -40,5 +40,55 @@
     "label": "أذان الفجر — المدينة المنورة",
     "sha256": "0DF433D909388B11A4FE556F8F76786CC2349FCAB5B49B7D14DF0496ED4F3F2F",
     "url": "https://raw.githubusercontent.com/Kiwifu/adhan-mp3/main/Adhan_Fajr_Al_Haram_Al_Madani_(أذان_الفجر_الحرم_المدني).mp3"
+  },
+  {
+    "id": "yt_ADVpixw_lhU",
+    "source": "YouTube — user supplied",
+    "label": "أذان سوريا — قناة يحيى معمو",
+    "title": "AZAN FROM SYRIA | أذان سوريا",
+    "channel": "Yahya Ma'mou | يحيى معمو",
+    "duration_seconds": 140,
+    "sha256": "0AB1C2029F9C108A64A67ACE3AB82BA5BC7E9887F98927702D25724D2646D5BA",
+    "url": "https://www.youtube.com/watch?v=ADVpixw_lhU"
+  },
+  {
+    "id": "yt_PQnkQJeYsec",
+    "source": "YouTube — user supplied",
+    "label": "أذان سوريا — قناة عبد الله عثمان",
+    "title": "أذان سوريا",
+    "channel": "Abdullah Othman عبدالله عثمان",
+    "duration_seconds": 142,
+    "sha256": "D3F227A25B0A9BD3C3163554E7631F247723865F36083D6D995BAB41E4EB9E27",
+    "url": "https://www.youtube.com/watch?v=PQnkQJeYsec"
+  },
+  {
+    "id": "yt_GN1f4LNoTUs",
+    "source": "YouTube — user supplied",
+    "label": "ناصر القطامي",
+    "title": "أروع ما قد تسمعه في حياتك .. أذان من الشيخ ناصر القطامي",
+    "channel": "مزامير الفرقان - ياسر الدوسري",
+    "duration_seconds": 127,
+    "sha256": "483CA119EDE7FC44BC33E9D2E26D7AB7568C80A8EF1D0AA9C45E667C4AA3A1A7",
+    "url": "https://www.youtube.com/watch?v=GN1f4LNoTUs"
+  },
+  {
+    "id": "yt_KEAjg0zzRmU",
+    "source": "YouTube — user supplied",
+    "label": "الأذان الدمشقي الجماعي — الجامع الأموي",
+    "title": "الاذان بالطريقة الدمشقية او الكوثرية الجماعية في الاموي",
+    "channel": "MURAT AKDENİZ مراد اكدنيز",
+    "duration_seconds": 343,
+    "sha256": "6E6067AD49FB376EFC1702453F236E02593E98BB4849A4EFA4CB4659482FB0F2",
+    "url": "https://www.youtube.com/watch?v=KEAjg0zzRmU"
+  },
+  {
+    "id": "yt_SI4CScs4D2Q",
+    "source": "YouTube — user supplied",
+    "label": "عمر هشام العربي",
+    "title": "The Adhan - Omar Hisham Al Arabi | الأذان بصوت عمر هشام العربي | The Call to Prayer",
+    "channel": "Omar Hisham Al Arabi",
+    "duration_seconds": 180,
+    "sha256": "42D197B8921B046DEBEEE4D3AE326CE943AC611F6E4FDCB05623C8ACC43CA9DB",
+    "url": "https://www.youtube.com/watch?v=SI4CScs4D2Q"
   }
 ]
