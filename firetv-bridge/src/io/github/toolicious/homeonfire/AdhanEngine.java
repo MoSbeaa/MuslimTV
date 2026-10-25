@@ -85,11 +85,11 @@ final class AdhanEngine {
             if("preview".equals(scope)) preview=visible;
         }
         refreshConfig();
-        if(intent!=null && intent.getBooleanExtra("preview_popup",false)) showBanner("معاينة: حان وقت أذان الظهر",System.currentTimeMillis());
+        if(intent!=null && intent.getBooleanExtra("preview_popup",false)) showBanner("حان الآن موعد أذان الظهر",System.currentTimeMillis());
         if(intent!=null && intent.getBooleanExtra("preview_adhan",false)) {
             if(!awake()) { Log.i("MUSLIMTVAdhan","Manual test skipped: device asleep"); return; }
             if(!config.optBoolean("enabled",false)) { showBanner("تجربة الأذان — الميزة معطّلة في الإعدادات",System.currentTimeMillis()); return; }
-            if(config.optBoolean("popup",true)) showBanner("تجربة الأذان — ليس موعد صلاة فعليًا",System.currentTimeMillis());
+            if(config.optBoolean("popup",true)) showBanner("حان الآن موعد أذان الظهر",System.currentTimeMillis());
             if(inside() && config.optBoolean("sound",true)) play(config.optString("voice","makkah"));
             else Log.i("MUSLIMTVAdhan","Manual test silent: outside launcher/screensaver or sound disabled");
         }
@@ -142,7 +142,7 @@ final class AdhanEngine {
             if(due<0 || now<due || now-due>45000 || today.equals(store.getString("done_"+KEYS[i],"")))continue;
             // Persist before emitting: periodic checks and exact alarm delivery cannot duplicate it.
             if(!store.edit().putString("done_"+KEYS[i],today).commit())continue;
-            if(config.optBoolean("popup",true))showBanner("حان وقت أذان "+NAMES[i],due);
+            if(config.optBoolean("popup",true))showBanner("حان الآن موعد أذان "+NAMES[i],due);
             if(inside() && config.optBoolean("sound",true))play(i==0?config.optString("fajr_voice","fajr_makkah"):config.optString("voice","makkah"));
         }
         long next=(now/3600000L+1)*3600000L;String nextName="";
@@ -232,10 +232,10 @@ final class AdhanEngine {
         TextView heading=new TextView(service);heading.setText(title);heading.setTextColor(0xFFFFE2A4);heading.setTextSize(21);heading.setGravity(Gravity.RIGHT);
         if(android.os.Build.VERSION.SDK_INT>=26)try{heading.setTypeface(service.getResources().getFont(R.font.rakkas));}catch(Exception ignored){}
         box.addView(heading);
-        TextView time=new TextView(service);SimpleDateFormat format=new SimpleDateFormat("h:mm a",new Locale("ar"));format.setTimeZone(ZONE);time.setText(format.format(new Date(when))+" · جدول MiaOnline");time.setTextColor(0xFFE5DECC);time.setTextSize(12);time.setGravity(Gravity.RIGHT);box.addView(time);
+        TextView time=new TextView(service);SimpleDateFormat format=new SimpleDateFormat("h:mm a",new Locale("ar"));format.setTimeZone(ZONE);time.setText(format.format(new Date()));time.setTextColor(0xFFE5DECC);time.setTextSize(12);time.setGravity(Gravity.RIGHT);box.addView(time);
         WindowManager.LayoutParams params=new WindowManager.LayoutParams(Math.min(dp(350),service.getResources().getDisplayMetrics().widthPixels-dp(48)),-2,WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE|WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,PixelFormat.TRANSLUCENT);
         params.gravity=Gravity.TOP|Gravity.RIGHT;params.x=dp(28);params.y=dp(32);
-        try {service.getSystemService(WindowManager.class).addView(box,params);banner=box;handler.postDelayed(hide,Math.max(5,Math.min(30,config.optInt("duration",12)))*1000L);}catch(Exception e){Log.w("MUSLIMTVAdhan","Overlay unavailable",e);}
+        try {service.getSystemService(WindowManager.class).addView(box,params);banner=box;Log.i("MUSLIMTVAdhan","Prayer banner shown");handler.postDelayed(hide,Math.max(5,Math.min(30,config.optInt("duration",12)))*1000L);}catch(Exception e){Log.w("MUSLIMTVAdhan","Overlay unavailable",e);}
     }
     private void hideBanner(){handler.removeCallbacks(hide);if(banner!=null){try{service.getSystemService(WindowManager.class).removeView(banner);}catch(Exception ignored){}banner=null;}}
 }
