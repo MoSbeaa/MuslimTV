@@ -1,4 +1,4 @@
-# الأذان والتنبيه الصامت — MuslimTV 3.103 / MuslimTV Bridge 1.5.3
+# الأذان والتنبيه الصامت — MuslimTV 3.106 / MuslimTV Bridge 1.5.6
 
 ## الاستخدام
 
