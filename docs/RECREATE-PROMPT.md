@@ -1,4 +1,4 @@
-# شاشة تلفزيونك (UrTV screensaver) — recreate prompt
+# MuslimTV Screensaver (MuslimTV screensaver) — recreate prompt
 
 Paste everything below the line into any AI that can write a single HTML file. It will rebuild the screen from scratch.
 

@@ -5,6 +5,7 @@ plugins {
 android {
     namespace 'sa.urtv.screensaver'
     compileSdk 34
+    aaptOptions { noCompress "mp3", "json" }
 
     defaultConfig {
         applicationId 'sa.urtv.screensaver'
@@ -15,7 +16,7 @@ android {
         versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as int)
         versionName "3.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
         // the branch the page, fonts and photos are fetched from: CI passes the one it builds, a local build follows master
-        buildConfigField "String", "BRANCH", "\"${System.getenv('URTV_BRANCH') ?: 'master'}\""
+        buildConfigField "String", "BRANCH", "\"${System.getenv('URTV_BRANCH') ?: 'main'}\""
     }
 
     buildFeatures {
@@ -44,7 +45,7 @@ android {
 
     // the page is built by ../../src/build.py into dist/
     sourceSets {
-        main { assets.srcDirs = ['../../dist', '../launcher/src/main/assets', '../../assets'] }   // page, Thmanyah fonts, backgrounds/, shared/ (the club lists)
+        main { assets.srcDirs = ['src/main/assets', "$buildDir/generated/web", '../launcher/src/main/assets' , '../../assets', "$buildDir/generated/localphotos"] }   // page, Thmanyah fonts, backgrounds/, shared/ (the club lists)
     }
 
     compileOptions {
@@ -52,3 +53,16 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
+
+// Keep the user-selected photo set in the APK, independent of upstream GitHub.
+def copyPersonalPhotos = tasks.register('copyPersonalPhotos', Sync) {
+    from('../../photos') { include 'index.json'; include 'tv/*.jpg'; into 'photos' }
+    into "$buildDir/generated/localphotos"
+}
+preBuild.dependsOn copyPersonalPhotos
+
+def copyTvPage = tasks.register('copyTvPage', Sync) {
+    from('../../dist') { include 'tv.html' }
+    into "$buildDir/generated/web"
+}
+preBuild.dependsOn copyTvPage

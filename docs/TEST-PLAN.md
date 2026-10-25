@@ -1,4 +1,4 @@
-# Test plan — شاشة تلفزيونك
+# Test plan — MuslimTV Screensaver
 
 For a tester (human or agent) with a Linux/macOS machine, `adb`, and an Android TV on the same network.
 Every step has an exact action and the expected result. Record **PASS / FAIL + note + screenshot** for each ID.
@@ -14,7 +14,7 @@ Logs on failure: `adb logcat -d -t 300 | grep -iE "urtv|chromium|AndroidRuntime"
 |---|---|---|
 | S1 | On the TV: Settings → Device preferences → About → press Build 7× → Developer options → enable **USB/Network debugging**. Note the TV's IP. | Debugging on |
 | S2 | `adb connect <TV_IP>:5555` then `adb devices` | Device listed as `device` |
-| S3 | `curl -L -o urtv-screensaver.apk https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-screensaver.apk` | ~2–5 MB file. To test the `next` branch, use the tag `apk-next` in the URL instead of `apk-latest` (with the scripts: `APK_TAG=apk-next optimize/install.sh saver`) |
+| S3 | `curl -L -o urtv-screensaver.apk https://github.com/MoSbeaa/MuslimTV/releases/download/apk-latest/urtv-screensaver.apk` | ~2–5 MB file. To test the `next` branch, use the tag `apk-next` in the URL instead of `apk-latest` (with the scripts: `APK_TAG=apk-next optimize/install.sh saver`) |
 | S4 | `adb uninstall sa.yourtv.screensaver` and `adb uninstall com.abdullah.tvsaver` (ignore "not installed") | The pre-rename app is gone (it would show twice) |
 | S5 | `adb install urtv-screensaver.apk` | `Success` |
 | S6 | `adb shell dumpsys package sa.urtv.screensaver \| grep versionName` | `versionName=3.<number>` |
@@ -26,7 +26,7 @@ Navigate with the remote, or `adb shell input keyevent DPAD_DOWN|DPAD_UP|DPAD_CE
 
 | ID | Action | Expected |
 |---|---|---|
-| A1 | Open the app from the TV launcher | Banner «شاشة تلفزيونك»; settings list opens, right-to-left, first row focused |
+| A1 | Open the app from the TV launcher | Banner «MuslimTV Screensaver»; settings list opens, right-to-left, first row focused |
 | A2 | Move through every row with D-pad | Every row focusable and highlighted; nothing unreachable |
 | A3 | المدينة → open | First item «بحث عن مدينة أو قرية…», then 13 regions with counts |
 | A4 | Region «منطقة الرياض» → pick «الخرج» | Dialog closes, row shows «المدينة: الخرج» |
@@ -89,7 +89,7 @@ Use the TV's clock or wait for the real moment; take a screenshot at each.
 
 | ID | Action | Expected |
 |---|---|---|
-| D1 | TV Settings → screensaver → choose «شاشة تلفزيونك», or `adb shell settings put secure screensaver_components sa.urtv.screensaver/.ScreenDream` | Selected |
+| D1 | TV Settings → screensaver → choose «MuslimTV Screensaver», or `adb shell settings put secure screensaver_components sa.urtv.screensaver/.ScreenDream` | Selected |
 | D2 | Start now: `adb shell am start -n "com.android.systemui/.Somnambulator"` (or wait for the idle timer) | The screen appears full screen |
 | D3 | Press any remote key | Screensaver exits |
 | D4 | Leave the TV idle for the timer set in TV settings | Starts by itself |
@@ -120,7 +120,7 @@ Use the TV's clock or wait for the real moment; take a screenshot at each.
 
 | ID | Action | Expected |
 |---|---|---|
-| H1 | On a computer open `https://raw.githack.com/tshi-dev/UrTV/master/dist/urtv.html` or download `dist/urtv.html` and double-click | Same screen in the browser; `F` toggles full screen |
+| H1 | On a computer open `https://raw.githack.com/MoSbeaa/MuslimTV/main/dist/urtv.html` or download `dist/urtv.html` and double-click | Same screen in the browser; `F` toggles full screen |
 | H2 | Add `#city=جدة&lat=21.5433&lon=39.1728&teams=136013` to the URL | Jeddah times; only one match slot |
 | H3 | Resize the window to 1280×720 | Layout holds, nothing overlaps |
 
@@ -140,13 +140,13 @@ Use the TV's clock or wait for the real moment; take a screenshot at each.
 | L4 | Open any app with the card on, then `adb shell top -n 1 \| grep urtv.home` | Launcher idle while the app is in front (card paused) |
 | L11 | An app with only a phone launcher activity (an OEM store or settings app, Aptoide): `adb shell cmd package query-activities -a android.intent.action.MAIN -c android.intent.category.LAUNCHER` lists it, the LEANBACK_LAUNCHER query doesn't | It is in the grid once, opens with OK, and can be added to the favourites; TV apps are not listed twice; the stock home and its setup app are not in the grid |
 
-## 10. Command-line tools (agents; run in the UrTV folder, after `optimize/run.sh`)
+## 10. Command-line tools (agents; run in the MuslimTV folder, after `optimize/run.sh`)
 
 | ID | Action | Expected |
 |---|---|---|
 | T1 | `optimize/dock.sh hidden` | One `package \| reason` line per app the home screen leaves out, or «nothing left out» |
 | T2 | `optimize/dock.sh hide <pkg of an app in the grid>`, look at the home screen, then `optimize/dock.sh show <pkg>` | `hidden: <pkg>` and the app leaves the grid; `shown: <pkg>` and it is back |
-| T3 | `optimize/check-home.sh` | «OK: Home opens تلفزيونك»; if no app can be opened: a `!!` line and exit 1 |
+| T3 | `optimize/check-home.sh` | «OK: Home opens MuslimTV»; if no app can be opened: a `!!` line and exit 1 |
 | T4 | `optimize/share.sh --agent "tester" "test note"` | «Sent to the author», or a QR code opens; `optimize/run/share.md` holds no IP address and no user folder (`grep` for the TV's IP and your user name prints nothing) |
 | T5 | `optimize/saver.sh find-team الأهلي` | The Saudi club first, then «الأهلي المصري»; each line `id:Name \| league` |
 | T6 | `optimize/saver.sh minrating 7`, then `optimize/saver.sh show` | `saved`; `show` lists `minrating: 7` |

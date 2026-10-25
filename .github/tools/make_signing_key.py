@@ -31,12 +31,12 @@ from cryptography.hazmat.primitives.serialization import pkcs12
 from cryptography.x509.oid import NameOID
 
 ALIAS = b"urtv"   # android/*/build.gradle signs with this alias
-REPO = "tshi-dev/UrTV"
+REPO = "MoSbeaa/MuslimTV"
 
 
 def make(password):
     key = rsa.generate_private_key(public_exponent=65537, key_size=4096)
-    name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "UrTV"), x509.NameAttribute(NameOID.ORGANIZATION_NAME, "UrTV")])
+    name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "MuslimTV"), x509.NameAttribute(NameOID.ORGANIZATION_NAME, "MuslimTV")])
     now = datetime.datetime.now(datetime.timezone.utc)
     cert = (x509.CertificateBuilder().subject_name(name).issuer_name(name).public_key(key.public_key())
             .serial_number(x509.random_serial_number()).not_valid_before(now)

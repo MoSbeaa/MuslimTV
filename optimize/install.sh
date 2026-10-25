@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Download the latest APKs from GitHub and install them on the TV.
-#   optimize/install.sh saver      شاشة تلفزيونك: install + make it the screensaver
+#   optimize/install.sh saver      MuslimTV Screensaver: install + make it the screensaver
 #   optimize/install.sh launcher   the home screen: install + make it the default Home
 #   optimize/install.sh all        both
 #   optimize/install.sh extras     two free apps from their own GitHub releases: TV Bro (a TV web browser,
@@ -11,12 +11,14 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
-REL=https://github.com/tshi-dev/UrTV/releases/download/${APK_TAG:-apk-latest}   # APK_TAG=v3.N: that numbered build
+REL=https://github.com/MoSbeaa/MuslimTV/releases/download/${APK_TAG:-apk-latest}   # APK_TAG=v3.N: that numbered build
 what="${1:?usage: optimize/install.sh saver|launcher|all|extras}"
 failed=0   # an extra that did not install: the rest are still tried, then run.sh must not count the step as done
 
-push_install() {   # $1 apk name, $2 package
-  if ! curl -fsSL -o "optimize/$1" "$REL/$1"; then
+push_install() {   # $1 apk name, $2 package, optional $3 local APK path
+  if [ -n "${3:-}" ]; then
+    cp "$3" "optimize/$1"
+  elif ! curl -fsSL -o "optimize/$1" "$REL/$1"; then
     echo "!! Could not download $REL/$1 (tag ${APK_TAG:-apk-latest}): no such build, or no internet"; exit 1
   fi
   "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
@@ -77,7 +79,7 @@ if [ "$what" = extras ]; then
 fi
 
 if [ "$what" = saver ] || [ "$what" = all ]; then
-  push_install urtv-screensaver.apk sa.urtv.screensaver
+  push_install urtv-screensaver.apk sa.urtv.screensaver "${LOCAL_SAVER_APK:-}"
   printf '%s\n' \
     "settings put secure screensaver_enabled 1" \
     "settings put secure screensaver_components sa.urtv.screensaver/.ScreenDream" \
@@ -88,8 +90,10 @@ if [ "$what" = saver ] || [ "$what" = all ]; then
 fi
 
 if [ "$what" = launcher ] || [ "$what" = all ]; then
-  # Which stock home does this TV have? Google TV sets: launcherx. Older Android TV: tvlauncher.
-  if "$PY" -I optimize/tv.py "pm list packages com.google.android.apps.tv.launcherx" | grep -q launcherx; then
+  # Which stock home does this TV have? Fire TV uses Amazon's launcher; then Google TV, then older Android TV.
+  if "$PY" -I optimize/tv.py "pm list packages com.amazon.tv.launcher" | grep -q com.amazon.tv.launcher; then
+    STOCK=com.amazon.tv.launcher/.ui.HomeActivity_vNext
+  elif "$PY" -I optimize/tv.py "pm list packages com.google.android.apps.tv.launcherx" | grep -q launcherx; then
     STOCK=com.google.android.apps.tv.launcherx/com.google.android.apps.tv.launcherx.home.HomeActivity
   else
     STOCK=com.google.android.tvlauncher/.MainActivity
@@ -97,8 +101,14 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
   echo "Stock home: $STOCK"
 
   # 1. The new home must be installed and working BEFORE anything is disabled.
-  push_install urtv-home.apk sa.urtv.home
+  push_install urtv-home.apk sa.urtv.home "${LOCAL_LAUNCHER_APK:-}"
   "$PY" -I optimize/tv.py "pm grant sa.urtv.home android.permission.ACCESS_FINE_LOCATION" || true
+
+  # Home on Fire (or another redirect app) needs only the app package; don't attempt to replace Fire OS Home.
+  if [ "${INSTALL_ONLY:-0}" = 1 ]; then
+    echo "Launcher app installed only; the system Home activity was left alone."
+    exit 0
+  fi
 
   # Steps 2-4 as one function, so an ADB drop in the middle (TCL G08: Wi-Fi fell during the batch) can be retried.
   # "verify" as $1: only step 4 (the switch is armed already and the batch may have run).

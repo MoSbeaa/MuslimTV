@@ -12,7 +12,7 @@ import java.util.List;
 
 /** Everything the user picks in settings, and the dashboard URL built from it. */
 final class Prefs {
-    static final String TZ = "Asia/Riyadh";
+    static final String TZ = "America/Winnipeg";
 
     // TheSportsDB id, Arabic name; more teams come from the in-app search
     static final String[][] TEAM_PRESETS = {
@@ -75,11 +75,25 @@ final class Prefs {
 
     private final SharedPreferences sp;
 
-    Prefs(Context c) { sp = c.getSharedPreferences("settings", Context.MODE_PRIVATE); }
+    private Context adhanContext;
+
+    Prefs(Context c) {
+        adhanContext = c.getApplicationContext();
+        sp = c.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        // This local dashboard contains owner-specific changes absent from the upstream page.
+        // Migrate once; the owner can still explicitly enable updates later in Settings.
+        if (!sp.getBoolean("custom_dashboard_v102", false)) {
+            sp.edit().putBoolean("autoUpdate", false).putBoolean("custom_dashboard_v102", true).apply();
+        }
+    }
 
     /** {name, latitude, longitude}; Riyadh until the user picks */
+    private int adhanAsr() { return adhanContext.getSharedPreferences("adhan", Context.MODE_PRIVATE).getInt("asr", 2); }
+
     String[] city() {
-        return new String[] {sp.getString("cityName", "الرياض"), sp.getString("cityLat", "24.6877"), sp.getString("cityLon", "46.7219")};
+        String name = sp.getString("cityName", "الرياض");
+        if ("Winnipeg".equalsIgnoreCase(name) || "وينيبغ".equals(name)) name = "وينبيغ";
+        return new String[] {name, sp.getString("cityLat", "24.6877"), sp.getString("cityLon", "46.7219")};
     }
     void setCity(String name, String lat, String lon) {
         sp.edit().putString("cityName", name).putString("cityLat", lat).putString("cityLon", lon).apply();
@@ -114,7 +128,7 @@ final class Prefs {
     // The card beside the clock: value sent to the page (#panel=), Arabic label
     static final String[][] PANELS = {
         {"shows", "جديد المسلسلات"}, {"prayers", "مواقيت الصلاة اليوم"}, {"forecast", "طقس الأيام القادمة"},
-        {"matches", "مباريات فرقك القادمة"}, {"verse", "آية أو حديث اليوم"}, {"none", "لا شيء"},
+        {"verse", "حديث اليوم"}, {"none", "لا شيء"},
     };
 
     /** Older builds had an on/off switch for the card; off becomes "none", otherwise the verse card. */
@@ -142,7 +156,8 @@ final class Prefs {
     String photoMinutes() { return sp.getString("photoMinutes", "30"); }
     void setPhotoMinutes(String v) { sp.edit().putString("photoMinutes", v).apply(); }
 
-    boolean autoUpdate() { return sp.getBoolean("autoUpdate", true); }
+    // A locally customized build must keep its bundled page instead of replacing it with upstream HTML.
+    boolean autoUpdate() { return sp.getBoolean("autoUpdate", false); }
     void setAutoUpdate(boolean v) { sp.edit().putBoolean("autoUpdate", v).apply(); }
 
     SharedPreferences raw() { return sp; }
@@ -165,7 +180,7 @@ final class Prefs {
         String[] city = city();
         List<String> ids = new ArrayList<>();
         for (String s : shows()) ids.add(s.split("\\|", 2)[0]);
-        return "city=" + Uri.encode(city[0]) + "&lat=" + city[1] + "&lon=" + city[2]
+        return "asr=" + adhanAsr() + "&city=" + Uri.encode(city[0]) + "&lat=" + city[1] + "&lon=" + city[2]
             + "&tz=" + Uri.encode(TZ)
             + "&teams=" + join(teamIds(), ",")
             + "&panel=" + panel()

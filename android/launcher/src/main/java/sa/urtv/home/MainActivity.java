@@ -80,6 +80,10 @@ public class MainActivity extends Activity {
     private final List<View> dockCards = new ArrayList<>();
     private final List<View> gridCards = new ArrayList<>();
     private final List<View> pills = new ArrayList<>();
+    private final List<View> quickButtons = new ArrayList<>();
+    private final List<Integer> quickSlots = new ArrayList<>();
+    private LinearLayout quickRow;
+    private String quickSignature = "";
 
     private HomeScrollView scroll;
     private LinearLayout content, dockRow;
@@ -94,7 +98,7 @@ public class MainActivity extends Activity {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable rotateWallpaper = this::nextWallpaper;
     static final long WALLPAPER_INTERVAL_MS = 10 * 60 * 1000;
-    private TextView greeting, clock, ampm, date, title, wifiPill, appsLabel;
+    private TextView greeting, clock, ampm, date, title, wifiPill, weatherPill, appsLabel;
     private int glowColor = 0xFF3A3A3A;
     private ValueAnimator glowAnim;
     private int lastFocusedId = View.NO_ID;
@@ -102,9 +106,13 @@ public class MainActivity extends Activity {
     private int packageSeq;
     private PopupWindow inputsPopup;
     private HomeCard homeCard;
+    private boolean tickRegistered;
+    private final BroadcastReceiver adhanQuery = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) { adhanScope(true); }
+    };
 
     private final BroadcastReceiver tick = new BroadcastReceiver() {
-        @Override public void onReceive(Context c, Intent i) { updateClock(); updateWifi(); }
+        @Override public void onReceive(Context c, Intent i) { updateClock(); updateWifi(); updateWeather(); }
     };
     private final BroadcastReceiver packages = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) { buildApps(); }
@@ -119,6 +127,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        themeAccent = ThemeColors.accent(this);
+        themeSurface = ThemeColors.surface(this);
+        themeSignature = ThemeColors.signature(this);
         dockApps = loadDock();
         liveTvPkg = getString(R.string.live_tv_package);
         inputPickerPkg = getString(R.string.input_picker_package);
@@ -141,14 +152,21 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (!ThemeColors.signature(this).equals(themeSignature)) { recreate(); return; }
         IntentFilter tf = new IntentFilter(Intent.ACTION_TIME_TICK);
         tf.addAction(Intent.ACTION_TIME_CHANGED);
         tf.addAction(Intent.ACTION_TIMEZONE_CHANGED);
         tf.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         registerReceiver(tick, tf);
+        registerReceiver(adhanQuery, new IntentFilter("sa.urtv.ADHAN_QUERY_SCOPE"), "sa.urtv.screensaver.READ_CONFIG", null);
+        tickRegistered = true;
+        adhanScope(true);
         updateClock();
         updateWifi();
+        updateWeather();
         homeCard.refresh();
+        buildQuickLinks();
+        wireFocus();
         View last = lastFocusedId == View.NO_ID ? null : findViewById(lastFocusedId);
         if (last == null && !dockCards.isEmpty()) last = dockCards.get(0);
         if (last != null) last.requestFocus();
@@ -162,10 +180,12 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onPause() {
+        adhanScope(false);
         super.onPause();
         handler.removeCallbacks(rotateWallpaper);
-        unregisterReceiver(tick);
+        if (tickRegistered) { unregisterReceiver(tick); unregisterReceiver(adhanQuery); tickRegistered = false; }
         if (inputsPopup != null) inputsPopup.dismiss();
+        if (weatherDialog != null) weatherDialog.dismiss();
         homeCard.pause();
     }
 
@@ -239,14 +259,20 @@ public class MainActivity extends Activity {
         content.addView(hero, new LinearLayout.LayoutParams(-1, screenH));
 
         hero.addView(buildHeader(), lp(-1, -2, Gravity.TOP, dp(48), dp(36), dp(48), 0));
-        // optional card under the pills, same size as beside the screensaver's clock
-        homeCard = new HomeCard(this, hero, lp(dp(461), dp(250), Gravity.LEFT | Gravity.TOP, dp(48), dp(84), 0, 0));
+        // Compact card under the pills: half the previous width, with the same height.
+        homeCard = new HomeCard(this, hero, lp(dp(230.5f), dp(250), Gravity.LEFT | Gravity.TOP, dp(48), dp(84), 0, 0));
 
         LinearLayout bottom = new LinearLayout(this);
         bottom.setOrientation(LinearLayout.VERTICAL);
         bottom.setClipChildren(false);
         bottom.setClipToPadding(false);
         hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, dp(48), 0, dp(48), dp(30)));
+
+        quickRow = new LinearLayout(this);
+        quickRow.setOrientation(LinearLayout.HORIZONTAL);
+        quickRow.setPadding(dp(20), dp(4), dp(20), dp(4));
+        quickRow.setClipChildren(false);
+        bottom.addView(quickRow, new LinearLayout.LayoutParams(-1, -2));
 
         title = text(34, "sans-serif-light", Color.WHITE);
         title.setShadowLayer(dp(18), 0, 0, 0x66000000);
@@ -262,14 +288,14 @@ public class MainActivity extends Activity {
         dockRow.setPadding(dp(20), dp(22), dp(20), dp(22));
         GradientDrawable band = new GradientDrawable();
         band.setCornerRadius(dp(26));
-        band.setColor(0x1FFFFFFF);
-        band.setStroke(dp(1), 0x14FFFFFF);
+        band.setColor(withAlpha(themeSurface, 0.55f));
+        band.setStroke(dp(1), withAlpha(themeAccent, 0.30f));
         dockRow.setBackground(band);
         bottom.addView(dockRow, new LinearLayout.LayoutParams(-1, -2));
 
         appsLabel = text(11, "sans-serif-medium", 0x99FFFFFF);
         appsLabel.setText("كل التطبيقات");
-        appsLabel.setTextColor(GOLD);
+        appsLabel.setTextColor(themeAccent);
         content.addView(appsLabel, llp(-2, -2, dp(68), dp(8), 0, dp(18)));
 
         grid = new LinearLayout(this);
@@ -287,7 +313,7 @@ public class MainActivity extends Activity {
         LinearLayout left = new LinearLayout(this);
         left.setOrientation(LinearLayout.VERTICAL);
         // Top right, stacked tight: greeting, clock, date. Gravity.RIGHT, not END: for Arabic text END is the left.
-        greeting = text(15, "medium", GOLD);
+        greeting = text(15, "medium", themeAccent);
         greeting.setSingleLine(true);
         left.addView(greeting, llp(-2, -2, 0, 0, dp(4), 0));
 
@@ -296,7 +322,7 @@ public class MainActivity extends Activity {
         clockRow.setGravity(Gravity.TOP);
         clock = text(58, "display", 0xFFFFFDF6);
         clock.setIncludeFontPadding(false);
-        ampm = text(16, "medium", GOLD);
+        ampm = text(16, "medium", themeAccent);
         clockRow.addView(ampm, llp(-2, -2, 0, dp(6), dp(8), 0));
         clockRow.addView(clock);
         left.addView(clockRow, llp(-2, -2, 0, dp(-2), 0, 0));
@@ -312,21 +338,185 @@ public class MainActivity extends Activity {
         LinearLayout right = new LinearLayout(this);
         right.setGravity(Gravity.CENTER_VERTICAL);
         right.setClipChildren(false);
-        TextView saver = pill("شاشة التوقف", R.drawable.ic_screensaver);
+        TextView saver = iconPill("شاشة التوقف", R.drawable.ic_screensaver);
         saver.setOnClickListener(v -> openPackage(SAVER_PKG));
-        TextView inputs = pill("المصادر", R.drawable.ic_input);
-        inputs.setOnClickListener(v -> showInputs(v));
-        wifiPill = pill("واي فاي", R.drawable.ic_wifi);
-        wifiPill.setOnClickListener(v -> launch(new Intent(Settings.ACTION_WIFI_SETTINGS)));
-        TextView settings = pill("الإعدادات", R.drawable.ic_settings);
-        settings.setOnClickListener(v -> launch(new Intent(Settings.ACTION_SETTINGS)));
-        for (TextView p : isInstalled(SAVER_PKG) ? new TextView[]{inputs, wifiPill, settings, saver}
-                                                  : new TextView[]{inputs, wifiPill, settings}) {
+        weatherPill = pill("طقس وينبيغ…", R.drawable.ic_weather);
+        weatherPill.setOnClickListener(v -> showWeatherForecast());
+        TextView settings = iconPill("الإعدادات", R.drawable.ic_settings);
+        settings.setOnClickListener(v -> showLauncherSettings());
+        for (TextView p : isInstalled(SAVER_PKG) ? new TextView[]{weatherPill, settings, saver}
+                                                  : new TextView[]{weatherPill, settings}) {
             right.addView(p, llp(-2, dp(30), dp(10), 0, 0, 0));
             pills.add(p);
         }
         header.addView(right, new FrameLayout.LayoutParams(-2, -2, Gravity.LEFT | Gravity.TOP));
         return header;
+    }
+
+    private TextView iconPill(String description, int icon) {
+        TextView p = pill("", icon);
+        p.setContentDescription(description);
+        p.setCompoundDrawablePadding(0);
+        p.setPadding(dp(10), 0, dp(10), 0);
+        return p;
+    }
+
+    private void showLauncherSettings() {
+        new android.app.AlertDialog.Builder(this).setTitle("الإعدادات")
+            .setItems(new String[]{"روابط يوتيوب السريعة", "ترتيب التطبيقات", "الواي فاي والشبكة", "كل إعدادات Fire TV", "فتح واجهة أمازون", "طريقة العودة إلى MuslimTV", "ألوان الواجهة", "الأذان وتنبيهات الصلاة"}, (dialog, which) -> {
+                if (which == 0) startActivity(new Intent(this, QuickLinksActivity.class));
+                else if (which == 1) startActivity(new Intent(this, DockActivity.class));
+                else if (which == 2) launch(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                else if (which == 3) openAmazon("settings");
+                else if (which == 4) openAmazon("home");
+                else if (which == 5) showReturnHelp();
+                else if (which == 6) startActivity(new Intent(this, ThemeActivity.class));
+                else launch(new Intent().setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".AdhanSettingsActivity")));
+            }).show();
+    }
+
+    private void adhanScope(boolean visible) {
+        sendBroadcast(new Intent("io.github.toolicious.homeonfire.urtv.ADHAN_UPDATE")
+            .setComponent(new ComponentName("io.github.toolicious.homeonfire.urtv", "io.github.toolicious.homeonfire.urtv.AdhanReceiver"))
+            .putExtra("scope", "home").putExtra("visible", visible));
+    }
+
+    private void showReturnHelp() {
+        new android.app.AlertDialog.Builder(this).setTitle("العودة إلى MuslimTV")
+            .setMessage("بعد فتح أمازون يبقى زر Home على واجهة أمازون مؤقتًا. للعودة: اضغط مطولًا على Home ثم اختر Apps / التطبيقات، وافتح تطبيق MuslimTV MuslimTV. يمكنك أيضًا فتحه من قائمة التطبيقات في واجهة أمازون. بمجرد ظهور MuslimTV يعود تحويل زر Home تلقائيًا، دون إعادة تفعيل أي صلاحية.")
+            .setPositiveButton("حسنًا", null).show();
+    }
+
+    private void openAmazon(String screen) {
+        Intent bridge = new Intent().setComponent(new ComponentName(
+            "io.github.toolicious.homeonfire.urtv", "io.github.toolicious.homeonfire.urtv.AmazonActivity"))
+            .putExtra("screen", screen);
+        try { startActivity(bridge); }
+        catch (android.content.ActivityNotFoundException | SecurityException e) {
+            new android.app.AlertDialog.Builder(this).setTitle("تعذر فتح أمازون")
+                .setMessage("تأكد من تثبيت تحديث تطبيق MuslimTV Bridge.").setPositiveButton("حسنًا", null).show();
+        }
+    }
+
+    private String weatherDetails = "جارٍ تحميل الطقس…";
+    private long weatherAttempt;
+    private boolean weatherLoading;
+    private void updateWeather() {
+        if (weatherPill == null) return;
+        android.content.SharedPreferences prefs = Dock.prefs(this);
+        weatherPill.setText(prefs.getString("weather_label", "طقس وينبيغ…"));
+        weatherDetails = prefs.getString("weather_details", weatherDetails);
+        long now = System.currentTimeMillis();
+        if (weatherLoading || now - weatherAttempt < 5 * 60 * 1000L
+                || (prefs.contains("weather_week") && now - prefs.getLong("weather_at", 0) < 20 * 60 * 1000L)) return;
+        weatherAttempt = now;
+        weatherLoading = true;
+        new Thread(() -> {
+            java.net.HttpURLConnection connection = null;
+            try {
+                connection = (java.net.HttpURLConnection) new java.net.URL(
+                    "https://api.open-meteo.com/v1/forecast?latitude=49.8951&longitude=-97.1384&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&forecast_days=7&timezone=America%2FWinnipeg").openConnection();
+                connection.setConnectTimeout(8000); connection.setReadTimeout(8000);
+                StringBuilder body = new StringBuilder();
+                try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(connection.getInputStream(), java.nio.charset.StandardCharsets.UTF_8))) {
+                    String line; while ((line = reader.readLine()) != null) body.append(line);
+                }
+                org.json.JSONObject response = new org.json.JSONObject(body.toString());
+                org.json.JSONObject current = response.getJSONObject("current");
+                org.json.JSONObject daily = response.getJSONObject("daily");
+                int code = current.getInt("weather_code");
+                String condition = weatherCondition(code);
+                String temp = String.format(new java.util.Locale("ar"), "%d°", Math.round(current.getDouble("temperature_2m")));
+                String label = temp + " " + condition;
+                String details = "وينبيغ، كندا\n" + label + "\nالحرارة بالدرجة المئوية\nآخر تحديث: " + current.getString("time").replace('T', ' ') + "\nالمصدر: Open-Meteo";
+                prefs.edit().putString("weather_label", label).putString("weather_details", details).putString("weather_week", daily.toString()).putLong("weather_at", System.currentTimeMillis()).apply();
+                handler.post(() -> { if (!isDestroyed()) { weatherPill.setText(label); weatherDetails = details; renderWeatherForecast(); } });
+            } catch (Exception e) {
+                handler.post(() -> { if (!isDestroyed() && !prefs.contains("weather_label")) weatherPill.setText("الطقس غير متاح"); if (!isDestroyed()) renderWeatherForecast(); });
+            } finally { if (connection != null) connection.disconnect(); handler.post(() -> weatherLoading = false); }
+        }, "WinnipegWeather").start();
+    }
+
+    private android.app.AlertDialog weatherDialog;
+    private LinearLayout weatherForecastBody;
+    private static String weatherCondition(int code) {
+        if (code == 0) return "صافٍ";
+        if (code <= 3) return "غائم";
+        if (code == 45 || code == 48) return "ضباب";
+        if (code >= 51 && code <= 57) return "رذاذ";
+        if (code >= 61 && code <= 67) return "ممطر";
+        if (code >= 71 && code <= 77) return "ثلوج";
+        if (code >= 80 && code <= 82) return "زخات مطر";
+        if (code == 85 || code == 86) return "زخات ثلج";
+        if (code >= 95 && code <= 99) return "عواصف رعدية";
+        return "غير متاح";
+    }
+
+    private void showWeatherForecast() {
+        if (weatherDialog != null && weatherDialog.isShowing()) return;
+        android.widget.ScrollView forecastScroll = new android.widget.ScrollView(this);
+        weatherForecastBody = new LinearLayout(this);
+        weatherForecastBody.setOrientation(LinearLayout.VERTICAL);
+        weatherForecastBody.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        weatherForecastBody.setPadding(dp(18), dp(12), dp(18), dp(12));
+        weatherForecastBody.setBackgroundColor(themeSurface);
+        forecastScroll.addView(weatherForecastBody);
+        weatherDialog = new android.app.AlertDialog.Builder(this)
+            .setTitle("طقس وينبيغ — توقعات سبعة أيام")
+            .setView(forecastScroll).setPositiveButton("إغلاق", null)
+            .setNeutralButton("تحديث", null).create();
+        weatherDialog.setOnDismissListener(dialog -> { weatherDialog = null; weatherForecastBody = null; });
+        weatherDialog.show();
+        weatherDialog.getWindow().setLayout((int)(getResources().getDisplayMetrics().widthPixels * .86f), -2);
+        weatherDialog.getButton(android.app.AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> {
+            weatherAttempt = 0;
+            Dock.prefs(this).edit().putLong("weather_at", 0).apply();
+            updateWeather();
+        });
+        renderWeatherForecast();
+        updateWeather();
+    }
+
+    private void renderWeatherForecast() {
+        if (weatherForecastBody == null) return;
+        weatherForecastBody.removeAllViews();
+        android.content.SharedPreferences prefs = Dock.prefs(this);
+        TextView summary = text(13, "regular", Color.WHITE);
+        summary.setGravity(Gravity.RIGHT);
+        summary.setText(weatherDetails.replace("وينيبغ", "وينبيغ"));
+        weatherForecastBody.addView(summary);
+        try {
+            org.json.JSONObject daily = new org.json.JSONObject(prefs.getString("weather_week", ""));
+            org.json.JSONArray dates = daily.getJSONArray("time");
+            org.json.JSONArray highs = daily.getJSONArray("temperature_2m_max");
+            org.json.JSONArray lows = daily.getJSONArray("temperature_2m_min");
+            org.json.JSONArray codes = daily.getJSONArray("weather_code");
+            java.text.SimpleDateFormat parse = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT);
+            java.text.SimpleDateFormat display = new java.text.SimpleDateFormat("EEEE d MMMM", new java.util.Locale("ar"));
+            parse.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+            display.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+            for (int n = 0; n < Math.min(7, dates.length()); n++) {
+                LinearLayout row = new LinearLayout(this);
+                row.setGravity(Gravity.CENTER_VERTICAL);
+                row.setPadding(0, dp(7), 0, dp(7));
+                String day = display.format(parse.parse(dates.getString(n)));
+                String temperature = String.format(new java.util.Locale("ar"), "العظمى %d°  ·  الصغرى %d°",
+                    Math.round(highs.getDouble(n)), Math.round(lows.getDouble(n)));
+                String[] cells = {day, weatherCondition(codes.getInt(n)), temperature};
+                for (int c = 0; c < cells.length; c++) {
+                    TextView cell = text(15, "regular", c == 0 ? themeAccent : Color.WHITE);
+                    cell.setGravity(Gravity.RIGHT); cell.setText(cells[c]);
+                    row.addView(cell, new LinearLayout.LayoutParams(0, -2, c == 2 ? 1.4f : 1f));
+                }
+                weatherForecastBody.addView(row);
+                View line = new View(this); line.setBackgroundColor(withAlpha(themeAccent, .22f));
+                weatherForecastBody.addView(line, new LinearLayout.LayoutParams(-1, dp(1)));
+            }
+        } catch (Exception missing) {
+            TextView message = text(15, "regular", themeAccent);
+            message.setText("جارٍ تحميل توقعات الأسبوع… إن لم تظهر، اضغط تحديث بعد التأكد من الاتصال.");
+            weatherForecastBody.addView(message);
+        }
     }
 
     /** Pill button: label with a Material icon on its right (Arabic reading order), tinted with the text. */
@@ -344,13 +534,13 @@ public class MainActivity extends Activity {
         p.setId(View.generateViewId());
         GradientDrawable bg = new GradientDrawable();
         bg.setCornerRadius(dp(15));
-        bg.setColor(0x66000000);
-        bg.setStroke(dp(1), 0x33FFFFFF);
+        bg.setColor(withAlpha(themeSurface, 0.65f));
+        bg.setStroke(dp(1), withAlpha(themeAccent, 0.35f));
         p.setBackground(bg);
         p.setOnFocusChangeListener((v, has) -> {
-            bg.setColor(has ? 0xF2FFFFFF : 0x66000000);
-            ((TextView) v).setTextColor(has ? 0xFF111111 : 0xE6FFFFFF);
-            ic.setTint(has ? 0xFF111111 : 0xE6FFFFFF);
+            bg.setColor(has ? themeAccent : withAlpha(themeSurface, 0.65f));
+            ((TextView) v).setTextColor(has ? ThemeColors.ink(themeAccent) : 0xE6FFFFFF);
+            ic.setTint(has ? ThemeColors.ink(themeAccent) : 0xE6FFFFFF);
             v.animate().scaleX(has ? 1.08f : 1f).scaleY(has ? 1.08f : 1f)
                     .setInterpolator(new OvershootInterpolator(2f)).setDuration(220).start();
             if (has) { lastFocusedId = v.getId(); scroll.smoothScrollTo(0, 0); fadeGlow(1f); }
@@ -420,6 +610,7 @@ public class MainActivity extends Activity {
             row.addView(new View(this), p);
         }
         appsLabel.setVisibility(rest.isEmpty() ? View.GONE : View.VISIBLE);
+        buildQuickLinks();
         wireFocus();
 
         if (!dock.isEmpty()) { title.setText(dock.get(0).label); setGlow(dock.get(0).color); }
@@ -515,6 +706,49 @@ public class MainActivity extends Activity {
         return box;
     }
 
+    private void buildQuickLinks() {
+        if (quickRow == null) return;
+        StringBuilder signature = new StringBuilder().append(dockCards.size());
+        for (int n = 0; n < QuickLinks.COUNT; n++) signature.append('\n')
+            .append(QuickLinks.title(this, n)).append('\n').append(QuickLinks.url(this, n));
+        if (signature.toString().equals(quickSignature)) return;
+        quickSignature = signature.toString();
+        quickRow.removeAllViews(); quickButtons.clear(); quickSlots.clear();
+        int columns = Math.max(QuickLinks.COUNT, dockCards.size());
+        for (int n = 0; n < columns; n++) {
+            final int index = n;
+            String name = n < QuickLinks.COUNT ? QuickLinks.title(this, n) : "";
+            TextView button = text(13, "regular", themeAccent);
+            button.setText(name); button.setGravity(Gravity.CENTER);
+            button.setTextDirection(View.TEXT_DIRECTION_RTL);
+            button.setMaxLines(2); button.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            button.setPadding(dp(7), dp(3), dp(7), dp(3));
+            try { button.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/rakkas.ttf")); } catch (RuntimeException ignored) { }
+            boolean visible = !name.isEmpty() && n < QuickLinks.COUNT && !QuickLinks.url(this, n).isEmpty();
+            button.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+            button.setFocusable(visible); button.setClickable(visible); button.setId(View.generateViewId());
+            GradientDrawable bg = new GradientDrawable(); bg.setColor(withAlpha(themeSurface, 0.85f));
+            bg.setCornerRadius(dp(9)); bg.setStroke(dp(1), withAlpha(themeAccent, 0.67f)); button.setBackground(bg);
+            button.setElevation(dp(5));
+            if (visible) {
+                quickButtons.add(button); quickSlots.add(n);
+                button.setOnClickListener(v -> QuickLinks.open(this, index));
+                button.setOnLongClickListener(v -> { startActivity(new Intent(this, QuickLinksActivity.class)); return true; });
+                button.setOnFocusChangeListener((v, focused) -> {
+                    GradientDrawable shape = new GradientDrawable(); shape.setCornerRadius(dp(9));
+                    shape.setColor(focused ? themeSurface : withAlpha(themeSurface, 0.85f));
+                    shape.setStroke(dp(focused ? 2 : 1), focused ? themeAccent : withAlpha(themeAccent, 0.67f));
+                    v.setBackground(shape);
+                    v.animate().scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f).setDuration(120).start();
+                    if (focused) { lastFocusedId = v.getId(); scroll.smoothScrollTo(0, 0); }
+                });
+            }
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, dp(40), 1f);
+            p.setMargins(n == 0 ? 0 : dp(10), 0, n == columns - 1 ? 0 : dp(10), dp(6));
+            quickRow.addView(button, p);
+        }
+    }
+
     /** Explicit D-pad targets: one row per press, ends of rows and of the top bar don't wrap. */
     private void wireFocus() {
         int d = dockCards.size(), g = gridCards.size();
@@ -523,12 +757,21 @@ public class MainActivity extends Activity {
             p.setNextFocusLeftId(i == 0 ? p.getId() : pills.get(i - 1).getId());
             p.setNextFocusRightId(i == pills.size() - 1 ? p.getId() : pills.get(i + 1).getId());
             p.setNextFocusUpId(p.getId());
-            p.setNextFocusDownId(d > 0 ? dockCards.get(Math.min(d - 1, d / 2)).getId() : p.getId());
+            p.setNextFocusDownId(!quickButtons.isEmpty() ? quickButtons.get(0).getId()
+                    : d > 0 ? dockCards.get(Math.min(d - 1, d / 2)).getId() : p.getId());
         }
         int topId = pills.get(0).getId();
+        for (int i = 0; i < quickButtons.size(); i++) {
+            View q = quickButtons.get(i);
+            q.setNextFocusLeftId(quickButtons.get(Math.max(0, i - 1)).getId());
+            q.setNextFocusRightId(quickButtons.get(Math.min(quickButtons.size() - 1, i + 1)).getId());
+            q.setNextFocusUpId(topId);
+            q.setNextFocusDownId(d > 0 ? dockCards.get(Math.min(d - 1, quickSlots.get(i))).getId() : q.getId());
+        }
         for (int i = 0; i < d; i++) {
             View c = dockCards.get(i);
-            c.setNextFocusUpId(topId);
+            int shortcut = quickSlots.indexOf(i);
+            c.setNextFocusUpId(shortcut >= 0 ? quickButtons.get(shortcut).getId() : topId);
             c.setNextFocusLeftId(i == 0 ? c.getId() : dockCards.get(i - 1).getId());
             c.setNextFocusRightId(i == d - 1 ? c.getId() : dockCards.get(i + 1).getId());
             c.setNextFocusDownId(g > 0 ? gridCards.get(Math.min(i, g - 1)).getId() : c.getId());
@@ -754,6 +997,7 @@ public class MainActivity extends Activity {
     /** Connected or not comes from ConnectivityManager: WifiManager hides the network (id -1, "<unknown ssid>")
      *  from apps without location access, which looked like "not connected". The name only when readable. */
     private void updateWifi() {
+        if (wifiPill == null) return;
         String name = "غير متصل";
         try {
             android.net.ConnectivityManager cm = getSystemService(android.net.ConnectivityManager.class);
@@ -806,13 +1050,14 @@ public class MainActivity extends Activity {
 
     // Hosted photos (photos/index.json in the repo) join the bundled ones. Each is downloaded once into
     // files/photos and reused; offline or on any failure the next bundled photo is shown instead.
-    static final String PHOTO_BASE = "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/";
+    static final String PHOTO_BASE = "https://raw.githubusercontent.com/MoSbeaa/MuslimTV/main/photos/";
     static final long INDEX_MAX_AGE_MS = 24 * 3600 * 1000L;
 
     static final int PHOTO_SET = 5, PHOTO_PERIOD_DAYS = 4;
 
     /** This 4-day period's 5 hosted photos: the same Park-Miller draw as photoSet() in the screensaver page. */
     private String[] remotePhotos() {
+        if (wallpapers.length > 0 && wallpapers[0].startsWith("tv_")) return new String[0];
         String s = prefs().getString("photoIndex", "");
         if (s.isEmpty()) return new String[0];
         String[] all = s.split(",");
@@ -841,6 +1086,7 @@ public class MainActivity extends Activity {
 
     /** Off the main thread: refresh the hosted photo list once a day. */
     private void refreshPhotoIndex() {
+        if (wallpapers.length > 0 && wallpapers[0].startsWith("tv_")) return;
         if (System.currentTimeMillis() - prefs().getLong("photoIndexAt", 0) < INDEX_MAX_AGE_MS) return;
         try {
             org.json.JSONArray a = new org.json.JSONArray(new String(download(PHOTO_BASE + "index.json"), "UTF-8"));
@@ -1018,7 +1264,9 @@ public class MainActivity extends Activity {
         if (i != null) launch(i);
     }
 
-    static final int GOLD = 0xFFD6AF6B;
+    private int themeAccent = 0xFFD6AF6B;
+    private int themeSurface = 0xFF102D21;
+    private String themeSignature;
     static final String SAVER_PKG = "sa.urtv.screensaver";
     private final Map<String, Typeface> fonts = new HashMap<>();
 
@@ -1070,9 +1318,9 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
-        // Menu key on the remote opens the Inputs dropdown.
+        // Menu key opens launcher settings.
         if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && !pills.isEmpty()) {
-            showInputs(pills.get(0));
+            showLauncherSettings();
             return true;
         }
         return super.dispatchKeyEvent(e);
@@ -1093,3 +1341,4 @@ public class MainActivity extends Activity {
         @Override protected int computeScrollDeltaToGetChildRectOnScreen(android.graphics.Rect r) { return 0; }
     }
 }
+

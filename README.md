@@ -1,13 +1,21 @@
-<p align="center"><img src=".github/brand/hero.png" alt="تلفزيونك · UrTV" width="100%"></p>
+# MuslimTV
 
-<h1 align="center">تلفزيونك · UrTV</h1>
+Customized Islamic Fire TV launcher and screensaver by MoSbeaa.
+
+Based on [UrTV by tshi-dev](https://github.com/tshi-dev/UrTV); original licenses and credits are retained. The Fire TV bridge is based on [Home on Fire](https://github.com/toolicious/home-on-fire), with its license in `firetv-bridge/LICENSE`.
+
+The public repository includes the owner-approved personal background photo collection. Signing keys, device backups and runtime logs are excluded.
+
+<p align="center"><img src=".github/brand/hero.png" alt="MuslimTV · MuslimTV" width="100%"></p>
+
+<h1 align="center">MuslimTV · MuslimTV</h1>
 
 <p align="center" dir="rtl">واجهة رئيسية عربية وشاشة توقف سعودية لتلفزيونات Android TV و Google TV، وتسريع آمن للتلفزيون.<br>يركّبها لك مساعد ذكاء اصطناعي بأمر واحد.</p>
 
 <p align="center">An Arabic home screen and a Saudi screensaver for Android TV / Google TV, and a safe speed-up.<br>Your AI agent sets it all up.</p>
 
-<p align="center"><img src=".github/screens/before-after-home.jpg" alt="Before: Google TV home. After: the تلفزيونك home screen" width="100%"></p>
-<p align="center"><img src=".github/screens/before-after-screensaver.jpg" alt="Before: the Google screensaver. After: شاشة تلفزيونك" width="100%"></p>
+<p align="center"><img src=".github/screens/before-after-home.jpg" alt="Before: Google TV home. After: the MuslimTV home screen" width="100%"></p>
+<p align="center"><img src=".github/screens/before-after-screensaver.jpg" alt="Before: the Google screensaver. After: MuslimTV Screensaver" width="100%"></p>
 
 <div dir="rtl">
 
@@ -28,7 +36,7 @@
 
 ### ③ الصق هذا
 
-> ركّب تلفزيوني من https://github.com/tshi-dev/UrTV: انسخ المستودع واتبع `docs/SETUP-PROMPT.md` خطوة بخطوة. أنت على كمبيوتر متصل بنفس شبكة الواي فاي حقت التلفزيون.
+> ركّب تلفزيوني من https://github.com/MoSbeaa/MuslimTV: انسخ المستودع واتبع `docs/SETUP-PROMPT.md` خطوة بخطوة. أنت على كمبيوتر متصل بنفس شبكة الواي فاي حقت التلفزيون.
 
 #### وش يصير بعد اللصق؟
 يسألك عن **مدينتك** و**أنديتك**، والتلفزيون يسألك **Allow** مرة وحدة، وبعدها خلّه يشتغل: 40 دقيقة وكم إعادة تشغيل.
@@ -64,7 +72,7 @@ Settings → About → press OK on **Build** 7 times. Then go to **Developer opt
 
 ### ③ Paste this
 
-> Set up my TV with https://github.com/tshi-dev/UrTV: clone it and follow `docs/SETUP-PROMPT.md` step by step. You are on a computer on the same Wi-Fi as the TV.
+> Set up my TV with https://github.com/MoSbeaa/MuslimTV: clone it and follow `docs/SETUP-PROMPT.md` step by step. You are on a computer on the same Wi-Fi as the TV.
 
 #### What happens after pasting?
 It asks your **city** and your **clubs**, the TV asks **Allow** once, then leave it: 40 minutes, a few restarts.
@@ -90,12 +98,12 @@ screen: [docs/RECREATE-PROMPT.md](docs/RECREATE-PROMPT.md).
 
 | | | |
 |---|---|---|
-| **شاشة تلفزيونك** · screensaver | Clock, Hijri date, prayer times and iqama, Ramadan, your teams' matches, weather, markets, and beside the clock your choice of new episodes, today's prayers, the 5-day forecast, all your teams' games, or a verse/hadith of the day, over Saudi landscapes | `urtv-screensaver.apk` |
-| **تلفزيونك** · home screen | Clean Arabic launcher: favourites row (5–10 apps) arranged in «ترتيب المفضلة», all apps, inputs, Wi-Fi, settings; optional card from the screensaver (off by default) | `urtv-home.apk` |
+| **MuslimTV Screensaver** · screensaver | Clock, Hijri date, prayer times and iqama, Ramadan, an optional custom-event countdown, and weather; beside the clock: new episodes, today's prayers, the 5-day forecast, or a verse/hadith of the day, over the rotating photo set | `urtv-screensaver.apk` |
+| **MuslimTV** · home screen | Clean Arabic launcher: favourites row (5–10 apps) arranged in «ترتيب المفضلة», all apps, inputs, Wi-Fi, settings; optional card from the screensaver (off by default) | `urtv-home.apk` |
 | **Two free apps** | [TV Bro](https://github.com/truefedex/tv-bro), a web browser for the TV, and [SmartTube](https://github.com/yuliskov/SmartTube), YouTube without ads, from their own releases (skip with `SKIP_EXTRAS=1`) | `optimize/install.sh extras` |
 | **Speed-up** | Telemetry, ads and demos off (reversibly), closed apps frozen, Play Store kept from running in the background, faster animations | `optimize/` |
 
-**Download the apps yourself:** [releases/apk-latest](https://github.com/tshi-dev/UrTV/releases/tag/apk-latest)
+**Download the apps yourself:** [releases/apk-latest](https://github.com/MoSbeaa/MuslimTV/releases/tag/apk-latest)
 (install with `adb install`; the agent route above also sets everything up).
 Every build is also kept as a numbered release (`v3.N`, the apps' version), to go back to one:
 `APK_TAG=v3.N optimize/install.sh all`.
@@ -147,12 +155,12 @@ release; a push to `next` publishes `apk-next` instead (a test build). `tests/ru
 urtv.html#city=جدة&lat=21.5433&lon=39.1728&tz=Asia/Riyadh&teams=136013,136137&panel=prayers
 ```
 
-`teams`: up to 10 TheSportsDB ids in priority order. `panel`: the card beside the clock: `shows`, `prayers`,
-`forecast`, `matches`, `verse` or `none`. Also `genres`, `langs`, `shows`, `minrating` for the episodes card.
+`panel`: the card beside the clock: `shows`, `prayers`, `forecast`, `verse` or `none`. Also `genres`, `langs`,
+`shows`, `minrating` for the episodes card.
 
-**Data** (free, no keys): Aladhan (prayer times, Umm al-Qura), Open-Meteo (weather), Yahoo and CoinGecko (markets),
-TVMaze (episodes), TheSportsDB (matches). Everything fails soft: offline, the clock, dates, prayer and Ramadan
-countdowns still work and the last good data stays on screen. A finished game's score stays up for a day.
+**Data** (free, no keys): Aladhan (prayer times, Umm al-Qura), Open-Meteo (weather), and TVMaze (episodes).
+Everything fails soft: offline, the clock, dates, prayer, Ramadan, and birthday countdowns still work and the last
+good data stays on screen.
 
 **Verse and hadith texts are never typed by hand:** verses come from the Quran API via CI
 (`.github/tools/fetch_verses.py`); each hadith is checked by CI (`.github/tools/verify_hadith.py`) against the

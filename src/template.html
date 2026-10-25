@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>شاشة تلفزيونك</title>
+<title>MuslimTV Screensaver</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("__F_LIGHT__") format("woff2")}
   @font-face{font-family:'Thmanyah';font-weight:400;font-style:normal;font-display:block;src:url("__F_REGULAR__") format("woff2")}
@@ -193,21 +193,11 @@
   .p-mid{text-align:center}
   .p-mid .big{display:block;text-align:center;line-height:1.06}
   .p-mid .num{font-size:1.3em;line-height:1}
-  .p-mid .unit{font-size:.46em;font-weight:500;color:#D6AF6B;letter-spacing:.02em;display:inline;vertical-align:.5em}
-  .p-match{text-align:left}
-  .p-match .big{justify-content:flex-end}
-  .p-match .sub{white-space:normal;line-height:1.4;max-width:100%;font-size:clamp(11px,.88vw,17px)}
+  .p-mid .unit,.p-birthday .unit{font-size:.46em;font-weight:500;color:#D6AF6B;letter-spacing:.02em;display:inline;vertical-align:.5em}
+  .p-birthday{text-align:left}
+  .p-birthday .big{justify-content:flex-end}
+  .p-birthday .sub{white-space:normal;line-height:1.4;max-width:100%;font-size:clamp(11px,.88vw,17px)}
 
-  .mrow{display:flex;flex-direction:row;gap:1.6vw;align-items:flex-end;justify-content:flex-end;min-width:0}
-  .mblock{text-align:left;flex:0 1 auto;min-width:0;max-width:100%}
-  .mblock:not(:last-child){padding-inline-end:1.6vw;border-inline-end:1px solid rgba(220,184,111,.25)}
-  .mrow:has(.mblock + .mblock) .big{font-size:clamp(18px,1.6vw,34px)}
-  .mblock .big{justify-content:flex-end;min-width:0}
-  .mrow.flip .mblock{animation:weekIn .5s ease both}
-  .mrow.flip .mblock + .mblock{animation-delay:.08s}
-  .mblock .big > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
-    padding-bottom:.3em;margin-bottom:-.3em}  /* room for the dots under ي, ج… */
-  .none-week{font-size:clamp(26px,2.5vw,54px);font-weight:700;font-family:'ThmanyahDisplay','Thmanyah',serif;color:#A79C85}
 
   /* A new photo settles in over a minute, then holds still: an endless drift kept the TV redrawing
      the whole screen 60 times a second, for hours. */
@@ -217,8 +207,8 @@
   }
   @media (prefers-reduced-motion:no-preference){.photo.settle{animation:settle 60s ease-out both}}
 
-  /* ===== top left: weather and markets, set like the date block on the right (no boxes) ===== */
-  .markets{text-align:left;flex-shrink:0}
+  /* ===== top left: weather, set like the date block on the right (no boxes) ===== */
+  .weather{text-align:left;flex-shrink:0}
   .wxline{display:flex;align-items:baseline;gap:.5em;justify-content:flex-end;line-height:1.3;
     font-size:clamp(19px,1.86vw,37px);font-weight:500;color:var(--sand)}
   .wxt{font-family:'ThmanyahDisplay','Thmanyah',serif;font-weight:700;color:#FFFCF2;direction:ltr;
@@ -228,15 +218,8 @@
   .wxr:not(:empty)::before{content:'  ·  ';white-space:pre;color:rgba(214,175,107,.7)}
   .wxt:empty,.wxd:empty,.wxr:empty{display:none}
   .rule.l{margin-left:0;margin-right:auto;background:linear-gradient(90deg,var(--gold),rgba(220,184,111,0))}
-  .mk{margin-top:1.2vh;display:flex;justify-content:flex-end;gap:1.6em;white-space:nowrap;
-    font-size:clamp(12px,1.06vw,21px);font-weight:400;color:#D8CDB6}
-  .mk .m{display:inline-flex;align-items:baseline;gap:.45em}
-  .mk .delta{font-size:.72em}
-  .mk .delta.up{color:#79D6A0}
-  .mk .delta.down{color:#EE8B70}
   .p-prayer.now .big{color:#FFE9B8;text-shadow:0 0 40px rgba(220,184,111,.45)}
   .p-prayer.now .label{color:#F1CF8A}
-  .live{color:#EE8B70;font-weight:500}
   .dimmer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:30;transition:opacity 6s linear}
   .stage{transition:transform 3s ease}
   .sc{color:#E0BA74;letter-spacing:.02em}
@@ -244,8 +227,7 @@
   @media (max-aspect-ratio:5/4){
     .top{flex-direction:column-reverse;gap:1.4vh}
     .bottom{grid-template-columns:1fr 1fr}
-    .p-match{grid-column:1/-1;text-align:right}
-    .mrow{align-items:flex-start}
+    .p-birthday{grid-column:1/-1;text-align:right}
   }
 </style>
 </head>
@@ -267,15 +249,9 @@
       <div class="rule"></div>
     </div>
 
-    <div class="markets">
+    <div class="weather">
       <div class="wxline"><span class="wxt" id="wx-temp"></span><span class="wxd" id="wx-desc"></span></div>
       <div class="wxsub"><span id="wx-city">الرياض</span><span class="wxr" id="wx-range"></span></div>
-      <div class="rule l"></div>
-      <div class="mk">
-        <span class="m"><span>تاسي</span><span id="tasi-chg" class="delta" hidden></span></span>
-        <span class="m"><span>S&amp;P 500</span><span id="spx-chg" class="delta" hidden></span></span>
-        <span class="m"><span>بيتكوين</span><span id="btc-chg" class="delta" hidden></span></span>
-      </div>
     </div>
   </header>
 
@@ -306,11 +282,10 @@
       <div class="sub" id="ramadan-sub">—</div>
     </div>
 
-    <div class="panel p-match">
-      <div class="label">المباريات</div>
-      <div class="mrow" id="match-row">
-        <div class="none-week">لا شيء هذا الأسبوع</div>
-      </div>
+    <div class="panel p-birthday">
+      <div class="label" id="birthday-label">موعد مخصص</div>
+      <div class="big"><span class="num" id="birthday-days">—</span><span class="unit">يوم</span></div>
+      <div class="sub" id="birthday-sub">—</div>
     </div>
   </footer>
 
@@ -326,21 +301,15 @@ const _Q = new URLSearchParams((location.hash || '').replace(/^#/, ''));
 const _list = k => (_Q.get(k) || '').split(',').map(x=>x.trim()).filter(Boolean);
 const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : v; };
 const CONFIG = {
-  city: _Q.get('city') || 'الرياض',
+  city: ((name) => /^winnipeg$/i.test(name) || name === 'وينيبغ' ? 'وينبيغ' : name)(_Q.get('city') || 'وينبيغ'),
   latitude: _num('lat', 24.7136),
   longitude: _num('lon', 46.6753),
-  timezone: _Q.get('tz') || 'Asia/Riyadh',
+  timezone: _Q.get('tz') || 'America/Winnipeg',
   prayerMethod: 4,
-  // followed teams in priority order: #teams=id,id,... (up to 10); older builds send team1/team2
-  teamIds: (_Q.has('teams') ? _Q.get('teams').split(',')
-            : [_Q.has('team1') ? _Q.get('team1') : '136013', _Q.has('team2') ? _Q.get('team2') : '136137'])
-    .map(x=>(x||'').trim()).filter(x=>/^\d+$/.test(x)).slice(0, 10),
-  sportsKey: '123',
-  // the card beside the clock: shows | prayers | forecast | matches | verse | none (#week=0 from older builds = none)
-  panel: (p => ['shows','prayers','forecast','matches','verse','none'].includes(p) ? p : 'verse')
+  asrMithl: _num('asr', 2),
+  // the card beside the clock: shows | prayers | forecast | verse | none
+  panel: (p => ['shows','prayers','forecast','verse','none'].includes(p) ? p : 'verse')
          (_Q.get('panel') || (_Q.get('week') === '0' ? 'none' : 'verse')),
-  matchesPerPage: 2,
-  matchPageMs: 15000,
   // minutes from adhan to iqama (Ministry of Islamic Affairs defaults); Friday Dhuhr has none
   iqama: {Fajr:25, Dhuhr:20, Asr:20, Maghrib:10, Isha:20},
   // "new this week" filters from the app: TVMaze genres, languages, countries, picked show ids
@@ -456,21 +425,42 @@ function computePrayers(){
   return {Fajr:hm(fajr), Sunrise:hm(sunrise), Dhuhr:hm(dhuhr), Asr:hm(asr), Maghrib:hm(maghrib), Isha:hm(isha)};
 }
 
-async function loadPrayers(){
+// The sound scheduler and visible cards use the same mosque's beginning-of-prayer table.
+const MIA_BUNDLED = __MIA_TIMETABLE__;
+let MIA_DAYS = (()=>{ try { return {...MIA_BUNDLED, ...JSON.parse(localStorage.getItem('miaDays') || '{}')}; } catch(e) { return MIA_BUNDLED; } })();
+function flattenMia(value, result = {}) {
+  if(Array.isArray(value)) value.forEach(v => flattenMia(v, result));
+  else if(value?.d_date && value?.fajr_begins && value?.isha_begins) result[value.d_date] = value;
+  return result;
+}
+function miaToday(){
   const p = riyadhParts();
-  const url = `https://api.aladhan.com/v1/timings/${pad(p.d)}-${pad(p.mo)}-${p.y}`
-            + `?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}`
-            + `&method=${CONFIG.prayerMethod}&timezonestring=${encodeURIComponent(CONFIG.timezone)}`;
-  try{
-    const r = await fetchT(url, 12000);
-    const j = await r.json();
-    if(!j?.data?.timings?.Fajr) throw 0;
-    buildPrayers(j.data.timings);
-  }catch(e){
-    try{ buildPrayers(computePrayers()); }catch(_){}
-  }
-  tickPrayer();
-  tickRamadan();   // Ramadan mode needs the prayer times
+  const date = `${p.y}-${pad(p.mo)}-${pad(p.d)}`;
+  const t = MIA_DAYS[date];
+  if(!t) return null;
+  return {Fajr:t.fajr_begins, Sunrise:t.sunrise, Dhuhr:t.zuhr_begins,
+    Asr:CONFIG.asrMithl === 1 ? t.asr_mithl_1 : t.asr_mithl_2,
+    Maghrib:t.maghrib_begins, Isha:t.isha_begins};
+}
+async function loadPrayers(){
+  let times = miaToday();
+  try {
+    let last = 0; try { last = +localStorage.getItem('miaFetchedAt'); } catch(e){}
+    if(!times || Date.now() - last > 6*3600*1000){
+      const r = await fetchT('https://miaonline.org/wp-json/dpt/v1/prayertime?filter=year', 12000);
+      if(!r.ok) throw 0;
+      const days = flattenMia(await r.json());
+      if(Object.keys(days).length){
+        MIA_DAYS = {...MIA_DAYS, ...days};
+        try { localStorage.setItem('miaDays',JSON.stringify(MIA_DAYS)); localStorage.setItem('miaFetchedAt',String(Date.now())); } catch(e){}
+      }
+      times = miaToday();
+    }
+  }catch(e){}
+  // No fabricated alarm times: the native scheduler uses only valid, date-matched MIA rows.
+  // The existing astronomical estimate remains a display fallback if a future year is unavailable.
+  try { buildPrayers(times || computePrayers()); } catch(e){}
+  tickPrayer(); tickRamadan();
   if(CONFIG.panel === 'prayers') renderPanel(false);
 }
 
@@ -609,285 +599,11 @@ function tickRamadan(){
         .format(new Date(Date.UTC(st.y, st.mo-1, st.d, 12)));
 }
 
-const TEAM_AR = __TEAMS_AR__;   // assets/shared/teams-ar.json
-// match "Al-Adalah", "Al Adalah", "Al-Adalah FC" and "AL ADALAH" to the same entry, and "Atlético" to "Atletico"
-// (the same key as team_key() in .github/tools/team_ids.py and Arabic.key(); tests/team_ids_test.py compares them)
-const teamKey = s => String(s).replace(/ı/g,'i').replace(/ß/g,'ss').normalize('NFKD').replace(/[\u0300-\u036f]+/g,'')
-  .toLowerCase().replace(/\b(fc|sc|cf|afc|club|saudi club)\b/g,'')
-  .replace(/[^a-z0-9]+/g,' ').trim().replace(/^al /,'al');
-const TEAM_BY_ID = __TEAMS_BY_ID__;   // assets/shared/teams.json: TheSportsDB id -> Arabic
-const TEAM_KEYS = {};
-// first entry wins on a clash: the Saudi "Al-Faisaly" before the Jordanian "Al Faisaly"
-for(const [en, arName] of Object.entries(TEAM_AR)) if(!(teamKey(en) in TEAM_KEYS)) TEAM_KEYS[teamKey(en)] = arName;
-let MATCHES_LOADED = false;   // a refresh answered; until then the saved row stays
-let MATCHES = {};   // team id -> next event
-let RESULTS = {};   // team id -> recent events
-let NEXT_LIST = {};   // team id -> upcoming events
-
-// ---------- team names in Arabic ----------
-// 1) built-in table, 2) the Arabic label on Wikidata (cached on the device), 3) transliteration meanwhile
-const AR_NAMES = (()=>{ try{ return JSON.parse(localStorage.getItem('arNames') || '{}'); }catch(e){ return {}; } })();
-const AR_PENDING = new Set();
-const AR_KIND = {team:/football|soccer|club|team|منتخب|نادي/i, show:/television|series|sitcom|anime|miniseries|show|مسلسل/i};
-const hasArabic = s => /[؀-ۿ]/.test(s);
-
-const TL_WORDS = {the:'ذا',of:'أوف',and:'آند',a:'إيه',in:'إن',on:'أون',to:'تو',us:'أس',fc:'',cf:'',sc:'',afc:'',
-  united:'يونايتد',city:'سيتي',real:'ريال',club:'كلوب',sporting:'سبورتنغ',saint:'سانت',st:'سانت'};
-const TL_LETTERS = {a:'إيه',b:'بي',c:'سي',d:'دي',e:'إي',f:'إف',g:'جي',h:'إتش',i:'آي',j:'جيه',k:'كيه',l:'إل',m:'إم',
-  n:'إن',o:'أو',p:'بي',q:'كيو',r:'آر',s:'إس',t:'تي',u:'يو',v:'في',w:'دبليو',x:'إكس',y:'واي',z:'زد'};
-function translit(en){
-  const map = {sh:'ش',kh:'خ',th:'ث',dh:'ذ',gh:'غ',ch:'تش',ph:'ف',ck:'ك',qu:'كو',ou:'و',oo:'و',ee:'ي',
-    a:'ا',b:'ب',c:'ك',d:'د',e:'ي',f:'ف',g:'ج',h:'ه',i:'ي',j:'ج',k:'ك',l:'ل',m:'م',n:'ن',o:'و',p:'ب',
-    q:'ق',r:'ر',s:'س',t:'ت',u:'و',v:'ف',w:'و',x:'كس',y:'ي',z:'ز'};
-  const start = {a:'أ',e:'إ',i:'إ',o:'أو',u:'أ'};
-  const word = w => {
-    if(hasArabic(w) || !/[A-Za-z0-9]/.test(w)) return w;
-    const lw = w.toLowerCase();
-    if(TL_WORDS[lw] !== undefined) return TL_WORDS[lw];
-    if(/^[A-Z]{2,4}$/.test(w)) return lw.split('').map(c=>TL_LETTERS[c]).join(' ');   // CP, PSG
-    if(/^al-/.test(lw)) return 'ال' + word(w.slice(3));
-    let out = '', x = lw.replace(/(.)\1/g,'$1');
-    for(let i = 0; i < x.length;){
-      const two = i+1 < x.length ? map[x.slice(i,i+2)] : undefined;
-      if(i === 0 && start[x[0]] && !two){ out += start[x[0]]; i++; continue; }
-      if(two){ out += two; i += 2; continue; }
-      const ch = x[i];
-      if(ch === 'e' && i > 0){ i++; continue; }                         // short or silent e
-      if(ch === 'c' && /[eiy]/.test(x[i+1] || '')){ out += 'س'; i++; continue; }
-      out += /[0-9]/.test(ch) ? ar(ch) : (map[ch] || '');
-      i++;
-    }
-    return out;
-  };
-  return String(en).replace(/&/g,' و ').replace(/\bAl (?=[A-Z])/g,'Al-')
-    .split(/(\s+)/).map(word).join('').replace(/\s{2,}/g,' ').trim();
-}
-
-async function wikidataArabic(en, kind){
-  const api = 'https://www.wikidata.org/w/api.php?format=json&origin=*';
-  const r = await fetchT(`${api}&action=wbsearchentities&type=item&limit=7&language=en&search=${encodeURIComponent(en)}`, 10000);
-  const hits = ((await r.json()).search || []).filter(h => AR_KIND[kind].test(h.description || ''));
-  if(!hits.length) return '';
-  const r2 = await fetchT(`${api}&action=wbgetentities&props=labels&languages=ar&ids=${hits.slice(0,3).map(h=>h.id).join('|')}`, 10000);
-  const ents = (await r2.json()).entities || {};
-  for(const h of hits.slice(0,3)){
-    const l = ents[h.id] && ents[h.id].labels && ents[h.id].labels.ar;
-    if(l && l.value) return l.value.replace(/\s*\([^)]*\)\s*/g,' ').replace(/^(نادي|فريق)\s+/,'').trim();
-  }
-  return '';
-}
-
-let arQueue = Promise.resolve();
-function arName(en, kind, id){
-  if(kind === 'team' && id && TEAM_BY_ID[id]) return TEAM_BY_ID[id];
-  en = String(en || '').trim();
-  if(!en || hasArabic(en)) return en;
-  if(kind === 'team'){
-    const k = TEAM_KEYS[teamKey(en)];
-    if(k) return k;
-  }
-  const key = kind + ':' + en;
-  if(AR_NAMES[key] !== undefined) return AR_NAMES[key] || translit(en);
-  if(!AR_PENDING.has(key)){
-    AR_PENDING.add(key);
-    arQueue = arQueue.then(async ()=>{            // one lookup at a time
-      try{
-        AR_NAMES[key] = await wikidataArabic(en, kind);   // '' = Wikidata has none: keep the transliteration
-        try{ localStorage.setItem('arNames', JSON.stringify(AR_NAMES)); }catch(e){}
-        if(AR_NAMES[key]){ renderMatches(); renderPanel(false); }
-      }catch(e){}                                    // offline: try again next time
-      AR_PENDING.delete(key);
-    });
-  }
-  return translit(en);
-}
-const teamAr = (s, id) => arName(s, 'team', id);
-
-async function fetchNext(id){
-  const r = await fetch(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/eventsnext.php?id=${id}`,{cache:'no-store'});
-  if(!r.ok) throw 0;
-  const j = await r.json();
-  if(j?.events) NEXT_LIST[id] = j.events;
-  return (j?.events || [])[0] || null;
-}
-function toDate(ev){
-  const s = ev.strTimestamp || `${ev.dateEvent}T${ev.strTime || '00:00:00'}`;
-  return new Date(s.endsWith('Z') ? s : s+'Z');
-}
-
-// one slot per picked team: a result from the last 24h, else a fixture this week, else hidden
-// A game is over once its status says so, or 2.5 h after kick-off; its score stays up for a day after that.
-const FINAL = ['FT','AET','PEN','MATCH FINISHED'];
-function finishedRecently(ev, now){
-  if(!ev || ev.intHomeScore == null || ev.intAwayScore == null) return false;
-  const k = toDate(ev).getTime(), end = k + 2.5*3600000;
-  const over = FINAL.includes((ev.strStatus || '').toUpperCase()) ? now >= k : now >= end;
-  return over && now - end < 86400000;
-}
-// Keep a score seen at the final whistle: the free API's "last games" list can lag, and "next game"
-// moves on to the following fixture right away. Saved, so a restart within the day still shows it.
-const KEPT = (()=>{ try{ return JSON.parse(localStorage.getItem('keptResults') || '{}'); }catch(e){ return {}; } })();
-function keepResult(id, ev){
-  if(!finishedRecently(ev, Date.now())) return;
-  KEPT[id] = [ev, ...(KEPT[id] || []).filter(x => x.idEvent !== ev.idEvent && finishedRecently(x, Date.now()))];
-  try{ localStorage.setItem('keptResults', JSON.stringify(KEPT)); }catch(e){}
-}
-function resultsFor(id){
-  const seen = new Set();
-  return [...(RESULTS[id] || []), ...(KEPT[id] || []), MATCHES[id]]
-    .filter(ev => ev && ev.idEvent && !seen.has(ev.idEvent) && seen.add(ev.idEvent));
-}
-
-function matchSlot(id, now, shown){
-  const done = resultsFor(id).filter(ev => finishedRecently(ev, now)).sort((a,b)=>toDate(b)-toDate(a))[0];
-  if(done){
-    if(shown.has(done.idEvent)) return '';          // both teams in the same game
-    shown.add(done.idEvent);
-    const day = new Intl.DateTimeFormat(GREG,{timeZone:CONFIG.timezone,weekday:'long'}).format(toDate(done));
-    return `<div class="mblock">`
-      + `<div class="big"><span>${esc(teamAr(done.strHomeTeam, done.idHomeTeam))} <span class="sc">${ar(+done.intHomeScore)} - ${ar(+done.intAwayScore)}</span> ${esc(teamAr(done.strAwayTeam, done.idAwayTeam))}</span></div>`
-      + `<div class="sub">النتيجة النهائية · ${day}</div></div>`;
-  }
-  const ev = MATCHES[id];
-  if(!ev || shown.has(ev.idEvent)) return '';
-  const home = esc(teamAr(ev.strHomeTeam, ev.idHomeTeam)), away = esc(teamAr(ev.strAwayTeam, ev.idAwayTeam));
-  const d = toDate(ev), diff = d - now;
-  if(diff < -2.5*3600000 || diff > CONFIG.weekWindowDays * 86400000) return '';   // in progress stays on screen
-  shown.add(ev.idEvent);
-  const p = new Intl.DateTimeFormat('en-GB',{timeZone:CONFIG.timezone,hour:'2-digit',minute:'2-digit',hour12:false})
-    .formatToParts(d).reduce((a,x)=>(a[x.type]=x.value,a),{});
-  const t12 = ar(fmt12(+p.hour % 24, +p.minute));
-  const live = diff <= 0 && ev.intHomeScore != null && ev.intAwayScore != null;
-  const sub = diff > 0 ? `بعد ${shortRemaining(diff)} · ${t12}` : `<span class="live">مباشر</span> · ${liveStatus(ev, t12)}`;
-  const mid = live ? ` <span class="sc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</span> ` : ' × ';
-  return `<div class="mblock">`
-       + `<div class="big"><span>${home}${mid}${away}</span></div>`
-       + `<div class="sub">${sub}</div>`
-       + `</div>`;
-}
-
-function liveStatus(ev, t12){
-  const st = (ev.strStatus || '').toUpperCase();
-  if(st === 'HT') return 'استراحة';
-  if(['FT','AET','PEN'].includes(st)) return 'انتهت';
-  const m = parseInt(ev.strProgress, 10);
-  return isNaN(m) ? `بدأت ${t12}` : `الدقيقة ${ar(m)}`;
-}
-
-// while a picked team is playing, refresh that event every 2 minutes
-async function loadLive(){
-  const now = Date.now();
-  await Promise.all(Object.entries(MATCHES).map(async ([id, ev])=>{
-    if(!ev || !ev.idEvent) return;
-    const k = toDate(ev).getTime();
-    if(now < k - 5*60000 || now > k + 2.5*3600000) return;
-    try{
-      const r = await fetchT(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/lookupevent.php?id=${ev.idEvent}`, 10000);
-      const j = await r.json();
-      const fresh = (j.events || [])[0];
-      if(fresh && fresh.idEvent === ev.idEvent){ MATCHES[id] = Object.assign({}, ev, fresh); keepResult(id, MATCHES[id]); }
-    }catch(e){}
-  }));
-  renderMatches();
-}
-
-// Every followed team with something to show, two at a time; the page turns every 15 s.
-let MATCH_PAGE = 0;
-function renderMatches(turn){
-  const now = Date.now(), shown = new Set();
-  const slots = CONFIG.teamIds.map(id => matchSlot(id, now, shown)).filter(Boolean);
-  const row = document.getElementById('match-row');
-  if(!slots.length){ if(!MATCHES_LOADED && row.firstElementChild) return; row.innerHTML = '<div class="none-week">لا شيء هذا الأسبوع</div>'; return; }
-  const per = CONFIG.matchesPerPage, pages = Math.ceil(slots.length / per);
-  if(turn) MATCH_PAGE++;
-  MATCH_PAGE %= pages;
-  row.innerHTML = slots.slice(MATCH_PAGE * per, MATCH_PAGE * per + per).join('');
-  if(turn && pages > 1){ row.classList.remove('flip'); void row.offsetWidth; row.classList.add('flip'); }
-}
-
-async function fetchLast(id){
-  const r = await fetch(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/eventslast.php?id=${id}`,{cache:'no-store'});
-  if(!r.ok) throw 0;
-  const j = await r.json();
-  return j.results || [];
-}
-async function loadMatches(){
-  // never throw away a good fixture or result on a failed refresh
-  let answered = 0;
-  await Promise.all(CONFIG.teamIds.map(async id=>{
-    try{
-      const ev = await fetchNext(id); answered++;
-      if(ev){ if(MATCHES[id] && MATCHES[id].idEvent !== ev.idEvent) keepResult(id, MATCHES[id]); MATCHES[id] = ev; }
-    }catch(e){}
-    try{ const l = await fetchLast(id); answered++; if(l.length) RESULTS[id] = l; }catch(e){}
-  }));
-  if(!answered && CONFIG.teamIds.length) return;    // offline: keep what is shown (the saved panels)
-  MATCHES_LOADED = true;
-  renderMatches();
-  if(CONFIG.panel === 'matches') renderPanel(false);
-}
-
-const TICKERS = [
-  {sym:'^TASI.SR', chg:'tasi-chg'},
-  {sym:'^GSPC',    chg:'spx-chg'},
-  {cg:'bitcoin',   chg:'btc-chg'},
-];
-
-// never invent a direction: unknown hides the marker
-function paintDir(t, up){
-  const chEl = document.getElementById(t.chg);
-  if(up === null || up === undefined){ chEl.style.display='none'; chEl.hidden = true; chEl.textContent=''; return; }
-  chEl.hidden = false; chEl.style.display='';
-  chEl.textContent = up ? '▲' : '▼';
-  chEl.className = 'delta ' + (up ? 'up' : 'down');
-}
-
 async function fetchT(url, ms){
   const c = new AbortController(); const id = setTimeout(()=>c.abort(), ms||12000);
   try{ return await fetch(url,{cache:'no-store', signal:c.signal}); }
   finally{ clearTimeout(id); }
 }
-
-// Yahoo has no CORS headers: try it directly (works inside the app), then through public CORS gateways
-async function yahooChart(sym){
-  const direct = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=5d`;
-  const routes = [
-    [direct, 7000, j => j],
-    ['https://api.allorigins.win/get?url=' + encodeURIComponent(direct), 15000, w => JSON.parse(w.contents)],
-    ['https://corsproxy.io/?url=' + encodeURIComponent(direct), 12000, j => j],
-  ];
-  for(const [url, ms, unwrap] of routes){
-    try{
-      const r = await fetchT(url, ms);
-      if(!r.ok) continue;
-      const j = unwrap(await r.json());
-      if(j && j.chart && j.chart.result) return j;
-    }catch(e){}
-  }
-  throw 0;
-}
-
-async function loadTicker(t){
-  try{
-    if(t.cg){                                  // crypto: CoinGecko, CORS friendly
-      const r = await fetchT(`https://api.coingecko.com/api/v3/simple/price?ids=${t.cg}&vs_currencies=usd&include_24hr_change=true`, 10000);
-      if(!r.ok) throw 0;
-      const j = await r.json();
-      const c = j && j[t.cg] ? j[t.cg] : null;
-      const d = c ? (c.usd_24h_change ?? c.usd_24hr_change ?? null) : null;
-      paintDir(t, typeof d === 'number' ? d >= 0 : null);
-      return;
-    }
-    const j = await yahooChart(t.sym);
-    const res = j.chart.result[0];
-    const price = res.meta.regularMarketPrice;
-    const closes = (res.indicators.quote[0].close || []).filter(x=>x != null);
-    const prev = closes.length >= 2 ? closes[closes.length-2]
-               : (res.meta.chartPreviousClose || res.meta.previousClose || null);
-    paintDir(t, prev == null ? null : price >= prev);
-  }catch(e){ if(!document.getElementById(t.chg).textContent) paintDir(t, null); }   // offline: keep the arrow on screen
-}
-
 const SKIP_TYPES = ['News','Talk Show','Sports','Game Show'];
 let NET_OK = 0;   // answers received; a refresh that got none must not replace what is on screen
 async function getJSON(url, fallback){
@@ -978,7 +694,7 @@ function renderWeekPage(animate){
 let FORECAST = [];
 try{ FORECAST = JSON.parse(localStorage.getItem('forecast:' + location.hash) || '[]') || []; }catch(e){}
 let LIST_PAGE = 0;
-const PANEL_TITLE = {shows:'هذا الأسبوع', prayers:'مواقيت اليوم', forecast:'الأيام القادمة', matches:'مباريات فرقك'};
+const PANEL_TITLE = {shows:'هذا الأسبوع', prayers:'مواقيت اليوم', forecast:'الأيام القادمة'};
 
 function renderPanel(animate){
   const ul = document.getElementById('week-list'), hd = document.getElementById('week-hd');
@@ -987,17 +703,12 @@ function renderPanel(animate){
   let rows = [];
   if(P === 'prayers') rows = prayerRows();
   else if(P === 'forecast') rows = forecastRows();
-  else if(P === 'matches') rows = matchRows();
   else if(P === 'verse'){ const q = quoteOfDay(); hd.textContent = q.title; rows = q.rows; }
   if(PANEL_TITLE[P]) hd.textContent = PANEL_TITLE[P];
   if(!rows.length){
     ul.classList.remove('flip');
-    ul.innerHTML = `<li class="empty">${P === 'matches' ? 'لا مباريات هذا الأسبوع' : 'لا تتوفر بيانات الآن'}</li>`;
+    ul.innerHTML = '<li class="empty">لا تتوفر بيانات الآن</li>';
     return;
-  }
-  if(P === 'matches' && rows.length > WEEK_ROWS){        // page through, like the shows
-    const start = (LIST_PAGE * WEEK_ROWS) % rows.length;
-    rows = Array.from({length: WEEK_ROWS}, (_, i) => rows[(start + i) % rows.length]);
   }
   ul.innerHTML = rows.join('');
   ul.classList.remove('flip');
@@ -1027,46 +738,14 @@ function forecastRows(){
   });
 }
 
-// every followed team's games this week, plus results from the last day, in time order
-function matchRows(){
-  const now = Date.now(), seen = new Set(), evs = [];
-  CONFIG.teamIds.forEach(id => {
-    const next = NEXT_LIST[id] || (MATCHES[id] ? [MATCHES[id]] : []);
-    next.forEach(ev => { if(ev && ev.idEvent && !seen.has(ev.idEvent)){ seen.add(ev.idEvent); evs.push(MATCHES[id] && MATCHES[id].idEvent === ev.idEvent ? MATCHES[id] : ev); } });
-    resultsFor(id).forEach(ev => { if(!seen.has(ev.idEvent)){ seen.add(ev.idEvent); evs.push(ev); } });
-  });
-  const day = d => new Intl.DateTimeFormat(GREG, {timeZone:CONFIG.timezone, weekday:'long'}).format(d);
-  const today = new Intl.DateTimeFormat('en-CA', {timeZone:CONFIG.timezone}).format(new Date());
-  return evs.map(ev => ({ev, t: toDate(ev).getTime()}))
-    .filter(x => finishedRecently(x.ev, now)
-      || (now < x.t + 2.5*3600000 && !FINAL.includes((x.ev.strStatus || '').toUpperCase())
-          && x.t - now <= CONFIG.weekWindowDays * 86400000))
-    .sort((a, b) => a.t - b.t)
-    .map(({ev, t}) => {
-      const d = new Date(t), scored = ev.intHomeScore != null && ev.intAwayScore != null;
-      const mid = scored && now >= t ? ` <span class="sc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</span> ` : ' × ';
-      const p = new Intl.DateTimeFormat('en-GB', {timeZone:CONFIG.timezone, hour:'2-digit', minute:'2-digit', hour12:false})
-        .formatToParts(d).reduce((a, x) => (a[x.type] = x.value, a), {});
-      const when = finishedRecently(ev, now) ? 'انتهت'
-        : now >= t ? '<span class="live">مباشر</span>'
-        : (new Intl.DateTimeFormat('en-CA', {timeZone:CONFIG.timezone}).format(d) === today ? 'اليوم' : day(d))
-          + ' ' + fmt12(+p.hour % 24, +p.minute);
-      return `<li><span>${esc(teamAr(ev.strHomeTeam, ev.idHomeTeam))}${mid}${esc(teamAr(ev.strAwayTeam, ev.idAwayTeam))}</span><span class="dt">${when}</span></li>`;
-    });
-}
-
-// verse one day, hadith the next. Verse texts come from the Quran API via CI (.github/tools/fetch_verses.py), never typed.
+// Verse texts come from the Quran API via CI (.github/tools/fetch_verses.py), never typed.
 const VERSES = __VERSES__;   // assets/shared/verses.json
 // hadith: only those .github/tools/verify_hadith.py found in the six books, each shown in full as the book has it,
 // isnad and all: parts are ["n", narration] and ["q", the Prophet's words]; source is the book and its number
 const HADITH = __HADITH__;   // assets/shared/hadith.json, through src/build.py
 function quoteOfDay(){
-  const n = riyadhDayNumber(), half = Math.floor(n / 2);
-  if(VERSES.length && n % 2 === 0){
-    const v = VERSES[half % VERSES.length];
-    return {title:'آية اليوم', rows:[`<li class="quote"><span class="orn">﴿</span>${esc(v.text)}<span class="orn">﴾</span></li>`, `<li class="src">${esc(v.surah)} · ${ar(v.ayah)}</li>`]};
-  }
-  const h = HADITH[half % HADITH.length];
+  const day = riyadhDayNumber();
+  const h = HADITH[day % HADITH.length];
   const saw = s => s.replace(/ﷺ/g, '<span class="saw">ﷺ</span>').replace(/[﴿﴾]/g, m => `<span class="orn">${m}</span>`);
   const body = h.parts.map(([k, t]) => k === 'q' ? `«${saw(esc(t))}»` : `<span class="nar">${saw(esc(t))}</span>`).join(' ');
   return {title:'حديث اليوم', rows:[`<li class="quote hadith">${body}</li>`, `<li class="src">${esc(h.source)}</li>`]};
@@ -1140,7 +819,7 @@ function pixelShift(){
 
 // Background photos: the hosted set in photos/ (photos/index.json in the repo). A hosted photo is used only
 // once it has loaded; offline, or if it fails, a bundled one is shown, so the screen is never empty.
-const PHOTO_BASE = 'https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/';
+const PHOTO_BASE = 'https://raw.githubusercontent.com/MoSbeaa/MuslimTV/main/photos/';
 let REMOTE_BGS = (()=>{ try{ return JSON.parse(localStorage.getItem('photoIndex') || '[]'); }catch(e){ return []; } })();
 
 async function loadPhotoIndex(){
@@ -1185,6 +864,7 @@ function riyadhDayNumber(){
   const p = riyadhParts();
   return Math.floor(Date.UTC(p.y, p.mo - 1, p.d) / 86400000);
 }
+function tickBirthday(){const panel=document.querySelector('.p-birthday');if(panel)panel.hidden=true;}
 function photoSet(n){
   const period = Math.floor(riyadhDayNumber() / PHOTO_PERIOD_DAYS);
   let seed = (period % 2147483646) + 1;
@@ -1204,7 +884,7 @@ function applyBackground(force){
     const slot = riyadhDayNumber() * (1440 / slotMin) + Math.floor((p.h * 60 + p.mi) / slotMin);
     if(slot === BG_SLOT && !force) return;
     BG_SLOT = slot;
-    const set = REMOTE_BGS.length ? photoSet(REMOTE_BGS.length).map(k => REMOTE_BGS[k]) : [];
+    const set = REMOTE_BGS.length ? (REMOTE_BGS.every(b => b.f.startsWith("tv/")) ? REMOTE_BGS : photoSet(REMOTE_BGS.length).map(k => REMOTE_BGS[k])) : [];
     const local = BGS[slot % BGS.length];
     if(!set.length){ showBackground(local.u, local); return; }
     const b = set[slot % set.length], url = PHOTO_BASE + b.f;
@@ -1223,8 +903,8 @@ function applyBackground(force){
 }
 
 // Last painted panels, shown at once on the next start while fresh data loads.
-const SNAP_KEY = 'snap3:' + location.hash;   // bump when the panels' markup changes
-const SNAP_SEL = ['.markets', '#week-list', '#match-row'];
+const SNAP_KEY = 'snap4:' + location.hash;   // bump when the panels' markup changes
+const SNAP_SEL = ['.weather', '#week-list', '.p-birthday'];
 function saveSnap(){
   try{ localStorage.setItem(SNAP_KEY, JSON.stringify(SNAP_SEL.map(q => (document.querySelector(q)||{}).innerHTML || ''))); }catch(e){}
 }
@@ -1245,37 +925,31 @@ function boot(){
   if(wxCity) wxCity.textContent = CONFIG.city;
   const cs = document.getElementById('clock-sub');
   if(cs) cs.textContent = 'بتوقيت ' + CONFIG.city;
-  document.title = 'شاشة تلفزيونك';
+  document.title = 'MuslimTV Screensaver';
   applyBackground(true);
   loadPhotoIndex().then(() => applyBackground(true));
   setInterval(() => applyBackground(false), 60*1000);
-  tickClock(); tickDates(); tickRamadan();
-  TICKERS.forEach(loadTicker);
+  tickClock(); tickDates(); tickRamadan(); tickBirthday();
   if(CONFIG.panel === 'none') document.querySelector('.week').style.display = 'none';
-  else if(CONFIG.panel !== 'shows') renderPanel(false);   // its own data arrives with prayers, weather, matches
-  loadPrayers(); loadMatches(); if(CONFIG.panel === 'shows') loadWeek(); loadWeather();
+  else if(CONFIG.panel !== 'shows') renderPanel(false);   // panel data arrives with prayers or weather
+  loadPrayers(); if(CONFIG.panel === 'shows') loadWeek(); loadWeather();
   applyNight(); pixelShift();
 
   setInterval(tickClock, 1000);
   setInterval(()=>{ tickDates(); tickPrayer(); tickRamadan(); if(CONFIG.panel === 'prayers') renderPanel(false); }, 15000);
-  setInterval(() => renderMatches(false), 60000);
-  setInterval(() => renderMatches(true), CONFIG.matchPageMs);
-  setInterval(loadLive, 2*60000);
+  setInterval(tickBirthday, 60000);
   setInterval(loadPrayers, 6*3600*1000);
-  setInterval(loadMatches, 30*60*1000);
-  setInterval(()=>TICKERS.forEach(loadTicker), 15*60*1000);
   if(CONFIG.panel === 'shows') setInterval(loadWeek, 6*3600*1000);
   setInterval(loadWeather, 30*60*1000);
   setInterval(()=>{
     if(CONFIG.panel === 'shows' && WEEK_POOL.length > WEEK_ROWS){ WEEK_PAGE++; renderWeekPage(true); }
-    if(CONFIG.panel === 'matches'){ LIST_PAGE++; renderPanel(matchRows().length > WEEK_ROWS); }
   }, 25*1000);
   setInterval(applyNight, 60*1000);
   setInterval(pixelShift, 4*60*1000);
   let lastDay = new Intl.DateTimeFormat('en-CA',{timeZone:CONFIG.timezone}).format(new Date());
   setInterval(()=>{
     const d = new Intl.DateTimeFormat('en-CA',{timeZone:CONFIG.timezone}).format(new Date());
-    if(d !== lastDay){ lastDay = d; loadPhotoIndex().then(() => applyBackground(true)); tickDates(); tickRamadan(); loadPrayers(); loadMatches(); if(CONFIG.panel === 'shows') loadWeek(); loadWeather(); renderPanel(false); }
+    if(d !== lastDay){ lastDay = d; loadPhotoIndex().then(() => applyBackground(true)); tickDates(); tickRamadan(); tickBirthday(); loadPrayers(); if(CONFIG.panel === 'shows') loadWeek(); loadWeather(); renderPanel(false); }
   }, 60*1000);
 }
 
@@ -1291,10 +965,8 @@ function bootWidget(){
   else renderPanel(false);
   if(P === 'prayers'){ loadPrayers(); setInterval(loadPrayers, 6*3600*1000); setInterval(() => renderPanel(false), 15000); }
   if(P === 'forecast'){ loadWeather(); setInterval(loadWeather, 30*60*1000); }
-  if(P === 'matches'){ loadMatches(); setInterval(loadMatches, 30*60*1000); setInterval(loadLive, 2*60000); }
   setInterval(() => {
     if(P === 'shows' && WEEK_POOL.length > WEEK_ROWS){ WEEK_PAGE++; renderWeekPage(true); }
-    if(P === 'matches'){ LIST_PAGE++; renderPanel(matchRows().length > WEEK_ROWS); }
   }, 25*1000);
   let lastDay = riyadhDayNumber();
   setInterval(() => { if(riyadhDayNumber() !== lastDay){ lastDay = riyadhDayNumber(); if(P === 'prayers') loadPrayers(); renderPanel(false); } }, 60*1000);

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Write how the setup went, for its owner to send to UrTV's author if they want to (optimize/share.sh).
+"""Write how the setup went, for its owner to send to MuslimTV's author if they want to (optimize/share.sh).
 
 Only what helps fix the setup for others: the TV (maker, model, firmware, Android), the computer's system, the agent,
-UrTV's version and the apps', how long each step took and where it stopped, the errors and dropped connections,
+MuslimTV's version and the apps', how long each step took and where it stopped, the errors and dropped connections,
 memory before and after, the checks, the agent's notes and the owner's own words if they want to add any.
 Nothing personal: no city, clubs, favourites or apps of theirs, no names, network addresses or file paths.
 
@@ -32,7 +32,7 @@ QR = RUN / "share-qr.png"
 FORM_ID = "1FAIpQLSfDJFfy1NgiB-ZMXoBI29n_KTdYnGadn1-iOqXJOxaQJEr-ZQ"   # from the form's link: docs.google.com/forms/d/e/<FORM_ID>/viewform
 FORM_FIELD = "1457112794"   # the question's number: entry.<FORM_FIELD>=… in the form's pre-filled link
 # Without the form, or offline: the QR code opens this page (docs/share/, GitHub Pages) with the summary after the #
-PAGE = "https://tshi-dev.github.io/UrTV/share/"
+PAGE = "https://mosbeaa.github.io/MuslimTV/share/"
 
 
 def scrub(text):   # in case a note or an output carries something personal
@@ -194,7 +194,7 @@ def main():
     notes = " ".join(args.notes).strip()
     summary = RUN / "summary.md"
     parts = [
-        f"UrTV setup report, {datetime.date.today()}, UrTV {urtv_version()}",
+        f"MuslimTV setup report, {datetime.date.today()}, MuslimTV {urtv_version()}",
         "",
         f"TV: {tv()}",
         f"Computer: {computer()}" + (f", agent: {args.agent}" if args.agent else ""),

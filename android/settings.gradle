@@ -4,5 +4,5 @@ pluginManagement {
 dependencyResolutionManagement {
     repositories { google(); mavenCentral() }
 }
-rootProject.name = 'urtv'
+rootProject.name = 'MuslimTV'
 include ':app', ':launcher'

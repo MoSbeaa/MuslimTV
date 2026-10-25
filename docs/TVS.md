@@ -8,6 +8,7 @@ app's preview of the same page and `measure.sh` writes «not measured»). Times 
 
 | TV | Android | Home switch | Screensaver from ADB | ADB | Watch out for | Typical time |
 |---|---|---|---|---|---|---|
+| Amazon Fire TV Stick HD (1st gen), AFTSS | 9 | failed; Fire OS protects `com.amazon.tv.launcher`; Home stayed on Amazon after `set-home-activity` accepted MuslimTV | no, preview only | 5555; first probe timed out once, then connected | installer must detect the Amazon Home component; disabling it returns `Security exception: Cannot disable a protected package`; the 5-minute safety switch restores Amazon Home | ~25 min |
 | TCL Smart TV Pro G08 | 14 | works (launcherx + setupwraith off) | no, preview only | 5555; the first probe may hang, run it again | a Wi-Fi drop during the switch: the safety switch restores the stock home and `optimize/install.sh launcher` retries the switch by itself (once) | 11 min |
 | TCL Smart TV Pro G05, G07, BeyondTV4 | 11 | works | yes | 5555 | `com.tcl.smartalexa` ships off outside Alexa's regions, expected | 14 min |
 | TCL UnionTV | 9 | works | yes | 5555 | – | 15 min |
@@ -19,5 +20,5 @@ app's preview of the same page and `measure.sh` writes «not measured»). Times 
 
 - **macOS:** Homebrew's Python 3.12 or 3.13 (`brew install python@3.12`). python.org's Python has no certificates
   and the system 3.9 can't load the ADB package; `optimize/setup.sh` picks a good one and sets up the certificates.
-- **Windows:** clone into a short folder such as `C:\UrTV`; Git and Python come from winget
+- **Windows:** clone into a short folder such as `C:\MuslimTV`; Git and Python come from winget
   (`winget install -e --id Git.Git`, `winget install -e --id Python.Python.3.12`); run every script in Git Bash.

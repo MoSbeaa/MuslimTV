@@ -1,0 +1,44 @@
+[
+  {
+    "id": "makkah",
+    "source": "Kiwifu/adhan-mp3",
+    "label": "مكة المكرمة — علي أحمد ملا",
+    "sha256": "21814BBE0E34E634894B484C1B9A810D9980331EE51FE19BF0274920191C6271",
+    "url": "https://raw.githubusercontent.com/Kiwifu/adhan-mp3/main/Ali_Ibn_Ahmad_Mala_1_-_Al_Haram_Al_Maki_(علي_بن_أحمد_ملا_-_الحرم_المكي).mp3"
+  },
+  {
+    "id": "quds",
+    "source": "Kiwifu/adhan-mp3",
+    "label": "القدس — المسجد الأقصى",
+    "sha256": "705F78B53CC9336E9AD0CE145857CBB2804D2A5956D16E8C0D9DDCF4132A90FC",
+    "url": "https://raw.githubusercontent.com/Kiwifu/adhan-mp3/main/Najee_Qazaz_-_Al_Aqsa_Jerusalem_(ناجي_قزاز_-_المسجد_الأقصى_القدس).mp3"
+  },
+  {
+    "id": "madinah",
+    "source": "Kiwifu/adhan-mp3",
+    "label": "المدينة المنورة — الحرم النبوي",
+    "sha256": "619605B98536264F6143D0B9D4D2725CF20EE85A827E4C038DC6E42583272958",
+    "url": "https://raw.githubusercontent.com/Kiwifu/adhan-mp3/main/Adhan_Al_Haram_Al_Madani_-_Al_Madinah_1_(أذان_الحرم_المدني_-_المدينة_المنورة).mp3"
+  },
+  {
+    "id": "alafasy",
+    "source": "Kiwifu/adhan-mp3",
+    "label": "مشاري راشد العفاسي",
+    "sha256": "7889FB396F7D29DEBF1258C4D522D43FE680C786A9D9F06D4542D22CEBE58FB8",
+    "url": "https://raw.githubusercontent.com/Kiwifu/adhan-mp3/main/Mishary_Rashid_Alafasy_1_-_Kuwait_(مشاري_راشد_العفاسي_-_الكويت).mp3"
+  },
+  {
+    "id": "fajr_makkah",
+    "source": "Kiwifu/adhan-mp3",
+    "label": "أذان الفجر — مكة المكرمة",
+    "sha256": "3F556C76C74AF088D89AFDCCC13293BEB320D70C7C3CBD48F2E02CD9C886FA68",
+    "url": "https://raw.githubusercontent.com/Kiwifu/adhan-mp3/main/Adhan_Fajr_Al_Haram_Al_Maki_(أذان_الفجر_الحرم_المكي).mp3"
+  },
+  {
+    "id": "fajr_madinah",
+    "source": "Kiwifu/adhan-mp3",
+    "label": "أذان الفجر — المدينة المنورة",
+    "sha256": "0DF433D909388B11A4FE556F8F76786CC2349FCAB5B49B7D14DF0496ED4F3F2F",
+    "url": "https://raw.githubusercontent.com/Kiwifu/adhan-mp3/main/Adhan_Fajr_Al_Haram_Al_Madani_(أذان_الفجر_الحرم_المدني).mp3"
+  }
+]

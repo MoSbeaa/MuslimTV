@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# How the setup went, for the TV's owner to send to UrTV's author if they want to: the TV model and Android
+# How the setup went, for the TV's owner to send to MuslimTV's author if they want to: the TV model and Android
 # version, how long each step took and where it stopped, memory before and after, the protected-features check,
 # and the agent's notes. Nothing personal (no city, clubs, apps, names, network addresses or paths).
 #   optimize/share.sh "what went wrong, how long it cost, how it was fixed"

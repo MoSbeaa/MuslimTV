@@ -2,7 +2,7 @@ name: Build APKs
 
 on:
   push:
-    branches: [master, next]   # next: a test build in apk-next, before anything reaches apk-latest
+    branches: [main, next]   # next: a test build in apk-next, before anything reaches apk-latest
     paths: ['src/**', 'assets/**', 'android/**', '.github/workflows/android.yml']
   workflow_dispatch:
 
@@ -67,7 +67,7 @@ jobs:
 
       # fixed download links: .../releases/download/apk-latest/urtv-screensaver.apk and urtv-home.apk
       - name: Publish to the apk-latest release
-        if: github.ref_name == 'master'
+        if: github.ref_name == 'main'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: apk-latest
@@ -80,11 +80,11 @@ jobs:
 
       # and every build kept under its own number, the apps' version: APK_TAG=v3.N optimize/install.sh all
       - name: Publish to the numbered release
-        if: github.ref_name == 'master'
+        if: github.ref_name == 'main'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v3.${{ github.run_number }}
-          name: UrTV 3.${{ github.run_number }}
+          name: MuslimTV 3.${{ github.run_number }}
           body: "Both apps at version 3.${{ github.run_number }}, built from ${{ github.sha }}"
           files: |
             urtv-screensaver.apk

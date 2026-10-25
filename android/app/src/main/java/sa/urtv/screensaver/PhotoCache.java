@@ -17,7 +17,7 @@ import java.util.Comparator;
  * opens at once. Fonts and bundled photos come from the APK; hosted photos are downloaded once and kept.
  */
 final class PhotoCache {
-    static final String REPO = "https://raw.githubusercontent.com/tshi-dev/UrTV/" + BuildConfig.BRANCH + "/";
+    static final String REPO = "https://raw.githubusercontent.com/MoSbeaa/MuslimTV/" + BuildConfig.BRANCH + "/";
     private static final String BUNDLED = REPO + "assets/backgrounds/", HOSTED = REPO + "photos/",
         FONTS = REPO + "assets/fonts/";
     private static final int KEEP = 12;   // the 5-photo set plus room for the next one
@@ -40,7 +40,17 @@ final class PhotoCache {
                 return name == null ? null : jpeg(c.getAssets().open("backgrounds/" + name));
             }
             if (url.startsWith(HOSTED)) {
-                String name = safeName(url.substring(HOSTED.length()));
+                String relative = url.substring(HOSTED.length());
+                if (relative.equals("index.json") || relative.matches("tv/[A-Za-z0-9_-]+\\.jpg")) {
+                    try {
+                        InputStream local = c.getAssets().open("photos/" + relative);
+                        java.util.Map<String, String> headers = new java.util.HashMap<>();
+                        headers.put("Access-Control-Allow-Origin", "*");
+                        return new WebResourceResponse(relative.endsWith(".json") ? "application/json" : "image/jpeg",
+                            relative.endsWith(".json") ? "UTF-8" : null, 200, "OK", headers, local);
+                    } catch (java.io.IOException missing) { /* older APK: normal hosted fallback */ }
+                }
+                String name = safeName(relative);
                 if (name == null) return null;   // index.json and anything else go to the network
                 File f = hosted(c, url, name);
                 return f == null ? null : jpeg(new FileInputStream(f));

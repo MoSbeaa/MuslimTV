@@ -29,7 +29,7 @@ if [ -n "$still" ]; then
   ours=$(grep -Fxvf <(printf '%s\n' "$before") <<< "$still" || true)
   [ -f optimize/run/backup.txt ] || ours=
   kept=$(grep -Fxvf <(printf '%s\n' "${ours:-}") <<< "$still" || true)
-  [ -z "$kept" ] || echo "   left off by the TV itself (off before UrTV, and pm enable can't turn it on): $(paste -sd' ' <<< "$kept")"
+  [ -z "$kept" ] || echo "   left off by the TV itself (off before MuslimTV, and pm enable can't turn it on): $(paste -sd' ' <<< "$kept")"
   if [ -n "$ours" ]; then echo "!! still off, tell the person: $(paste -sd' ' <<< "$ours")"; exit 1; fi
 fi
 echo "Protected features: all on."

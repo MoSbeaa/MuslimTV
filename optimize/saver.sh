@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# شاشة تلفزيونك's settings, for agents: no remote, no menus.
+# MuslimTV Screensaver's settings, for agents: no remote, no menus.
 #   optimize/saver.sh show                         current settings
 #   optimize/saver.sh cities                       built-in Saudi cities by region
 #   optimize/saver.sh city الرس                    a built-in city (Arabic name as listed)
 #   optimize/saver.sh city 'اسم' 25.86 43.49       any place: name, latitude, longitude
 #   optimize/saver.sh find-team الهلال             a club's id (Arabic or English name): id:Name | league
 #   optimize/saver.sh teams 136013:Al-Hilal 150643:Al-Zulfi    followed teams in order (up to 10)
+#   optimize/saver.sh teams clear                         clear followed teams
 #   optimize/saver.sh card prayers                 beside the clock: shows prayers forecast matches verse none
 #   optimize/saver.sh home-card none               on the home screen (launcher): same choices, none = off
 #   optimize/saver.sh genres Drama,Comedy          episodes card: Drama Comedy Action Crime Thriller Mystery
@@ -44,7 +45,8 @@ case "${1:-}" in
     send SET "$extra" ;;
   teams)
     shift
-    [ $# -gt 0 ] || { echo "usage: optimize/saver.sh teams ID:EnglishName ..."; exit 1; }
+    if [ "${1:-}" = clear ]; then send SET "--es teams $(quote "")"; exit; fi
+    [ $# -gt 0 ] || { echo "usage: optimize/saver.sh teams ID:EnglishName ... | clear"; exit 1; }
     send SET "--es teams $(quote "$(IFS=,; echo "$*")")" ;;
   card)      send SET "--es panel $(quote "${2:?usage: optimize/saver.sh card prayers}")" ;;
   home-card) send SET "--es home_panel $(quote "${2:?usage: optimize/saver.sh home-card none}")" ;;

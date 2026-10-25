@@ -48,8 +48,8 @@ android {
     lint { abortOnError false }
 }
 
-def copyWallpapers = tasks.register('copyWallpapers', Copy) {
-    from('../../assets/backgrounds') { include '*.jpg' }
+def copyWallpapers = tasks.register('copyWallpapers', Sync) {
+    from(file('../../photos/tv').isDirectory() ? '../../photos/tv' : '../../assets/backgrounds') { include '*.jpg' }
     into "$buildDir/generated/wallpapers/wallpapers"
 }
 preBuild.dependsOn copyWallpapers

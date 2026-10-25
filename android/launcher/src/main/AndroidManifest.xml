@@ -2,6 +2,7 @@
 <!-- Home screen adapted from github.com/mihirgupta0900/tv-home (MIT). -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="io.github.toolicious.homeonfire.urtv.OPEN_AMAZON" />
     <uses-permission android:name="android.permission.INTERNET" />   <!-- hosted wallpapers, the optional card -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -38,7 +39,7 @@
     </queries>
 
     <application
-        android:label="تلفزيونك"
+        android:label="MuslimTV"
         android:icon="@mipmap/ic_launcher"
         android:banner="@drawable/banner"
         android:allowBackup="false"
@@ -58,10 +59,18 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <!-- Expose the custom launcher to TV apps such as Home on Fire's target picker. -->
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
 
         <!-- «ترتيب المفضلة»: the favourites as a list; also opened from the screensaver's settings -->
+        <activity android:name=".ThemeActivity" android:exported="false" android:screenOrientation="landscape" android:theme="@android:style/Theme.Material.NoActionBar" />
+        <activity
+            android:name=".QuickLinksActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
         <activity
             android:name=".DockActivity"
             android:exported="true"

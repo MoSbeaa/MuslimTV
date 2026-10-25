@@ -21,3 +21,8 @@ optimize/lists/mine.txt
 /hadith/
 /verses/
 /unsplash/
+
+# Signing sidecars and local environment files
+*.apk.idsig
+.env
+.env.*

@@ -10,6 +10,7 @@ import android.webkit.WebView;
 /** Full-screen preview of the screensaver; any remote key closes it. */
 public class MainActivity extends Activity {
     private WebView web;
+    private android.content.BroadcastReceiver adhanQuery;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -20,6 +21,9 @@ public class MainActivity extends Activity {
         web.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
+
+    @Override public void onResume() { super.onResume(); adhanQuery = AdhanOptions.watchScope(this, "preview"); AdhanOptions.scope(this, "preview", true); }
+    @Override public void onPause() { AdhanOptions.scope(this, "preview", false); if (adhanQuery != null) { unregisterReceiver(adhanQuery); adhanQuery = null; } super.onPause(); }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {

@@ -19,7 +19,7 @@ FONTS = {
     "__F_DISPLAY__": "ThmanyahDisplay-Bold.woff2",
 }
 # tv.html points here for fonts and bundled photos; the app answers from its assets, a browser from GitHub.
-REPO = "https://raw.githubusercontent.com/tshi-dev/UrTV/master/"
+REPO = "https://raw.githubusercontent.com/MoSbeaa/MuslimTV/main/"
 
 
 BASMALA = "بسم الله الرحمن الرحيم"   # compared without harakat: the API orders them its own way
@@ -226,9 +226,27 @@ def main():
     html = html.replace("__TEAMS_BY_ID__", js_json(by_id))
     html = html.replace("__VERSES__", js_json(verses_for_screen()))
     html = html.replace("__HADITH__", js_json(hadith_for_screen()))   # checked by CI
+    def collect_mia(value, result):
+        if isinstance(value, list):
+            for child in value: collect_mia(child, result)
+        elif isinstance(value, dict) and value.get("d_date") and value.get("fajr_begins") and value.get("isha_begins"):
+            result[value["d_date"]] = value
+    mia = {}
+    mia_file = ROOT / "android/app/src/main/assets/adhan/timetable.json"
+    if mia_file.is_file(): collect_mia(json.loads(mia_file.read_text(encoding="utf-8-sig")), mia)
+    html = html.replace("__MIA_TIMETABLE__", js_json(mia))
 
-    bg_dir = ROOT / "assets/backgrounds"
-    bgs = json.loads((bg_dir / "backgrounds.json").read_text(encoding="utf-8"))
+
+    personal = ROOT / "photos/index.json"
+    if (ROOT / "photos/tv").is_dir():
+        bg_dir = ROOT / "photos"
+        bgs = [{"file": p["f"], "credit": p.get("c", ""), "brightness": p.get("d", .95)}
+               for p in json.loads(personal.read_text(encoding="utf-8"))]
+        bg_url = REPO + "photos/"
+    else:
+        bg_dir = ROOT / "assets/backgrounds"
+        bgs = json.loads((bg_dir / "backgrounds.json").read_text(encoding="utf-8"))
+        bg_url = REPO + "assets/backgrounds/"
     for name, inline in (("urtv.html", True), ("tv.html", False)):
         page = html
         for token, font in FONTS.items():
@@ -236,7 +254,7 @@ def main():
                                 else REPO + "assets/fonts/" + font)
         entries = []
         for bg in bgs:
-            u = data_uri(bg_dir / bg["file"], "image/jpeg") if inline else REPO + "assets/backgrounds/" + bg["file"]
+            u = data_uri(bg_dir / bg["file"], "image/jpeg") if inline else bg_url + bg["file"]
             entries.append(f'  {{u:"{u}", c:{js_json(bg["credit"])}, d:{bg["brightness"]}}}')
         out = ROOT / "dist" / name
         out.parent.mkdir(exist_ok=True)
