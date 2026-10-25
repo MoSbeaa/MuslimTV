@@ -18,7 +18,7 @@ import java.util.Set;
 /** The favourites row: one set of rules for the home screen, its «ترتيب المفضلة» screen and ADB (DockReceiver). */
 final class Dock {
     static final int MIN = 5;    // the row never shows fewer apps than this
-    static final int MAX = 10;   // tiles share the row width, so 10 still fit at 1080p
+    static final int MAX = 5;    // five favourites, with replacement available in the editor
     static final String CHANGED = "sa.muslimtv.home.DOCK_CHANGED";   // tells a running home screen to redraw
 
     private Dock() {}
@@ -142,7 +142,7 @@ final class Dock {
     }
 
     static void save(Context c, List<String> row) {
-        prefs(c).edit().putString("dock", String.join(",", row)).apply();
+        prefs(c).edit().putString("dock", String.join(",", row.subList(0, Math.min(row.size(), MAX)))).apply();
         c.sendBroadcast(new Intent(CHANGED).setPackage(c.getPackageName()));
     }
 

@@ -571,7 +571,7 @@ public class MainActivity extends Activity {
         }
 
         List<App> dock = new ArrayList<>();
-        for (String p : dockApps) if (byPkg.containsKey(p)) dock.add(byPkg.remove(p));
+        for (String p : dockApps) if (dock.size() < MAX_DOCK && byPkg.containsKey(p)) dock.add(byPkg.remove(p));
         cardByPkg.clear();
         List<App> rest = new ArrayList<>(byPkg.values());
         Collections.sort(rest, (x, y) -> x.label.compareToIgnoreCase(y.label));
@@ -826,7 +826,7 @@ public class MainActivity extends Activity {
     /** Only installed apps are kept, so the dock never holds a removed app's slot. */
     private void saveDock(List<String> dock, String focusPkg) {
         List<String> installed = new ArrayList<>();
-        for (String p : dock) if (isInstalled(p)) installed.add(p);
+        for (String p : dock) if (installed.size() < MAX_DOCK && isInstalled(p)) installed.add(p);
         prefs().edit().putString("dock", android.text.TextUtils.join(",", installed)).apply();
         dockApps = installed.toArray(new String[0]);
         buildApps();
@@ -855,8 +855,8 @@ public class MainActivity extends Activity {
             labels.add("إضافة إلى المفضلة");
             actions.add(() -> { dock.add(pkg); saveDock(dock, pkg); });
         } else {
-            labels.add("المفضلة ممتلئة (" + MAX_DOCK + ")");
-            actions.add(() -> { });
+            labels.add("استبدال تطبيق من المفضلة…");
+            actions.add(() -> launch(new Intent(this, DockActivity.class)));
         }
         labels.add("إعادة المفضلة الافتراضية");
         actions.add(() -> {

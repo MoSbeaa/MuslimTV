@@ -56,8 +56,7 @@ public class DockActivity extends Activity {
         frame.addView(col, new FrameLayout.LayoutParams(dp(600), -2, Gravity.CENTER_HORIZONTAL));
 
         col.addView(text("ترتيب المفضلة", 26, "Medium", TEXT), right(0));
-        col.addView(text("OK على تطبيق لتحريكه بالأسهم ▲▼ ثم OK لتثبيته. من " + ar(Dock.MIN) + " إلى "
-            + ar(Dock.MAX) + " تطبيقات.", 14, "Regular", DIM), right(dp(6)));
+        col.addView(text("OK على تطبيق لتحريكه بالأسهم ▲▼ ثم OK لتثبيته. خمسة تطبيقات، ويمكن استبدال أي منها.", 14, "Regular", DIM), right(dp(6)));
         count = text("", 13, "Medium", GOLD);
         col.addView(count, right(dp(24)));
         list = new LinearLayout(this);
@@ -80,7 +79,7 @@ public class DockActivity extends Activity {
         others.removeAll(row);
         Collections.sort(others, (x, y) -> apps.get(x).compareToIgnoreCase(apps.get(y)));
         if (!others.isEmpty()) {
-            TextView h = text("إضافة تطبيق", 13, "Medium", GOLD);
+            TextView h = text("إضافة أو استبدال تطبيق", 13, "Medium", GOLD);
             LinearLayout.LayoutParams hp = right(0);
             hp.topMargin = dp(22);
             hp.bottomMargin = dp(8);
@@ -114,7 +113,7 @@ public class DockActivity extends Activity {
     private View favouriteRow(final int i) {
         LinearLayout r = new LinearLayout(this);
         r.setOrientation(LinearLayout.HORIZONTAL);
-        TextView remove = (TextView) pill("إزالة", v -> remove(i));
+        TextView remove = (TextView) pill("استبدال", v -> chooseReplacement(i));
         r.addView(remove, new LinearLayout.LayoutParams(dp(84), -1));
         View c = card(row.get(i), ar(i + 1), i == moving, v -> {
             if (moving == i) drop(); else { moving = i; render(i); }
@@ -197,6 +196,25 @@ public class DockActivity extends Activity {
 
     // ---------------------------------------------------------------- actions
 
+    private void chooseReplacement(int index) {
+        List<String> candidates = new ArrayList<>(apps.keySet());
+        candidates.removeAll(row);
+        Collections.sort(candidates, (a, b) -> apps.get(a).compareToIgnoreCase(apps.get(b)));
+        if (candidates.isEmpty()) { toast("لا توجد تطبيقات أخرى"); return; }
+        String[] labels = new String[candidates.size()];
+        for (int i = 0; i < candidates.size(); i++) labels[i] = apps.get(candidates.get(i));
+        new android.app.AlertDialog.Builder(this).setTitle("استبدال التطبيق")
+            .setItems(labels, (dialog, which) -> replace(index, candidates.get(which))).show();
+    }
+
+    private void replace(int index, String pkg) {
+        moving = -1;
+        row.set(index, pkg);
+        Dock.save(this, row);
+        render(index);
+        toast("تم استبدال التطبيق");
+    }
+
     private void remove(int i) {
         if (row.size() <= Dock.MIN) { toast("المفضلة لا تقل عن " + ar(Dock.MIN) + " تطبيقات"); return; }
         row.remove(i);
@@ -205,7 +223,13 @@ public class DockActivity extends Activity {
     }
 
     private void add(String pkg) {
-        if (row.size() >= Dock.MAX) { toast("المفضلة ممتلئة (" + ar(Dock.MAX) + ")"); return; }
+        if (row.size() >= Dock.MAX) {
+            String[] labels = new String[row.size()];
+            for (int i = 0; i < row.size(); i++) labels[i] = apps.get(row.get(i));
+            new android.app.AlertDialog.Builder(this).setTitle("اختر التطبيق المراد استبداله")
+                .setItems(labels, (dialog, which) -> replace(which, pkg)).show();
+            return;
+        }
         row.add(pkg);
         Dock.save(this, row);
         render(row.size() - 1);
