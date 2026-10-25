@@ -52,7 +52,7 @@ WIKIDATA = "https://www.wikidata.org/w/api.php"
 SPARQL = "https://query.wikidata.org/sparql"
 ENWIKI = "https://en.wikipedia.org/w/api.php"
 UA = "MuslimTV club list (github.com/MoSbeaa/MuslimTV)"
-PREFS = ROOT / "android/app/src/main/java/sa/urtv/screensaver/Prefs.java"
+PREFS = ROOT / "android/app/src/main/java/sa/muslimtv/screensaver/Prefs.java"
 OUT = Path(os.environ.get("TEAMS_OUT", "teams"))
 CACHE = ROOT / ".github/tools/teams-cache.json"
 FULL = os.environ.get("RUN_FULL") == "1"

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 toolicious
-package io.github.toolicious.homeonfire.urtv;
+package io.github.toolicious.homeonfire.muslimtv;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.ComponentName;
@@ -653,10 +653,10 @@ public class HijackService extends AccessibilityService {
         CharSequence pkg = event.getPackageName();
         CharSequence cls = event.getClassName();
         String pkgStr = pkg != null ? pkg.toString() : null;
-        if (amazonSession && "sa.urtv.home".equals(pkgStr)) {
+        if (amazonSession && "sa.muslimtv.home".equals(pkgStr)) {
             amazonSession = false;
             bypassUntil = 0L;
-            Log.i(TAG, "URTV resumed: Amazon session ended, Home redirect restored");
+            Log.i(TAG, "MUSLIMTV resumed: Amazon session ended, Home redirect restored");
         }
 
 

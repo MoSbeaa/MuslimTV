@@ -1,177 +1,83 @@
 # MuslimTV
 
-Customized Islamic Fire TV launcher and screensaver by MoSbeaa.
-
-Based on [UrTV by tshi-dev](https://github.com/tshi-dev/UrTV); original licenses and credits are retained. The Fire TV bridge is based on [Home on Fire](https://github.com/toolicious/home-on-fire), with its license in `firetv-bridge/LICENSE`.
-
-The public repository includes the owner-approved personal background photo collection. Signing keys, device backups and runtime logs are excluded.
-
-<p align="center"><img src=".github/brand/hero.png" alt="MuslimTV · MuslimTV" width="100%"></p>
-
-<h1 align="center">MuslimTV · MuslimTV</h1>
-
-<p align="center" dir="rtl">واجهة رئيسية عربية وشاشة توقف سعودية لتلفزيونات Android TV و Google TV، وتسريع آمن للتلفزيون.<br>يركّبها لك مساعد ذكاء اصطناعي بأمر واحد.</p>
-
-<p align="center">An Arabic home screen and a Saudi screensaver for Android TV / Google TV, and a safe speed-up.<br>Your AI agent sets it all up.</p>
-
-<p align="center"><img src=".github/screens/before-after-home.jpg" alt="Before: Google TV home. After: the MuslimTV home screen" width="100%"></p>
-<p align="center"><img src=".github/screens/before-after-screensaver.jpg" alt="Before: the Google screensaver. After: MuslimTV Screensaver" width="100%"></p>
+![MuslimTV](.github/brand/muslimtv-hero.png)
 
 <div dir="rtl">
 
-## ركّبه في 3 خطوات
+## واجهة إسلامية لتلفزيونك
 
-### ① التلفزيون
-الإعدادات ← حول ← اضغط OK على **Build** سبع مرات. بعدها روح إلى **خيارات المطوّر** ← شغّل **USB debugging**.
+**MuslimTV** واجهة رئيسية وشاشة توقف لتلفزيونات **Android TV** وأجهزة **Fire TV**، بألوان خضراء وذهبية قابلة للتخصيص، وساعة بالأرقام العربية، وخط **Rakkas** للنصوص العربية.
 
-### ② كمبيوتر على نفس الواي فاي، وعليه واحد من هذي
+### المزايا
 
-| **Codex** (OpenAI) | **Claude Code** (Anthropic) |
+- ترتيب التطبيقات المفضلة والتنقل باستخدام جهاز التحكم.
+- خمسة اختصارات فيديو قابلة لتعديل العناوين والروابط، مع فتحها في TizenTube.
+- مواقيت الصلاة من **MiaOnline** مع عرض الصلاة القادمة.
+- تشغيل الأذان داخل الواجهة الرئيسية وشاشة التوقف، وإيقافه عند فتح تطبيق آخر.
+- تنبيه صلاة صامت أعلى يمين الشاشة عند استخدام تطبيق آخر.
+- اختيار أصوات الأذان والاستماع إليها قبل الحفظ: مكة، القدس، المدينة، والعفاسي، مع خيارات للفجر.
+- حديث يتغيّر يوميًا، وطقس أسبوعي، وعدّاد رمضان.
+- ألوان جاهزة وألوان مخصصة، وخلفيات متناوبة متاحة دون اتصال.
+- عدّاد اختياري لموعد مخصص؛ عنوانه وتاريخه محفوظان محليًا، وهو مخفي افتراضيًا.
+- الوصول إلى إعدادات Fire TV وواجهة أمازون، ثم العودة إلى MuslimTV.
+
+### شاشة التوقف
+
+![نموذج شاشة توقف MuslimTV](.github/screens/muslimtv-screensaver.png)
+
+صور العرض توضيحية، أُعدّت بالاستناد إلى المظهر الحالي للتطبيق مع حذف المعلومات الشخصية. أوقات الصلاة والطقس الظاهرة فيها أمثلة وليست جدولًا حاليًا.
+
+### مكوّنات المشروع
+
+| المجلد | الوظيفة |
 |---|---|
-| مجاني بحساب ChatGPT | يحتاج اشتراك Claude Pro (20$ بالشهر) |
-| حمّل تطبيق Codex | حمّل تطبيق Claude ← تبويب **Code** |
-| الموافقات: اختر **«Approve for me»** | الموافقات: **Allow** للمهمة كلها |
+| `android/launcher` | الواجهة الرئيسية وترتيب التطبيقات والاختصارات والألوان |
+| `android/app` | شاشة التوقف والإعدادات ومواقيت الصلاة والأذان |
+| `firetv-bridge` | تحويل زر Home والتنبيهات على Fire TV |
+| `src` | قالب الشاشة وأداة إنشاء الصفحات |
+| `dist` | الصفحات المُنشأة، بما فيها `muslimtv.html` للاستخدام المستقل |
+| `photos` | صور الخلفيات الأصلية والنسخ المحسّنة للتلفزيون |
+| `docs` | تعليمات الإعداد والتخصيص |
 
-<sub>ويندوز: ركّب Git وPython أول (`winget install Git.Git Python.Python.3.12`). Gemini CLI مجاني وناس قالوا يشتغل؛ ما جرّبناه.</sub>
+### الإعداد
 
-### ③ الصق هذا
+1. فعّل خيارات المطوّر وتصحيح ADB على الجهاز، واجعل الحاسوب والجهاز متصلين بالشبكة نفسها.
+2. انسخ هذا المستودع: `https://github.com/MoSbeaa/MuslimTV.git`.
+3. اتبع [دليل الإعداد](docs/SETUP-PROMPT.md) بحسب نوع جهازك. يتطلب Fire TV مساعد التحويل الموجود في `firetv-bridge`؛ ولا يستبدل التطبيق نظام التشغيل.
 
-> ركّب تلفزيوني من https://github.com/MoSbeaa/MuslimTV: انسخ المستودع واتبع `docs/SETUP-PROMPT.md` خطوة بخطوة. أنت على كمبيوتر متصل بنفس شبكة الواي فاي حقت التلفزيون.
+يمكن تثبيت التطبيقات المبنية محليًا أو استخدام [الإصدارات المنشورة](https://github.com/MoSbeaa/MuslimTV/releases) عند توفرها. يتطلب النشر التلقائي إعداد أسرار التوقيع أولًا.
 
-#### وش يصير بعد اللصق؟
-يسألك عن **مدينتك** و**أنديتك**، والتلفزيون يسألك **Allow** مرة وحدة، وبعدها خلّه يشتغل: 40 دقيقة وكم إعادة تشغيل.
+### البناء
 
-#### بترجعه مثل ما كان؟
-نعم، بأي وقت: تطبيقاتنا تنحذف، واللي أطفأناه يرجع، وشاشة التلفزيون الأصلية ترجع.
-<sub>`optimize/reset.sh`</sub>
+```sh
+python src/build.py
+gradle -p android :app:assembleRelease :launcher:assembleRelease
+```
 
-#### نزلت نسخة جديدة؟
-حدّث التطبيقين وإعداداتك كلها باقية. الشاشة نفسها تتحدّث لحالها. وصف «تحديث الشاشة الآن» في الإعدادات يخبرك متى يوجد إصدار جديد.
-<sub>`optimize/install.sh all`</sub>
+لبناء مساعد Fire TV على Windows، اضبط `JAVA_HOME` وثبّت Android SDK، ثم شغّل:
 
-#### نزل تحديث للنظام وقفل تطبيقنا؟
-أعد الإعداد كله بأمر واحد، وإعداداتك باقية.
-<sub>`optimize/run.sh again`</sub>
+```powershell
+./firetv-bridge/build.ps1 -NoInstall
+```
+
+معرّفات التثبيت: `sa.muslimtv.home` و`sa.muslimtv.screensaver` و`io.github.toolicious.homeonfire.muslimtv`. الانتقال من إصدار ذي معرّفات مختلفة يتطلب نقل الإعدادات قبل حذف التطبيقات السابقة.
+
+### الخصوصية
+
+صور الخلفيات منشورة بموافقة مالكها. لا يتضمن الإصدار الحالي موعدًا شخصيًا مُبرمجًا داخل الكود. ملفات التوقيع ونسخ إعدادات الجهاز وسجلات التشغيل مستبعدة من Git.
+
+### أدلة التخصيص
+
+[الأذان](docs/ADHAN.md) · [الألوان](docs/THEME-COLORS.md) · [الاختصارات](docs/QUICK-LINKS.md) · [الطقس والحديث](docs/DAILY-HADITH-WEEKLY-WEATHER.md) · [الخلفيات](docs/PHOTO-UPDATE.md) · [Fire TV وأمازون](docs/AMAZON-ACCESS.md)
 
 </div>
 
-## Set it up in 3 steps
+## English
 
-### ① The TV
-Settings → About → press OK on **Build** 7 times. Then go to **Developer options** → turn on **USB debugging**.
+MuslimTV is an Islamic home screen and screensaver for Fire TV and Android TV. It includes Arabic typography, configurable themes, local wallpapers, daily hadith, weekly weather, MiaOnline prayer times, selectable adhan recordings with previews, and silent prayer banners over other apps. The public custom-event countdown is disabled by default and stores its title/date locally.
 
-### ② A computer on the same Wi-Fi, with one of these
-
-| **Codex** (OpenAI) | **Claude Code** (Anthropic) |
-|---|---|
-| Free with a ChatGPT account | Needs Claude Pro ($20/month) |
-| Download the Codex app | Download the Claude app → **Code** tab |
-| Approvals: choose **«Approve for me»** | Approvals: **Allow** for the whole task |
-
-<sub>Windows: install Git and Python first (`winget install Git.Git Python.Python.3.12`). Gemini CLI is free and reported to work; not tested by us.</sub>
-
-### ③ Paste this
-
-> Set up my TV with https://github.com/MoSbeaa/MuslimTV: clone it and follow `docs/SETUP-PROMPT.md` step by step. You are on a computer on the same Wi-Fi as the TV.
-
-#### What happens after pasting?
-It asks your **city** and your **clubs**, the TV asks **Allow** once, then leave it: 40 minutes, a few restarts.
-
-#### Can I put it back as it was?
-Yes, anytime: our apps are removed, what we turned off comes back on, the TV's own screen returns.
-<sub>`optimize/reset.sh`</sub>
-
-#### A new version came out?
-Update both apps; all your settings stay. The screen itself updates on its own. The settings row tells you when one exists.
-<sub>`optimize/install.sh all`</sub>
-
-#### The TV updated its system and locked our app out?
-Redo the whole setup with one command, settings kept.
-<sub>`optimize/run.sh again`</sub>
-
-**Safe:** nothing is uninstalled; AirPlay, Chromecast and voice are never touched; a 5-minute safety switch puts the
-stock home back if ours doesn't come up. The apps are built and signed by GitHub Actions from this repo (version
-3.N = the build number). The full prompt: [docs/SETUP-PROMPT.md](docs/SETUP-PROMPT.md). To build a different
-screen: [docs/RECREATE-PROMPT.md](docs/RECREATE-PROMPT.md).
-
-## What you get
-
-| | | |
-|---|---|---|
-| **MuslimTV Screensaver** · screensaver | Clock, Hijri date, prayer times and iqama, Ramadan, an optional custom-event countdown, and weather; beside the clock: new episodes, today's prayers, the 5-day forecast, or a verse/hadith of the day, over the rotating photo set | `urtv-screensaver.apk` |
-| **MuslimTV** · home screen | Clean Arabic launcher: favourites row (5–10 apps) arranged in «ترتيب المفضلة», all apps, inputs, Wi-Fi, settings; optional card from the screensaver (off by default) | `urtv-home.apk` |
-| **Two free apps** | [TV Bro](https://github.com/truefedex/tv-bro), a web browser for the TV, and [SmartTube](https://github.com/yuliskov/SmartTube), YouTube without ads, from their own releases (skip with `SKIP_EXTRAS=1`) | `optimize/install.sh extras` |
-| **Speed-up** | Telemetry, ads and demos off (reversibly), closed apps frozen, Play Store kept from running in the background, faster animations | `optimize/` |
-
-**Download the apps yourself:** [releases/apk-latest](https://github.com/MoSbeaa/MuslimTV/releases/tag/apk-latest)
-(install with `adb install`; the agent route above also sets everything up).
-Every build is also kept as a numbered release (`v3.N`, the apps' version), to go back to one:
-`APK_TAG=v3.N optimize/install.sh all`.
-
-## For agents and scripts
-
-Everything is scriptable over ADB, made for slow Wi-Fi (retries, resumable uploads, every step remembered):
-
-| | |
-|---|---|
-| `optimize/find-tv.sh` | `--check`: can this terminal reach the home network at all (not from a cloud or sandbox) · then finds the TV (Windows, Mac, Linux) |
-| `optimize/run.sh` | the whole setup; run again after any failure to continue · `status` · `again` after a TV system update (redo all, settings kept) |
-| `optimize/saver.sh` | screensaver settings: `show`, `cities`, `city`, `find-team`, `teams`, `card`, `home-card`, `genres`, `langs`, `minrating`, `photos`, `idle`, `update` |
-| `optimize/dock.sh` | favourites row: `show`, `apps`, `set`, `reset`; `hidden`, `hide PKG`, `show PKG` for apps left off the home screen |
-| `optimize/measure.sh` · `shot.sh` | memory before/after (restart + settle) · screenshots without navigating |
-| `optimize/keep.sh` | turn back on anything protected (AirPlay, casting, voice, updates…) that something turned off |
-| `docs/TVS.md` | what was seen on each TV model (ADB port, home switch, what to watch out for) |
-| `optimize/reset.sh` | back to stock: lists re-enabled, stock home and screensaver back, our apps removed |
-| `optimize/share.sh` | if the owner wants: how the setup went (TV model, time per step, what failed, memory before/after; nothing personal), sent anonymously to the author (from their phone by a QR code if this computer is offline) |
-
-What we learned on real TCL sets, and what must stay on: [docs/OPTIMIZE.md](docs/OPTIMIZE.md). Manual test plan:
-[docs/TEST-PLAN.md](docs/TEST-PLAN.md).
-
-## For developers
-
-```
-src/template.html     the screen (HTML/CSS/JS, no framework); edit this, then run src/build.py
-src/build.py          builds the two pages in dist/
-dist/urtv.html        stand-alone page, fonts and photos inlined: open in any browser (F = full screen), works offline
-dist/tv.html          light page the Android app loads (0.3 MB); the app serves fonts and photos from disk
-android/app           the screensaver app (sa.urtv.screensaver): DreamService, settings, auto-update
-android/launcher      the home screen (sa.urtv.home)
-assets/               fonts, bundled photos, Arabic team names, verse and hadith texts
-photos/               the hosted photo set (5 shown per 4 days, rotating every 30 min)
-optimize/             TV tools (Python ADB client, no adb binary needed); lists/ says what may be turned off
-docs/                 the agent prompts (setup, recreate), what we learned on real TVs, test plan, photo credits
-.github/              CI: APK builds, checks, data tools (verses, hadith, clubs, photos), README images
-tests/run.sh          every check: build, data, fonts, scripts, private data, flaky-ADB upload, the screen in a browser
-```
-
-A push to `master` builds both APKs in GitHub Actions and publishes them to `apk-latest` and a numbered `v3.N`
-release; a push to `next` publishes `apk-next` instead (a test build). `tests/run.sh` runs on `master`, `next`,
-`content` and pull requests. Local Android build (needs the SDK): `python3 src/build.py && gradle -p android assembleRelease`
-(signed with the debug key; the release key lives only in the repository's secrets).
-
-**Screen settings** come from the URL fragment (works on `file://` and in WebView):
-
-```
-urtv.html#city=جدة&lat=21.5433&lon=39.1728&tz=Asia/Riyadh&teams=136013,136137&panel=prayers
-```
-
-`panel`: the card beside the clock: `shows`, `prayers`, `forecast`, `verse` or `none`. Also `genres`, `langs`,
-`shows`, `minrating` for the episodes card.
-
-**Data** (free, no keys): Aladhan (prayer times, Umm al-Qura), Open-Meteo (weather), and TVMaze (episodes).
-Everything fails soft: offline, the clock, dates, prayer, Ramadan, and birthday countdowns still work and the last
-good data stays on screen.
-
-**Verse and hadith texts are never typed by hand:** verses come from the Quran API via CI
-(`.github/tools/fetch_verses.py`); each hadith is checked by CI (`.github/tools/verify_hadith.py`) against the
-Arabic text of the six Sunni books, and only those found are shown, with the books as the source line.
-
-**The Android apps** update the screen page from this repo every 6 hours (so it must stay public), start fast
-(the page shows once the clock, saved panels and photo are ready), and come back after a power cut.
+The promotional images reflect the current visual style and omit personal event information; they are illustrative rather than live schedule screenshots. Existing TV backgrounds are unchanged.
 
 ## Credits
 
-Photos: Unsplash photographers, listed in [docs/PHOTO-CREDITS.md](docs/PHOTO-CREDITS.md). Fonts: Thmanyah, and
-Noto Naskh Arabic for ﷺ ﴿﴾ (OFL, `assets/fonts/`).
-Home screen adapted from [mihirgupta0900/tv-home](https://github.com/mihirgupta0900/tv-home) (MIT,
-`android/launcher/LICENSE-tv-home`). Package ratings from [UAD-ng](https://github.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation).
+Based on the original work of [tshi-dev](https://github.com/tshi-dev), with a Fire TV bridge derived from [Home on Fire](https://github.com/toolicious/home-on-fire). Original copyright notices, the launcher license, bridge GPL license, font licenses, photo credits and audio-source metadata are retained in their respective directories.

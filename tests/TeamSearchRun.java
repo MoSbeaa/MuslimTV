@@ -1,4 +1,4 @@
-package sa.urtv.screensaver;
+package sa.muslimtv.screensaver;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

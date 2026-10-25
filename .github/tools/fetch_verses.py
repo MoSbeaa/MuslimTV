@@ -71,7 +71,7 @@ def get(url):
     for wait in (0, 2, 5, 10):
         time.sleep(wait)
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "urtv"})
+            req = urllib.request.Request(url, headers={"User-Agent": "muslimtv"})
             with urllib.request.urlopen(req, timeout=30) as r:
                 return json.load(r)
         except Exception as e:  # noqa: BLE001

@@ -22,7 +22,7 @@ tv "cmd dreams start-dreaming" > /dev/null 2>&1 || true    # Android 14's own wa
 sleep "${SAVER_WAIT_S:-6}"
 if dreaming; then echo dream; exit 0; fi
 if [ "${1:-}" = --preview ]; then
-  tv "am start -n sa.urtv.screensaver/.MainActivity" > /dev/null
+  tv "am start -n sa.muslimtv.screensaver/.MainActivity" > /dev/null
   echo preview
   exit 0
 fi

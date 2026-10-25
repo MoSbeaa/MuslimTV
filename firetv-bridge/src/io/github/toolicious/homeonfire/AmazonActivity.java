@@ -1,4 +1,4 @@
-package io.github.toolicious.homeonfire.urtv;
+package io.github.toolicious.homeonfire.muslimtv;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.ComponentName;
 import android.widget.Toast;
 
-/** Signature protected bridge from URTV to Amazon, with a temporary Home bypass. */
+/** Signature protected bridge from MUSLIMTV to Amazon, with a temporary Home bypass. */
 public final class AmazonActivity extends Activity {
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);

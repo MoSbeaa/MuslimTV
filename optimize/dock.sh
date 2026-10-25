@@ -7,12 +7,12 @@
 #   optimize/dock.sh hidden                apps left off the home screen, and why: package | reason
 #   optimize/dock.sh hide PKG ...          take these off the home screen (all its lists)
 #   optimize/dock.sh show PKG ...          put these on it, even against the rules (the TV's own home doesn't list them)
-# The home screen redraws at once. Only ADB can do this (sa.urtv.home/.DockReceiver needs the shell's DUMP).
+# The home screen redraws at once. Only ADB can do this (sa.muslimtv.home/.DockReceiver needs the shell's DUMP).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
 send() {   # $1 action, $2 extra arguments; prints the receiver's answer (the "data" of am broadcast)
-  "$PY" -I optimize/tv.py "am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.$1 ${2:-}" \
+  "$PY" -I optimize/tv.py "am broadcast -n sa.muslimtv.home/.DockReceiver -a sa.muslimtv.home.$1 ${2:-}" \
     | sed -n '/data="/,$p' | sed '1s/.*data="//; $s/"$//'
 }
 case "${1:-}:$#" in

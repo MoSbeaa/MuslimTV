@@ -71,8 +71,8 @@ $ProjectRoot  = $PSScriptRoot
 $BuildDir     = Join-Path $ProjectRoot 'build'
 $Keystore     = "$env:USERPROFILE\.android\debug.keystore"
 $Manifest     = Join-Path $ProjectRoot 'AndroidManifest.xml'
-$OutApk       = Join-Path $ProjectRoot 'home-on-fire.apk'
-$Package      = 'io.github.toolicious.homeonfire.urtv'
+$OutApk       = Join-Path $ProjectRoot 'muslimtv-bridge.apk'
+$Package      = 'io.github.toolicious.homeonfire.muslimtv'
 
 if (-not (Test-Path $Keystore)) {
     throw "Keystore not found at $Keystore. Generate one with `keytool -genkey` or restore yours."

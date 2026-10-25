@@ -30,7 +30,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.serialization import pkcs12
 from cryptography.x509.oid import NameOID
 
-ALIAS = b"urtv"   # android/*/build.gradle signs with this alias
+ALIAS = b"muslimtv"   # android/*/build.gradle signs with this alias
 REPO = "MoSbeaa/MuslimTV"
 
 
@@ -47,14 +47,14 @@ def make(password):
 
 
 def main():
-    out = Path.home() / "urtv-signing-key.p12"
+    out = Path.home() / "muslimtv-signing-key.p12"
     if out.exists():
         sys.exit(f"{out} already exists: that is your key. Use it, or move it away first to make a new one.")
     password = secrets.token_urlsafe(30)
     data = make(password)
     out.write_bytes(data)
-    (Path.home() / "urtv-signing-key-password.txt").write_text(password + "\n")
-    print(f"Key saved to {out}, its password to {Path.home() / 'urtv-signing-key-password.txt'}")
+    (Path.home() / "muslimtv-signing-key-password.txt").write_text(password + "\n")
+    print(f"Key saved to {out}, its password to {Path.home() / 'muslimtv-signing-key-password.txt'}")
     print("Keep both somewhere safe (a password manager, a USB stick); never commit them.\n")
     secret = {"ANDROID_KEYSTORE_B64": base64.b64encode(data).decode(), "ANDROID_KEYSTORE_PASSWORD": password}
     gh = gh_ready()

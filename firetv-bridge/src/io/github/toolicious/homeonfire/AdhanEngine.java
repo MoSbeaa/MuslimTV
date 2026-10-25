@@ -1,4 +1,4 @@
-package io.github.toolicious.homeonfire.urtv;
+package io.github.toolicious.homeonfire.muslimtv;
 
 import android.accessibilityservice.AccessibilityService;
 import android.app.AlarmManager;
@@ -40,9 +40,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/** MIA beginning-of-prayer alarms. Never plays audio outside the two URTV surfaces. */
+/** MIA beginning-of-prayer alarms. Never plays audio outside the two MUSLIMTV surfaces. */
 final class AdhanEngine {
-    private static final Uri CONFIG = Uri.parse("content://sa.urtv.screensaver.config/adhan");
+    private static final Uri CONFIG = Uri.parse("content://sa.muslimtv.screensaver.config/adhan");
     private static final String[] KEYS = {"Fajr","Dhuhr","Asr","Maghrib","Isha"};
     private static final String[] NAMES = {"الفجر","الظهر","العصر","المغرب","العشاء"};
     private static final TimeZone ZONE = TimeZone.getTimeZone("America/Winnipeg");
@@ -72,8 +72,8 @@ final class AdhanEngine {
                 handler.post(() -> { if(!stopped && days.length()==0) { days=seed;store.edit().putString("days",seed.toString()).apply();check(); } });
             }catch(Exception ignored) { }
         },"MiaBundledTimetable").start();
-        service.sendBroadcast(new Intent("sa.urtv.ADHAN_QUERY_SCOPE").setPackage("sa.urtv.home"));
-        service.sendBroadcast(new Intent("sa.urtv.ADHAN_QUERY_SCOPE").setPackage("sa.urtv.screensaver"));
+        service.sendBroadcast(new Intent("sa.muslimtv.ADHAN_QUERY_SCOPE").setPackage("sa.muslimtv.home"));
+        service.sendBroadcast(new Intent("sa.muslimtv.ADHAN_QUERY_SCOPE").setPackage("sa.muslimtv.screensaver"));
         handler.post(tick);
     }
     void stop() { stopped=true;handler.removeCallbacksAndMessages(null);stopAudio();hideBanner();cancelAlarm(); }
@@ -90,8 +90,8 @@ final class AdhanEngine {
     }
     void onWindow(String pkg,String cls) {
         if(pkg==null || cls==null) return;
-        if("sa.urtv.home".equals(pkg) && "sa.urtv.home.MainActivity".equals(cls)) { home=true;preview=false; }
-        else if("sa.urtv.screensaver".equals(pkg) && "sa.urtv.screensaver.MainActivity".equals(cls)) { preview=true;home=false; }
+        if("sa.muslimtv.home".equals(pkg) && "sa.muslimtv.home.MainActivity".equals(cls)) { home=true;preview=false; }
+        else if("sa.muslimtv.screensaver".equals(pkg) && "sa.muslimtv.screensaver.MainActivity".equals(cls)) { preview=true;home=false; }
         else if(!cls.startsWith("android.") && !pkg.equals("com.android.systemui")) { home=false;preview=false;dream=false; }
         if(!inside())stopAudio();
     }
@@ -102,7 +102,7 @@ final class AdhanEngine {
         configAt=System.currentTimeMillis();
         try(Cursor c=service.getContentResolver().query(CONFIG,null,null,null,null)) {
             if(c!=null && c.moveToFirst())config=new JSONObject(c.getString(0));
-        }catch(Exception e){Log.w("URTVAdhan","Settings provider not ready");}
+        }catch(Exception e){Log.w("MUSLIMTVAdhan","Settings provider not ready");}
         if(!config.optBoolean("enabled",false) || !config.optBoolean("sound",true))stopAudio();
         if(!config.optBoolean("enabled",false) || !config.optBoolean("popup",true))hideBanner();
     }
@@ -153,7 +153,7 @@ final class AdhanEngine {
         }
     }
     private PendingIntent alarm() {
-        return PendingIntent.getBroadcast(service,3301,new Intent("io.github.toolicious.homeonfire.urtv.ADHAN_ALARM").setComponent(new ComponentName(service,AdhanReceiver.class)),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+        return PendingIntent.getBroadcast(service,3301,new Intent("io.github.toolicious.homeonfire.muslimtv.ADHAN_ALARM").setComponent(new ComponentName(service,AdhanReceiver.class)),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
     }
     private void schedule(long at) {
         if(alarmAt==at)return;alarmAt=at;
@@ -174,7 +174,7 @@ final class AdhanEngine {
                 if(fresh.optJSONObject(dayKey(System.currentTimeMillis()))==null)throw new java.io.IOException("No current date");
                 store.edit().putString("days",fresh.toString()).putLong("fetched_at",System.currentTimeMillis()).apply();
                 handler.post(() -> {if(!stopped){days=fresh;statusAt=0;check();}});
-            } catch(Exception failed){Log.w("URTVAdhan","Using cached MIA timetable");}
+            } catch(Exception failed){Log.w("MUSLIMTVAdhan","Using cached MIA timetable");}
             finally{if(connection!=null)connection.disconnect();handler.post(() -> fetching=false);}
         },"MiaPrayerTimetable").start();
     }
@@ -219,7 +219,7 @@ final class AdhanEngine {
         TextView time=new TextView(service);SimpleDateFormat format=new SimpleDateFormat("h:mm a",new Locale("ar"));format.setTimeZone(ZONE);time.setText(format.format(new Date(when))+" · جدول MiaOnline");time.setTextColor(0xFFE5DECC);time.setTextSize(12);time.setGravity(Gravity.RIGHT);box.addView(time);
         WindowManager.LayoutParams params=new WindowManager.LayoutParams(Math.min(dp(350),service.getResources().getDisplayMetrics().widthPixels-dp(48)),-2,WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE|WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,PixelFormat.TRANSLUCENT);
         params.gravity=Gravity.TOP|Gravity.RIGHT;params.x=dp(28);params.y=dp(32);
-        try {service.getSystemService(WindowManager.class).addView(box,params);banner=box;handler.postDelayed(hide,Math.max(5,Math.min(30,config.optInt("duration",12)))*1000L);}catch(Exception e){Log.w("URTVAdhan","Overlay unavailable",e);}
+        try {service.getSystemService(WindowManager.class).addView(box,params);banner=box;handler.postDelayed(hide,Math.max(5,Math.min(30,config.optInt("duration",12)))*1000L);}catch(Exception e){Log.w("MUSLIMTVAdhan","Overlay unavailable",e);}
     }
     private void hideBanner(){handler.removeCallbacks(hide);if(banner!=null){try{service.getSystemService(WindowManager.class).removeView(banner);}catch(Exception ignored){}banner=null;}}
 }

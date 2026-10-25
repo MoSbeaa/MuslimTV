@@ -16,12 +16,12 @@ apps() {   # packages with a MAIN activity in category $1 (--brief where the TV 
 }
 
 echo "== 1. upload"
-echo urtv-test > optimize/urtv-test.txt
-tv --push-b64 optimize/urtv-test.txt /data/local/tmp/urtv-test.txt
-got=$(tv "cat /data/local/tmp/urtv-test.txt" | tr -d "\r")
-tv "rm -f /data/local/tmp/urtv-test.txt" > /dev/null
-rm -f optimize/urtv-test.txt
-[ "$got" = urtv-test ] && echo "OK upload" || echo "FAILED upload (read back: ${got:-nothing})"
+echo muslimtv-test > optimize/muslimtv-test.txt
+tv --push-b64 optimize/muslimtv-test.txt /data/local/tmp/muslimtv-test.txt
+got=$(tv "cat /data/local/tmp/muslimtv-test.txt" | tr -d "\r")
+tv "rm -f /data/local/tmp/muslimtv-test.txt" > /dev/null
+rm -f optimize/muslimtv-test.txt
+[ "$got" = muslimtv-test ] && echo "OK upload" || echo "FAILED upload (read back: ${got:-nothing})"
 
 echo "== 2. Arabic"
 got=$(tv "echo مرحبا" | tr -d "\r")

@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    namespace 'sa.urtv.screensaver'
+    namespace 'sa.muslimtv.screensaver'
     compileSdk 34
     aaptOptions { noCompress "mp3", "json" }
 
     defaultConfig {
-        applicationId 'sa.urtv.screensaver'
+        applicationId 'sa.muslimtv.screensaver'
         minSdk 21
         targetSdk 34
         // CI passes its run number so every build installs over the previous one; 3.x since the new signing key,
@@ -16,7 +16,7 @@ android {
         versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as int)
         versionName "3.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
         // the branch the page, fonts and photos are fetched from: CI passes the one it builds, a local build follows master
-        buildConfigField "String", "BRANCH", "\"${System.getenv('URTV_BRANCH') ?: 'main'}\""
+        buildConfigField "String", "BRANCH", "\"${System.getenv('MUSLIMTV_BRANCH') ?: 'main'}\""
     }
 
     buildFeatures {
@@ -30,7 +30,7 @@ android {
             release {
                 storeFile file(System.getenv('ANDROID_KEYSTORE'))
                 storePassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
-                keyAlias 'urtv'
+                keyAlias 'muslimtv'
                 keyPassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
             }
         }

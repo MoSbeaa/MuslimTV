@@ -1,4 +1,4 @@
-package io.github.toolicious.homeonfire.urtv;
+package io.github.toolicious.homeonfire.muslimtv;
 
 import android.content.ComponentName;
 import android.content.Context;

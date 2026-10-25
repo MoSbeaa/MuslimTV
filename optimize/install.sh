@@ -7,7 +7,7 @@
 #                                  github.com/truefedex/tv-bro) and SmartTube (YouTube without ads,
 #                                  github.com/yuliskov/SmartTube), the build that fits the TV's processor
 # The first install of the screensaver replaces an APK signed with another key: uninstall the old one first
-# (pm uninstall sa.urtv.screensaver) — this script does that only if a plain install fails.
+# (pm uninstall sa.muslimtv.screensaver) — this script does that only if a plain install fails.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
@@ -29,7 +29,7 @@ push_install() {   # $1 apk name, $2 package, optional $3 local APK path
     if grep -qE 'UPDATE_INCOMPATIBLE|signatures do not match' <<< "$out"; then
       echo "An older $2 signed with another key is installed: removing it, then installing again."
       # removing the home app while the stock one is off would leave the TV with no home at all
-      [ "$2" = sa.urtv.home ] && "$PY" -I optimize/tv.py "pm enable ${STOCK%%/*}" > /dev/null || true
+      [ "$2" = sa.muslimtv.home ] && "$PY" -I optimize/tv.py "pm enable ${STOCK%%/*}" > /dev/null || true
       "$PY" -I optimize/tv.py "pm uninstall $2" || true
       out=$("$PY" -I optimize/tv.py "pm install -r /data/local/tmp/$1")
       grep -q Success <<< "$out" || { echo "!! Install of $1 failed again: $out"; exit 1; }
@@ -79,12 +79,12 @@ if [ "$what" = extras ]; then
 fi
 
 if [ "$what" = saver ] || [ "$what" = all ]; then
-  push_install urtv-screensaver.apk sa.urtv.screensaver "${LOCAL_SAVER_APK:-}"
+  push_install muslimtv-screensaver.apk sa.muslimtv.screensaver "${LOCAL_SAVER_APK:-}"
   printf '%s\n' \
     "settings put secure screensaver_enabled 1" \
-    "settings put secure screensaver_components sa.urtv.screensaver/.ScreenDream" \
-    "settings put secure screensaver_default_component sa.urtv.screensaver/.ScreenDream" \
-    "am start -n sa.urtv.screensaver/.SettingsActivity" \
+    "settings put secure screensaver_components sa.muslimtv.screensaver/.ScreenDream" \
+    "settings put secure screensaver_default_component sa.muslimtv.screensaver/.ScreenDream" \
+    "am start -n sa.muslimtv.screensaver/.SettingsActivity" \
     | "$PY" -I optimize/tv.py --batch
   echo "Screensaver installed and selected. Its settings screen is open on the TV."
 fi
@@ -101,8 +101,8 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
   echo "Stock home: $STOCK"
 
   # 1. The new home must be installed and working BEFORE anything is disabled.
-  push_install urtv-home.apk sa.urtv.home "${LOCAL_LAUNCHER_APK:-}"
-  "$PY" -I optimize/tv.py "pm grant sa.urtv.home android.permission.ACCESS_FINE_LOCATION" || true
+  push_install muslimtv-home.apk sa.muslimtv.home "${LOCAL_LAUNCHER_APK:-}"
+  "$PY" -I optimize/tv.py "pm grant sa.muslimtv.home android.permission.ACCESS_FINE_LOCATION" || true
 
   # Home on Fire (or another redirect app) needs only the app package; don't attempt to replace Fire OS Home.
   if [ "${INSTALL_ONLY:-0}" = 1 ]; then
@@ -128,11 +128,11 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
       # 3. Switch: the HOME role (Android 10+; the classic set-home-activity for older sets and as a backup), then
       #    the setup app off, then the stock home (this order avoided the black screen).
       printf '%s\n' \
-        "cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home" \
-        "cmd package set-home-activity --user 0 sa.urtv.home/.MainActivity" \
+        "cmd role add-role-holder --user 0 android.app.role.HOME sa.muslimtv.home" \
+        "cmd package set-home-activity --user 0 sa.muslimtv.home/.MainActivity" \
         "pm disable-user --user 0 com.google.android.tungsten.setupwraith" \
         "pm disable-user --user 0 ${STOCK%%/*}" \
-        "cmd package set-home-activity --user 0 sa.urtv.home/.MainActivity" \
+        "cmd package set-home-activity --user 0 sa.muslimtv.home/.MainActivity" \
         "am force-stop com.android.tv.settings" \
         "input keyevent KEYCODE_HOME" \
         | "$PY" -I optimize/tv.py --batch || return 1
@@ -141,14 +141,14 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     for _ in 1 2 3; do
       sleep 6
       top=$("$PY" -I optimize/tv.py "dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity'") || return 1
-      if grep -q sa.urtv.home <<< "$top"; then ours=yes; break; fi
+      if grep -q sa.muslimtv.home <<< "$top"; then ours=yes; break; fi
       "$PY" -I optimize/tv.py "input keyevent KEYCODE_HOME" > /dev/null || return 1
     done
     [ "$ours" = yes ] || return 2
     "$PY" -I optimize/tv.py "touch /data/local/tmp/home_ok" || return 1
     # the switch may have fired already if ADB was very slow: then the stock home is back
     res=$("$PY" -I optimize/tv.py "cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN") || return 1
-    grep -q sa.urtv.home <<< "$res" || return 3
+    grep -q sa.muslimtv.home <<< "$res" || return 3
   }
 
   rc=0; switch_home || rc=$?
@@ -165,7 +165,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     fi
     res=$("$PY" -I optimize/tv.py "cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN" 2> /dev/null) || res=""
     rc=0
-    if grep -q sa.urtv.home <<< "$res"; then
+    if grep -q sa.muslimtv.home <<< "$res"; then
       echo "ADB dropped during the switch; the TV is back and the new home is already set: checking it"
       switch_home verify || rc=$?
     else

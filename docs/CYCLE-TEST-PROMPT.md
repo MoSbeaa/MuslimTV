@@ -56,7 +56,7 @@ Note the clock time at the start and end of each numbered step.
    quotes inside the Git Bash `-lc "…"` string: `optimize/share.sh --agent '<you and your model>' 'Cycle test …'`)
 5. Reset: `optimize/reset.sh`, then check it is really back as it came:
    - `optimize/shot.sh home after-reset-<n>`, and look at it: the TV's own home screen
-   - `optimize/venv/bin/python -I optimize/tv.py pm list packages sa.urtv` must print nothing
+   - `optimize/venv/bin/python -I optimize/tv.py pm list packages sa.muslimtv` must print nothing
    - `optimize/venv/bin/python -I optimize/tv.py pm list packages -d`: compare with the list `reset.sh` printed
      at its end in cycle 1's first reset; anything new is something left behind
 

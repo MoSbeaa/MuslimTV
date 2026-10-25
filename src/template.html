@@ -193,10 +193,10 @@
   .p-mid{text-align:center}
   .p-mid .big{display:block;text-align:center;line-height:1.06}
   .p-mid .num{font-size:1.3em;line-height:1}
-  .p-mid .unit,.p-birthday .unit{font-size:.46em;font-weight:500;color:#D6AF6B;letter-spacing:.02em;display:inline;vertical-align:.5em}
-  .p-birthday{text-align:left}
-  .p-birthday .big{justify-content:flex-end}
-  .p-birthday .sub{white-space:normal;line-height:1.4;max-width:100%;font-size:clamp(11px,.88vw,17px)}
+  .p-mid .unit,.p-countdown .unit{font-size:.46em;font-weight:500;color:#D6AF6B;letter-spacing:.02em;display:inline;vertical-align:.5em}
+  .p-countdown{text-align:left}
+  .p-countdown .big{justify-content:flex-end}
+  .p-countdown .sub{white-space:normal;line-height:1.4;max-width:100%;font-size:clamp(11px,.88vw,17px)}
 
 
   /* A new photo settles in over a minute, then holds still: an endless drift kept the TV redrawing
@@ -227,7 +227,7 @@
   @media (max-aspect-ratio:5/4){
     .top{flex-direction:column-reverse;gap:1.4vh}
     .bottom{grid-template-columns:1fr 1fr}
-    .p-birthday{grid-column:1/-1;text-align:right}
+    .p-countdown{grid-column:1/-1;text-align:right}
   }
 </style>
 </head>
@@ -282,10 +282,10 @@
       <div class="sub" id="ramadan-sub">—</div>
     </div>
 
-    <div class="panel p-birthday">
-      <div class="label" id="birthday-label">موعد مخصص</div>
-      <div class="big"><span class="num" id="birthday-days">—</span><span class="unit">يوم</span></div>
-      <div class="sub" id="birthday-sub">—</div>
+    <div class="panel p-countdown" hidden>
+      <div class="label" id="countdown-label">العد التنازلي</div>
+      <div class="big"><span class="num" id="countdown-days">—</span><span class="unit">يوم</span></div>
+      <div class="sub" id="countdown-sub">—</div>
     </div>
   </footer>
 
@@ -325,6 +325,8 @@ const CONFIG = {
   photoMinutes: (m => [5,10,15,30,60].includes(m) ? m : 30)(_num('photos', 30)),
   // #widget=1: only the card, on a transparent page (the launcher's home screen shows it)
   widget: _Q.get('widget') === '1',
+  eventTitle: _Q.get('event_title') || 'العد التنازلي',
+  eventDate: _Q.get('event_date') || '',
 };
 
 const GREG = 'ar-SA-u-ca-gregory-nu-arab';
@@ -864,7 +866,21 @@ function riyadhDayNumber(){
   const p = riyadhParts();
   return Math.floor(Date.UTC(p.y, p.mo - 1, p.d) / 86400000);
 }
-function tickBirthday(){const panel=document.querySelector('.p-birthday');if(panel)panel.hidden=true;}
+function tickCountdown(){
+  const panel = document.querySelector('.p-countdown');
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(CONFIG.eventDate);
+  const target = match ? Date.UTC(+match[1], +match[2] - 1, +match[3]) : NaN;
+  const valid = match && new Date(target).toISOString().slice(0,10) === CONFIG.eventDate;
+  if(panel) panel.hidden = !valid;
+  if(!valid) return;
+  const parts = new Intl.DateTimeFormat('en-CA', {timeZone:CONFIG.timezone, year:'numeric', month:'2-digit', day:'2-digit'})
+    .formatToParts(new Date()).reduce((o, x) => (o[x.type] = +x.value, o), {});
+  const today = Date.UTC(parts.year, parts.month - 1, parts.day);
+  const remaining = Math.round((target - today) / 86400000);
+  document.getElementById('countdown-label').textContent = CONFIG.eventTitle;
+  document.getElementById('countdown-days').textContent = ar(Math.max(0, remaining));
+  document.getElementById('countdown-sub').textContent = remaining < 0 ? 'انقضى الموعد' : remaining === 0 ? 'الموعد اليوم' : 'متبقٍ حتى ' + ar(CONFIG.eventDate);
+}
 function photoSet(n){
   const period = Math.floor(riyadhDayNumber() / PHOTO_PERIOD_DAYS);
   let seed = (period % 2147483646) + 1;
@@ -904,7 +920,7 @@ function applyBackground(force){
 
 // Last painted panels, shown at once on the next start while fresh data loads.
 const SNAP_KEY = 'snap4:' + location.hash;   // bump when the panels' markup changes
-const SNAP_SEL = ['.weather', '#week-list', '.p-birthday'];
+const SNAP_SEL = ['.weather', '#week-list', '.p-countdown'];
 function saveSnap(){
   try{ localStorage.setItem(SNAP_KEY, JSON.stringify(SNAP_SEL.map(q => (document.querySelector(q)||{}).innerHTML || ''))); }catch(e){}
 }
@@ -929,7 +945,7 @@ function boot(){
   applyBackground(true);
   loadPhotoIndex().then(() => applyBackground(true));
   setInterval(() => applyBackground(false), 60*1000);
-  tickClock(); tickDates(); tickRamadan(); tickBirthday();
+  tickClock(); tickDates(); tickRamadan(); tickCountdown();
   if(CONFIG.panel === 'none') document.querySelector('.week').style.display = 'none';
   else if(CONFIG.panel !== 'shows') renderPanel(false);   // panel data arrives with prayers or weather
   loadPrayers(); if(CONFIG.panel === 'shows') loadWeek(); loadWeather();
@@ -937,7 +953,7 @@ function boot(){
 
   setInterval(tickClock, 1000);
   setInterval(()=>{ tickDates(); tickPrayer(); tickRamadan(); if(CONFIG.panel === 'prayers') renderPanel(false); }, 15000);
-  setInterval(tickBirthday, 60000);
+  setInterval(tickCountdown, 60000);
   setInterval(loadPrayers, 6*3600*1000);
   if(CONFIG.panel === 'shows') setInterval(loadWeek, 6*3600*1000);
   setInterval(loadWeather, 30*60*1000);
@@ -949,7 +965,7 @@ function boot(){
   let lastDay = new Intl.DateTimeFormat('en-CA',{timeZone:CONFIG.timezone}).format(new Date());
   setInterval(()=>{
     const d = new Intl.DateTimeFormat('en-CA',{timeZone:CONFIG.timezone}).format(new Date());
-    if(d !== lastDay){ lastDay = d; loadPhotoIndex().then(() => applyBackground(true)); tickDates(); tickRamadan(); tickBirthday(); loadPrayers(); if(CONFIG.panel === 'shows') loadWeek(); loadWeather(); renderPanel(false); }
+    if(d !== lastDay){ lastDay = d; loadPhotoIndex().then(() => applyBackground(true)); tickDates(); tickRamadan(); tickCountdown(); loadPrayers(); if(CONFIG.panel === 'shows') loadWeek(); loadWeather(); renderPanel(false); }
   }, 60*1000);
 }
 

@@ -1,4 +1,4 @@
-package io.github.toolicious.homeonfire.urtv;
+package io.github.toolicious.homeonfire.muslimtv;
 
 import android.app.Activity;
 import android.os.Bundle;

@@ -2,14 +2,14 @@
 <!-- Home screen adapted from github.com/mihirgupta0900/tv-home (MIT). -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="io.github.toolicious.homeonfire.urtv.OPEN_AMAZON" />
+    <uses-permission android:name="io.github.toolicious.homeonfire.muslimtv.OPEN_AMAZON" />
     <uses-permission android:name="android.permission.INTERNET" />   <!-- hosted wallpapers, the optional card -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Android 11 only reveals the Wi-Fi name to apps holding location; granted over ADB at install. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- the optional home-screen card reads the screensaver's settings (signature permission, same key) -->
-    <uses-permission android:name="sa.urtv.screensaver.READ_CONFIG" />
+    <uses-permission android:name="sa.muslimtv.screensaver.READ_CONFIG" />
 
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -31,7 +31,7 @@
         </intent>
         <package android:name="com.tcl.tv" />
         <package android:name="com.tcl.suspension" />
-        <package android:name="sa.urtv.screensaver" />
+        <package android:name="sa.muslimtv.screensaver" />
         <!-- the stock Google homes (Dock.GOOGLE_HOMES): so getPackageInfo sees a disabled one on Android 11+ -->
         <package android:name="com.google.android.apps.tv.launcherx" />
         <package android:name="com.google.android.tvlauncher" />
@@ -84,13 +84,13 @@
             android:exported="true"
             android:permission="android.permission.DUMP">
             <intent-filter>
-                <action android:name="sa.urtv.home.GET_DOCK" />
-                <action android:name="sa.urtv.home.LIST_APPS" />
-                <action android:name="sa.urtv.home.SET_DOCK" />
-                <action android:name="sa.urtv.home.RESET_DOCK" />
-                <action android:name="sa.urtv.home.HIDDEN" />
-                <action android:name="sa.urtv.home.HIDE" />
-                <action android:name="sa.urtv.home.SHOW" />
+                <action android:name="sa.muslimtv.home.GET_DOCK" />
+                <action android:name="sa.muslimtv.home.LIST_APPS" />
+                <action android:name="sa.muslimtv.home.SET_DOCK" />
+                <action android:name="sa.muslimtv.home.RESET_DOCK" />
+                <action android:name="sa.muslimtv.home.HIDDEN" />
+                <action android:name="sa.muslimtv.home.HIDE" />
+                <action android:name="sa.muslimtv.home.SHOW" />
             </intent-filter>
         </receiver>
     </application>

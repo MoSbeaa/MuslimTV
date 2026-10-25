@@ -19,13 +19,13 @@
 #   optimize/saver.sh idle 10                      the TV starts the screensaver after N idle minutes: 1 2 5 10 15 30
 #                                                  (the TV's own timer; left alone unless you run this)
 #   optimize/saver.sh update                       download the latest screen now
-# Only ADB can change these (sa.urtv.screensaver/.SaverReceiver needs the shell's DUMP).
+# Only ADB can change these (sa.muslimtv.screensaver/.SaverReceiver needs the shell's DUMP).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
 send() {   # $1 action, $2 extras; prints the receiver's answer (the "data" of am broadcast); exit 1 on "error:"
   local out
-  out=$("$PY" -I optimize/tv.py "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.$1 ${2:-}" \
+  out=$("$PY" -I optimize/tv.py "am broadcast -n sa.muslimtv.screensaver/.SaverReceiver -a sa.muslimtv.screensaver.$1 ${2:-}" \
     | sed -n '/data="/,$p' | sed '1s/.*data="//; $s/"$//')
   echo "$out"
   [[ "$out" != error:* ]]

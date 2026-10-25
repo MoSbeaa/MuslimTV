@@ -32,10 +32,10 @@ def tracked(*globs):
 
 
 # ---- build
-before = {n: (ROOT / "dist" / n).read_bytes() for n in ("urtv.html", "tv.html") if (ROOT / "dist" / n).is_file()}
+before = {n: (ROOT / "dist" / n).read_bytes() for n in ("muslimtv.html", "tv.html") if (ROOT / "dist" / n).is_file()}
 r = subprocess.run([sys.executable, "src/build.py"], cwd=ROOT, capture_output=True, text=True)
 check("src/build.py runs", r.returncode == 0, r.stderr[-400:])
-for page, limit in (("urtv.html", 4_000_000), ("tv.html", 600_000)):   # tv.html: about 1000 verses and hadith
+for page, limit in (("muslimtv.html", 4_000_000), ("tv.html", 600_000)):   # tv.html: about 1000 verses and hadith
     html = (ROOT / "dist" / page).read_text(encoding="utf-8")
     left = sorted(set(re.findall(r"__[A-Z][A-Z_]+__", html)))
     check(f"{page}: every build token replaced", not left, left)
@@ -135,7 +135,7 @@ by_id = {c["id"]: c for c in clubs}
 check("clubs: the known ids are the clubs the app uses",
       all(team_key(by_id.get(i, {}).get("en", "")) == team_key(n) for i, n in KNOWN.items()),
       {i: by_id.get(i, {}).get("en") for i, n in KNOWN.items() if team_key(by_id.get(i, {}).get("en", "")) != team_key(n)})
-prefs_leagues = re.findall(r'\{"([^"]+)", "[^"]+"\}', (ROOT / "android/app/src/main/java/sa/urtv/screensaver/Prefs.java")
+prefs_leagues = re.findall(r'\{"([^"]+)", "[^"]+"\}', (ROOT / "android/app/src/main/java/sa/muslimtv/screensaver/Prefs.java")
                            .read_text(encoding="utf-8").split("LEAGUES = {")[1].split("};")[0])
 count = {l: sum(l in c["leagues"] for c in clubs) for l in prefs_leagues}
 check("clubs: every league of the app has at least its minimum", all(count[l] >= LEAGUES.get(l, {}).get("min", 1)
@@ -166,7 +166,7 @@ check("clubs: every character of the Arabic names in Thmanyah", not missing, mis
 cfg = ET.parse(ROOT / "android/launcher/src/main/res/values/config.xml").getroot()
 arr = {a.get("name"): [i.text for i in a] for a in cfg.findall("string-array")}
 check("launcher: no dock app is also hidden", not set(arr["dock_apps"]) & set(arr["hidden_apps"]))
-check("launcher: screensaver app not hidden", "sa.urtv.screensaver" not in arr["hidden_apps"])
+check("launcher: screensaver app not hidden", "sa.muslimtv.screensaver" not in arr["hidden_apps"])
 
 # ---- optimize: never disable a kept package
 def pkgs(path):

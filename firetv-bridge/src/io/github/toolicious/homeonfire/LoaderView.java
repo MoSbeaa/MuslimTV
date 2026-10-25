@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Based on Home on Fire by toolicious; local Arabic transition customization.
-package io.github.toolicious.homeonfire.urtv;
+package io.github.toolicious.homeonfire.muslimtv;
 
 import android.content.Context;
 import android.graphics.Canvas;

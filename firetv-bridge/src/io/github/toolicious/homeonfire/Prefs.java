@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 toolicious
-package io.github.toolicious.homeonfire.urtv;
+package io.github.toolicious.homeonfire.muslimtv;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -58,7 +58,7 @@ public class Prefs {
      * boot launcher and "Open target" button all early-return on an
      * empty target package.
      */
-    private static final String DEFAULT_TARGET = "sa.urtv.home";
+    private static final String DEFAULT_TARGET = "sa.muslimtv.home";
 
     private final SharedPreferences sp;
 

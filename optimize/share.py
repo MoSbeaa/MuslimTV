@@ -51,7 +51,7 @@ def tv():
             f"(SDK {props.get('ro.build.version.sdk', '?')}), firmware {props.get('ro.build.display.id', '?')}")
 
 
-def urtv_version():   # this copy of the repo: its last commit
+def muslimtv_version():   # this copy of the repo: its last commit
     try:
         out = subprocess.run(["git", "-C", str(RUN.parent.parent), "log", "-1", "--format=%h %cs"],
                              capture_output=True, text=True, timeout=20).stdout.strip()
@@ -194,7 +194,7 @@ def main():
     notes = " ".join(args.notes).strip()
     summary = RUN / "summary.md"
     parts = [
-        f"MuslimTV setup report, {datetime.date.today()}, MuslimTV {urtv_version()}",
+        f"MuslimTV setup report, {datetime.date.today()}, MuslimTV {muslimtv_version()}",
         "",
         f"TV: {tv()}",
         f"Computer: {computer()}" + (f", agent: {args.agent}" if args.agent else ""),

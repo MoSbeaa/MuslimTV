@@ -30,26 +30,26 @@ debugging?» on the TV). Cloning the repo and reading this file before message 1
 
 **Message 1, approvals.** If you are Codex:
 
-> قبل نبدأ: من القائمة اللي تحت خانة الكتابة، اختر «Approve for me» للموافقات، عشان ما أوقف أسألك عن كل أمر.
-> وقلّي «تم».
+> قبل البدء: من القائمة أسفل حقل الكتابة، اختر «Approve for me» للموافقات للسماح بتنفيذ أوامر المهمة.
+> ثم أخبرني باكتمال الخطوة بكتابة «تم».
 
 Any other agent: the same in your words: ask me to allow running commands and network access in this folder for
 the whole task, and to say «تم».
 
 **Message 2, the city:**
 
-> وش مدينتك؟
+> ما مدينتك؟
 > (لمواقيت الصلاة والطقس. مثال: الرياض، جدة، الرس)
 
 **Message 3, the clubs and the defaults:**
 
-> وتتابع مباريات أي أندية؟ اكتب أسماءها، أو «لا شي».
+> هل تتابع أندية رياضية؟ اكتب أسماءها، أو «لا شيء».
 >
-> والباقي بخليه على الافتراضي، وتقدر تطلب تغيير أي شي منه الحين أو بعدين:
-> • جنب الساعة: «آية وحديث اليوم» (أو: مواقيت الصلاة، المسلسلات، الطقس، المباريات، لا شي)
+> سأستخدم الإعدادات الافتراضية التالية، ويمكنك طلب تعديلها الآن أو لاحقًا:
+> • بجانب الساعة: «آية وحديث اليوم» (أو: مواقيت الصلاة، المسلسلات، الطقس، المباريات، لا شيء)
 > • المفضلة: أول ٦ تطبيقات من واجهتك الحالية، بنفس الترتيب
-> • بركّب TV Bro (متصفح للتلفزيون) و SmartTube (يوتيوب بدون إعلانات)، مجانيين من GitHub
-> • ما فيه بطاقة في الواجهة الرئيسية، ووقت شاشة التوقف يبقى مثل ما هو، وما أعطّل إضافات TCL الاختيارية
+> • لن أثبّت تطبيقات إضافية دون طلبك. يمكن اختيار متصفح أو تطبيق فيديو لاحقًا.
+> • لا توجد بطاقة افتراضية على الشاشة الرئيسية، وتبقى مهلة شاشة التوقف وإضافات TCL الاختيارية دون تغيير
 
 After my answer to message 3, start steps 0 and 1 at once, in the same turn: don't end your turn to wait for me
 again. The only other thing I do is press Allow on the TV, and step 1 tells me when, without stopping.
@@ -63,7 +63,7 @@ Those defaults, unless I change them:
 - nothing from `optimize/lists/tcl-optional.txt` is disabled (`optimize/lists/mine.txt` stays empty);
 - if I pick the episodes card: all genres and languages.
 
-My city is checked later against `android/app/src/main/java/sa/urtv/screensaver/Cities.java`; if it isn't there,
+My city is checked later against `android/app/src/main/java/sa/muslimtv/screensaver/Cities.java`; if it isn't there,
 step 4 sets it with its coordinates (`city <name> <lat> <lon>`) without asking me again.
 
 ## 0. Can you reach my TV? (check this first, 1 minute)
@@ -210,8 +210,8 @@ Right before `--probe`, tell me, word for word, and **don't end your turn or wai
 after it. It waits by itself (silent, up to 2 minutes) until I press Allow; that is the wait, not a fault. If it times
 out, tell me again and run it once more.
 
-> الحين بتطلع لك على التلفزيون رسالة «Allow USB debugging?»: اضغط Allow وعلّم «Always allow». بعدها تقدر
-> تتركني، أكمّل لحالي حوالي ٤٠ دقيقة.
+> ستظهر على التلفزيون رسالة «Allow USB debugging?». اختر Allow وفعّل «Always allow». بعد ذلك يمكنك
+> ترك المساعد ليكمل الإعداد تلقائيًا. تختلف المدة بحسب الجهاز والاتصال.
 
 - Tell me the model and Android version.
 - Read the row for this TV model in `docs/TVS.md` before going on: it says what was seen on that model (ADB port,
@@ -268,7 +268,7 @@ list it for me in step 7 instead of choosing.
 
 Take every id from `find-team`'s output, which comes from our list of every club in the app's leagues and the
 national teams; never guess one. If it gives several, pick the one I meant (a Saudi club before a namesake abroad).
-If I said «لا شي» to clubs, skip `find-team` and `teams`. `optimize/saver.sh` without arguments lists every option.
+If I said «لا شيء» to clubs, skip `find-team` and `teams`. `optimize/saver.sh` without arguments lists every option.
 
 ## 5. Check (5 minutes)
 
@@ -289,8 +289,8 @@ Check each, and fix or report what fails:
 optimize/keep.sh                                  # must end with «Protected features: all on.»
 optimize/run.sh status                            # every step ✓, and «report: no !! lines»
 ```
-- `report.md` shows Home as `sa.urtv.home` (or the stock home if we used `SKIP_LAUNCHER=1`) and the screensaver
-  as `sa.urtv.screensaver`.
+- `report.md` shows Home as `sa.muslimtv.home` (or the stock home if we used `SKIP_LAUNCHER=1`) and the screensaver
+  as `sa.muslimtv.screensaver`.
 - You looked at the step 5 screenshots yourself and they show my city, my card and my favourites.
 
 ## 7. Tell me
@@ -303,15 +303,15 @@ optimize/run.sh status                            # every step ✓, and «report
   screensaver delay, and the optional TCL extras (the TCL tab and channels, game bar, T-Cast…).
 - How to undo, again: the folder's full path and the exact command to paste there
   (`optimize/reset.sh`; on Windows in Git Bash), what it brings back, and that if I ever want it, I can open an
-  agent on this computer and say «رجّع التلفزيون مثل ما كان: شغّل optimize/reset.sh في مجلد MuslimTV».
+  agent on this computer and say «أعد التلفزيون إلى حالته السابقة: شغّل optimize/reset.sh في مجلد MuslimTV».
 
 ## 8. Ask me to share how it went (the very last thing)
 
 Only after everything above, undo included, and nowhere earlier: your last message, on its own, word for word:
 
-> آخر شي: تبغى ترسل لصاحب المشروع ملخص كيف مشى التركيب؟ يساعده يحسّنه للناس. فيه بس نوع التلفزيون ونسخة
-> أندرويد، وكم أخذت كل خطوة ووش اللي تعطّل، والذاكرة قبل وبعد. ما فيه أي شي شخصي: لا مدينة ولا أندية ولا
-> تطبيقات ولا عناوين. وإذا عندك كلمة تبغى توصله (عجبك؟ شي ضايقك؟)، اكتبها مع ردك.
+> أخيرًا، هل ترغب في مشاركة ملخص الإعداد مع مطوّر المشروع للمساعدة في تحسينه؟ يتضمن الملخص نوع التلفزيون ونسخة
+> أندرويد ومدة كل خطوة والأخطاء التي حدثت والذاكرة قبل الإعداد وبعده. لا يتضمن بيانات شخصية أو أسماء مدن أو أندية أو
+> تطبيقات أو عناوين. يمكنك إرفاق ملاحظاتك مع الرد.
 
 If I say yes, run it with: your name and model as the agent; my words if I wrote any (as I wrote them, minus
 anything personal); and your own notes: what failed or was slow, how long it cost and what fixed it, in two to five

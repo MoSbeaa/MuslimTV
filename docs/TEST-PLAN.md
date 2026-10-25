@@ -4,7 +4,7 @@ For a tester (human or agent) with a Linux/macOS machine, `adb`, and an Android 
 Every step has an exact action and the expected result. Record **PASS / FAIL + note + screenshot** for each ID.
 
 Screenshots: `adb exec-out screencap -p > ID.png`
-Logs on failure: `adb logcat -d -t 300 | grep -iE "urtv|chromium|AndroidRuntime" > ID.log`
+Logs on failure: `adb logcat -d -t 300 | grep -iE "muslimtv|chromium|AndroidRuntime" > ID.log`
 
 ---
 
@@ -14,14 +14,14 @@ Logs on failure: `adb logcat -d -t 300 | grep -iE "urtv|chromium|AndroidRuntime"
 |---|---|---|
 | S1 | On the TV: Settings → Device preferences → About → press Build 7× → Developer options → enable **USB/Network debugging**. Note the TV's IP. | Debugging on |
 | S2 | `adb connect <TV_IP>:5555` then `adb devices` | Device listed as `device` |
-| S3 | `curl -L -o urtv-screensaver.apk https://github.com/MoSbeaa/MuslimTV/releases/download/apk-latest/urtv-screensaver.apk` | ~2–5 MB file. To test the `next` branch, use the tag `apk-next` in the URL instead of `apk-latest` (with the scripts: `APK_TAG=apk-next optimize/install.sh saver`) |
-| S4 | `adb uninstall sa.yourtv.screensaver` and `adb uninstall com.abdullah.tvsaver` (ignore "not installed") | The pre-rename app is gone (it would show twice) |
-| S5 | `adb install urtv-screensaver.apk` | `Success` |
-| S6 | `adb shell dumpsys package sa.urtv.screensaver \| grep versionName` | `versionName=3.<number>` |
+| S3 | `curl -L -o muslimtv-screensaver.apk https://github.com/MoSbeaa/MuslimTV/releases/download/apk-latest/muslimtv-screensaver.apk` | ~2–5 MB file. To test the `next` branch, use the tag `apk-next` in the URL instead of `apk-latest` (with the scripts: `APK_TAG=apk-next optimize/install.sh saver`) |
+| S4 | `adb uninstall sa.yomuslimtv.screensaver` and `adb uninstall com.abdullah.tvsaver` (ignore "not installed") | The pre-rename app is gone (it would show twice) |
+| S5 | `adb install muslimtv-screensaver.apk` | `Success` |
+| S6 | `adb shell dumpsys package sa.muslimtv.screensaver \| grep versionName` | `versionName=3.<number>` |
 
 ## 1. Settings screen
 
-Open: `adb shell am start -n sa.urtv.screensaver/.SettingsActivity`
+Open: `adb shell am start -n sa.muslimtv.screensaver/.SettingsActivity`
 Navigate with the remote, or `adb shell input keyevent DPAD_DOWN|DPAD_UP|DPAD_CENTER|BACK`.
 
 | ID | Action | Expected |
@@ -45,13 +45,13 @@ Navigate with the remote, or `adb shell input keyevent DPAD_DOWN|DPAD_UP|DPAD_CE
 | A17 | تحديث الشاشة الآن | Toast «تم التحديث» or «الصفحة محدثة» (not «لا يوجد اتصال») |
 | A17b | تحديث الشاشة الآن → read the row text | Starts «الإصدار 3.N»; after A17, if a newer release exists, also «يوجد إصدار جديد» with the new number and «حدّث تلفزيوني» |
 | A18 | بدء شاشة التوقف بعد (TV without «Modify system settings» for the app, the usual case) | The row shows the TV's current delay (e.g. «١٠ دقائق»); pressing it shows the toast «غيّرها من إعدادات التلفاز، أو بأمر من مساعدك» and opens the TV's screensaver settings; the delay is unchanged |
-| A18b | بدء شاشة التوقف بعد, after `adb shell appops set sa.urtv.screensaver WRITE_SETTINGS allow` | Pressing it lists دقيقة واحدة, دقيقتان, ٥ دقائق, ١٠ دقائق, ١٥ دقيقة, ٣٠ دقيقة with the current one selected; pick ٥ دقائق → the row says «٥ دقائق» and `adb shell settings get system screen_off_timeout` prints `300000`; set it back afterwards |
+| A18b | بدء شاشة التوقف بعد, after `adb shell appops set sa.muslimtv.screensaver WRITE_SETTINGS allow` | Pressing it lists دقيقة واحدة, دقيقتان, ٥ دقائق, ١٠ دقائق, ١٥ دقيقة, ٣٠ دقيقة with the current one selected; pick ٥ دقائق → the row says «٥ دقائق» and `adb shell settings get system screen_off_timeout` prints `300000`; set it back afterwards |
 | A18c | تبديل الصورة كل | Row shows «٣٠ دقيقة» on a fresh install; the list has ٥ دقائق, ١٠ دقائق, ١٥ دقيقة, ٣٠ دقيقة, ٦٠ دقيقة; pick ٥ دقائق → the row shows it, and in the preview the photo changes at the next five-minute mark (hh:00, :05, …) |
-| A19 | Force-close and reopen: `adb shell am force-stop sa.urtv.screensaver` then A1 | All choices from A4–A15 kept |
+| A19 | Force-close and reopen: `adb shell am force-stop sa.muslimtv.screensaver` then A1 | All choices from A4–A15 kept |
 
 ## 2. Preview / screen content
 
-Open: «معاينة الشاشة» row, or `adb shell am start -n sa.urtv.screensaver/.MainActivity`. Wait 60 s for data.
+Open: «معاينة الشاشة» row, or `adb shell am start -n sa.muslimtv.screensaver/.MainActivity`. Wait 60 s for data.
 
 | ID | Check | Expected |
 |---|---|---|
@@ -89,7 +89,7 @@ Use the TV's clock or wait for the real moment; take a screenshot at each.
 
 | ID | Action | Expected |
 |---|---|---|
-| D1 | TV Settings → screensaver → choose «MuslimTV Screensaver», or `adb shell settings put secure screensaver_components sa.urtv.screensaver/.ScreenDream` | Selected |
+| D1 | TV Settings → screensaver → choose «MuslimTV Screensaver», or `adb shell settings put secure screensaver_components sa.muslimtv.screensaver/.ScreenDream` | Selected |
 | D2 | Start now: `adb shell am start -n "com.android.systemui/.Somnambulator"` (or wait for the idle timer) | The screen appears full screen |
 | D3 | Press any remote key | Screensaver exits |
 | D4 | Leave the TV idle for the timer set in TV settings | Starts by itself |
@@ -107,20 +107,20 @@ Use the TV's clock or wait for the real moment; take a screenshot at each.
 |---|---|---|
 | F1 | Press A17 twice in a row | First «تم التحديث», second «الصفحة محدثة» (the page is cached and unchanged) |
 | F2 | Ask the developer to push a visible change (or note the latest commit), then A17 | Toast «تم التحديث»; preview shows the change |
-| F3 | `adb shell dumpsys jobscheduler \| grep -A3 urtv` | A periodic, persisted job listed |
+| F3 | `adb shell dumpsys jobscheduler \| grep -A3 muslimtv` | A periodic, persisted job listed |
 
 ## 7. Power cycle (TCL)
 
 | ID | Action | Expected |
 |---|---|---|
 | G1 | Unplug the TV for 30 s, power on, **do not open the app**, wait for the idle timer | Screensaver starts. If not: note it, open the app once, retest D4 |
-| G2 | `adb logcat -d \| grep -iE "dream\|urtv" > G1.log` after G1 | Attach the log |
+| G2 | `adb logcat -d \| grep -iE "dream\|muslimtv" > G1.log` after G1 | Attach the log |
 
 ## 8. Browser (no app)
 
 | ID | Action | Expected |
 |---|---|---|
-| H1 | On a computer open `https://raw.githack.com/MoSbeaa/MuslimTV/main/dist/urtv.html` or download `dist/urtv.html` and double-click | Same screen in the browser; `F` toggles full screen |
+| H1 | On a computer open `https://raw.githack.com/MoSbeaa/MuslimTV/main/dist/muslimtv.html` or download `dist/muslimtv.html` and double-click | Same screen in the browser; `F` toggles full screen |
 | H2 | Add `#city=جدة&lat=21.5433&lon=39.1728&teams=136013` to the URL | Jeddah times; only one match slot |
 | H3 | Resize the window to 1280×720 | Layout holds, nothing overlaps |
 
@@ -137,7 +137,7 @@ Use the TV's clock or wait for the real moment; take a screenshot at each.
 | L5 | `optimize/dock.sh apps`, then `optimize/dock.sh set <3 packages from that list>`, then `optimize/dock.sh show` | Home screen redraws at once with those three first, topped up to 5; `show` lists them |
 | L6 | `optimize/dock.sh set com.not.installed` | `error: none of these apps are on this TV's home screen`; row unchanged |
 | L7 | `optimize/dock.sh reset` | Row back to the defaults |
-| L4 | Open any app with the card on, then `adb shell top -n 1 \| grep urtv.home` | Launcher idle while the app is in front (card paused) |
+| L4 | Open any app with the card on, then `adb shell top -n 1 \| grep muslimtv.home` | Launcher idle while the app is in front (card paused) |
 | L11 | An app with only a phone launcher activity (an OEM store or settings app, Aptoide): `adb shell cmd package query-activities -a android.intent.action.MAIN -c android.intent.category.LAUNCHER` lists it, the LEANBACK_LAUNCHER query doesn't | It is in the grid once, opens with OK, and can be added to the favourites; TV apps are not listed twice; the stock home and its setup app are not in the grid |
 
 ## 10. Command-line tools (agents; run in the MuslimTV folder, after `optimize/run.sh`)
@@ -152,7 +152,7 @@ Use the TV's clock or wait for the real moment; take a screenshot at each.
 | T6 | `optimize/saver.sh minrating 7`, then `optimize/saver.sh show` | `saved`; `show` lists `minrating: 7` |
 | T7 | `optimize/selftest.sh` | `OK upload`, `OK Arabic`, then the screensaver and the app counts; no `FAILED` |
 | T8 | `optimize/venv/bin/python -I optimize/random-clubs.py 8 1` | `seed: 1` and 8 names; the same on every run |
-| T9 | `optimize/reset.sh`, then `optimize/venv/bin/python -I optimize/tv.py pm list packages sa.urtv` and `optimize/venv/bin/python -I optimize/tv.py settings get secure screensaver_enabled` | The package list is empty; `screensaver_enabled` is the value in `optimize/run-*/backup.txt` (under «== screensaver»: the components line, then this one; `null` means unset) |
+| T9 | `optimize/reset.sh`, then `optimize/venv/bin/python -I optimize/tv.py pm list packages sa.muslimtv` and `optimize/venv/bin/python -I optimize/tv.py settings get secure screensaver_enabled` | The package list is empty; `screensaver_enabled` is the value in `optimize/run-*/backup.txt` (under «== screensaver»: the components line, then this one; `null` means unset) |
 | T10 | Put a `!!` line in `optimize/run/report.md` and run `optimize/run.sh` | It ends with «Done, with problems:» and that line, exit code 1; no «All steps done» |
 | T11 | `optimize/saver.sh photos 15`, then `optimize/saver.sh show`; then `optimize/saver.sh photos 7` | `saved`, `show` lists `photos: 15`; the second prints `error: photos is one of 5 10 15 30 60` and changes nothing; put it back with `photos 30` |
 | T12 | `optimize/saver.sh idle 10`, then `optimize/saver.sh show` and `optimize/venv/bin/python -I optimize/tv.py settings get system screen_off_timeout`; then `optimize/saver.sh idle 3` | `idle: 10` (set by the app, or «set from the shell» when the app may not), `show` lists `idle: 10`, the setting prints `600000`; `idle 3` prints `error: idle is one of 1 2 5 10 15 30`; put the TV's old value back afterwards |

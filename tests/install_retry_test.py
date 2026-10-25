@@ -39,8 +39,8 @@ case "$1" in
     n=$(( $(cat "$T/polls" 2>/dev/null || echo 0) + 1 )); echo $n > "$T/polls"
     [ "$n" -le "$DOWN_POLLS" ] && exit 1
     echo 0123456789 ;;
-  *resolve-activity*) [ "$(cat "$T/home" 2>/dev/null)" = ours ] && echo sa.urtv.home/.MainActivity || echo stock/.Home ;;
-  *dumpsys*) [ "$(cat "$T/home" 2>/dev/null)" = ours ] && echo "mResumedActivity: sa.urtv.home" ;;
+  *resolve-activity*) [ "$(cat "$T/home" 2>/dev/null)" = ours ] && echo sa.muslimtv.home/.MainActivity || echo stock/.Home ;;
+  *dumpsys*) [ "$(cat "$T/home" 2>/dev/null)" = ours ] && echo "mResumedActivity: sa.muslimtv.home" ;;
   "touch /data/local/tmp/home_ok") log disarm; touch "$T/home_ok" ;;
 esac
 exit 0

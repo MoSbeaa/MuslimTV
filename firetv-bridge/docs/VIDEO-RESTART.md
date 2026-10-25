@@ -6,4 +6,4 @@ RestartVideoActivity is signature protected using the existing OPEN_AMAZON permi
 
 Android requires enabled notification-listener access to query/control another application's active media session. PlaybackAccess implements no notification callbacks, does not read notification text or store it, and performs no network requests. Android nevertheless grants broad notification access to an enabled listener, so explicit owner approval is required before enabling this component. No notification-listener access has been enabled by preparing/building this change.
 
-Next after approval: install both prepared APKs, enable only io.github.toolicious.homeonfire.urtv/.PlaybackAccess via the supported Android notification access mechanism, preserving all other listeners. Never disable another listener. Access is reversible by disabling that component.
+Next after approval: install both prepared APKs, enable only io.github.toolicious.homeonfire.muslimtv/.PlaybackAccess via the supported Android notification access mechanism, preserving all other listeners. Never disable another listener. Access is reversible by disabling that component.
