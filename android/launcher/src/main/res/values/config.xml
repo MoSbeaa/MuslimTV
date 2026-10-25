@@ -9,6 +9,7 @@
          and replaces this list. -->
     <string-array name="dock_apps">
         <item>io.gh.reisxd.tizentube.cobalt</item>   <!-- First on new installations; saved orders are preserved. -->
+        <item>com.quran.labs.androidquran</item>   <!-- Free, open-source Quran; no-Google build supports Fire TV. -->
         <item>com.google.android.youtube.tv</item>
         <item>com.netflix.ninja</item>
         <item>com.netflix.mediaclient</item>   <!-- Netflix on some TCL / Android TV builds -->

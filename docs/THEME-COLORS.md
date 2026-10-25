@@ -9,3 +9,9 @@ Colors are stored in the launcher's existing preferences as theme_surface and th
 The launcher card width is 230.5 dp, half of its previous 461 dp. Its height and position are unchanged.
 
 Files: ThemeColors.java, ThemeActivity.java, MainActivity.java, HomeCard.java, launcher AndroidManifest.xml.
+
+## صور التطبيقات المفضلة
+
+تستخدم المفضلة بطاقات مرسومة محليًا برموز مبسطة وإطار هندسي يتبع لون البطاقات ولون الزخارف المختارين. لا تحتوي على ألوان ثابتة للشركات، ولا تحتاج صورًا من الإنترنت. تتغير الخلفية والرمز والإطار وتوهج التركيز مع الثيم.
+
+تتضمن الرموز تشغيل الفيديو والمصحف والمتصفح والملفات وقائمة التطبيقات. تبقى صور التطبيقات الأصلية في قائمة «كل التطبيقات». يمكن العودة إلى الصور الأصلية للمفضلة من «ألوان الواجهة ← صور المفضلة». التغيير لا يبدّل أيقونات التطبيقات في نظام التشغيل.

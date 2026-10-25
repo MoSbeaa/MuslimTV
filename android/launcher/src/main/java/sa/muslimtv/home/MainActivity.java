@@ -613,13 +613,13 @@ public class MainActivity extends Activity {
         buildQuickLinks();
         wireFocus();
 
-        if (!dock.isEmpty()) { title.setText(dock.get(0).label); setGlow(dock.get(0).color); }
+        if (!dock.isEmpty()) { title.setText(ThemeColors.themedFavorites(this) ? "" : dock.get(0).label); setGlow(dock.get(0).color); }
         View last = lastFocusedId == View.NO_ID ? null : findViewById(lastFocusedId);
         if (last != null) last.requestFocus();
         else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
     }
 
-    /** A 16:9 card with the app's banner; the name shows under it while focused. */
+    /** Favourites follow the selected palette; the all-apps grid keeps original app artwork. */
     private View tile(App app, boolean inDock) {
         LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.VERTICAL);
@@ -637,13 +637,16 @@ public class MainActivity extends Activity {
                 o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(10));
             }
         });
+        boolean themed = inDock && ThemeColors.themedFavorites(this);
+        if (themed) app.color = themeAccent;
+        card.setContentDescription(app.label);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(app.isBanner ? 0xFF1C1C1E : darken(app.color, 0.45f));
+        bg.setColor(themed ? themeSurface : app.isBanner ? 0xFF1C1C1E : darken(app.color, 0.45f));
         card.setBackground(bg);
 
         ImageView img = new ImageView(this);
-        img.setImageDrawable(app.art);
-        if (app.isBanner) {
+        img.setImageDrawable(themed ? new FavoriteArt(app.pkg, themeSurface, themeAccent) : app.art);
+        if (themed || app.isBanner) {
             img.setScaleType(ImageView.ScaleType.CENTER_CROP);
             card.addView(img, new FrameLayout.LayoutParams(-1, -1));
         } else {
@@ -655,7 +658,7 @@ public class MainActivity extends Activity {
         // Focus ring and sheen, drawn above the art.
         GradientDrawable ring = new GradientDrawable();
         ring.setCornerRadius(dp(10));
-        ring.setStroke(dp(2), 0xE6FFFFFF);
+        ring.setStroke(dp(2), themed ? themeAccent : 0xE6FFFFFF);
         ring.setOrientation(GradientDrawable.Orientation.TL_BR);
         ring.setColors(new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});
         View shine = new View(this);
@@ -686,8 +689,8 @@ public class MainActivity extends Activity {
             if (!has) return;
             lastFocusedId = v.getId();
             if (inDock) {
-                title.setText(app.label);
-                title.animate().alpha(1f).setDuration(200).start();
+                title.setText(themed ? "" : app.label);
+                title.animate().alpha(themed ? 0f : 1f).setDuration(200).start();
                 animateGlow(app.color);
                 fadeGlow(1f);
                 scroll.smoothScrollTo(0, 0);

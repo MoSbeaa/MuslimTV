@@ -31,7 +31,7 @@ title() {
     tweaks)      echo "Speed and memory tweaks" ;;
     screensaver) echo "Install MuslimTV Screensaver" ;;
     launcher)    echo "Install the home screen (safety switch on)" ;;
-    extras)      echo "Ensure TizenTube is installed; TV Bro only with INSTALL_TV_BRO=1" ;;
+    extras)      echo "Ensure TizenTube and free Quran are installed; TV Bro only with INSTALL_TV_BRO=1" ;;
     after)       echo "Measure after (restart + 3 min)" ;;
     after-saver) echo "Measure our screensaver (1 min)" ;;
     report)      echo "Write the report" ;;

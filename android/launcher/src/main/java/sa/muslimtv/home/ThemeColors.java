@@ -7,7 +7,8 @@ import java.util.Locale;
 final class ThemeColors {
     static int surface(Context c) { return Dock.prefs(c).getInt("theme_surface", 0xFF102D21); }
     static int accent(Context c) { return Dock.prefs(c).getInt("theme_accent", 0xFFD6AF6B); }
-    static String signature(Context c) { return surface(c) + ":" + accent(c); }
+    static boolean themedFavorites(Context c) { return Dock.prefs(c).getBoolean("themed_favorites", true); }
+    static String signature(Context c) { return surface(c) + ":" + accent(c) + ":" + themedFavorites(c); }
     static String hex(int color) { return String.format(Locale.ROOT, "#%06X", color & 0xFFFFFF); }
     static int parse(String value) {
         String text = value.trim();

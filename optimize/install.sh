@@ -4,7 +4,8 @@
 #   optimize/install.sh launcher   the home screen: install + make it the default Home
 #   optimize/install.sh all        both
 #   optimize/install.sh tizentube  install TizenTube Cobalt if missing (official release, device ABI)
-#   optimize/install.sh extras     TizenTube; add TV Bro only with INSTALL_TV_BRO=1
+#   optimize/install.sh quran      free Quran for Android, official no-Google APK
+#   optimize/install.sh extras     TizenTube + Quran; add TV Bro only with INSTALL_TV_BRO=1
 # TizenTube is included in launcher/all setup unless SKIP_TIZENTUBE=1; existing installs stay untouched.
 # The first install of the screensaver replaces an APK signed with another key: uninstall the old one first
 # (pm uninstall sa.muslimtv.screensaver) — this script does that only if a plain install fails.
@@ -12,7 +13,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
 REL=https://github.com/MoSbeaa/MuslimTV/releases/download/${APK_TAG:-apk-latest}   # APK_TAG=v3.N: that numbered build
-what="${1:?usage: optimize/install.sh saver|launcher|all|tizentube|extras}"
+what="${1:?usage: optimize/install.sh saver|launcher|all|tizentube|quran|extras}"
 failed=0   # an extra that did not install: the rest are still tried, then run.sh must not count the step as done
 
 push_install() {   # $1 apk name, $2 package, optional $3 local APK path
@@ -92,13 +93,31 @@ install_tizentube() {
   from_github reisxd/TizenTubeCobalt io.gh.reisxd.tizentube.cobalt 'cobalt-{abi}\.apk'
 }
 
+install_quran() {
+  if [ "${SKIP_QURAN:-0}" = 1 ]; then
+    echo "Quran skipped (SKIP_QURAN=1)."; return 0
+  fi
+  local installed
+  installed=$("$PY" -I optimize/tv.py "pm list packages com.quran.labs.androidquran" | tr -d '\r')
+  if grep -qx 'package:com.quran.labs.androidquran' <<< "$installed"; then
+    echo "Quran is already installed; preserving its version, downloads and settings."
+    return 0
+  fi
+  from_github quran/quran_android com.quran.labs.androidquran 'quran-[0-9A-Za-z.-]+-no-google\.apk'
+}
+
 # Install before opening a new launcher, so its first default tile is available at first launch.
 case "$what" in
   launcher|all|tizentube|extras)
     install_tizentube
     [ "$failed" = 0 ] || exit 1 ;;
 esac
-if [ "$what" = tizentube ]; then exit 0; fi
+case "$what" in
+  launcher|all|quran|extras)
+    install_quran
+    [ "$failed" = 0 ] || exit 1 ;;
+esac
+if [ "$what" = tizentube ] || [ "$what" = quran ]; then exit 0; fi
 if [ "$what" = extras ]; then
   if [ "${INSTALL_TV_BRO:-0}" = 1 ]; then
     from_github truefedex/tv-bro com.phlox.tvwebbrowser 'tvbro-[0-9.]+-generic-geckoExcluded\.apk'

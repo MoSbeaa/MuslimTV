@@ -21,6 +21,10 @@ public final class ThemeActivity extends Activity {
         body.setPadding(dp(100), dp(24), dp(100), dp(24)); scroll.addView(body);
         label("ألوان الواجهة", 27);
         label("اختر مظهرًا جاهزًا، أو أدخل لون البطاقات ولون الزخارف بصيغة #RRGGBB. تتغير ألوان المشغل وبطاقة الصلاة؛ تبقى الصور كما هي.", 16);
+        button("صور المفضلة: " + (ThemeColors.themedFavorites(this) ? "متوافقة مع الثيم" : "صور التطبيقات الأصلية")).setOnClickListener(v -> {
+            Dock.prefs(this).edit().putBoolean("themed_favorites", !ThemeColors.themedFavorites(this)).apply();
+            Toast.makeText(this, "تم تغيير صور المفضلة", Toast.LENGTH_SHORT).show(); finish();
+        });
         preset("أخضر وذهبي — الافتراضي", 0xFF102D21, 0xFFD6AF6B);
         preset("أزرق وفضي", 0xFF142D49, 0xFFCEDDEC);
         preset("عنابي وذهبي", 0xFF421D2B, 0xFFE6C17A);
