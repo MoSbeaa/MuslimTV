@@ -271,10 +271,11 @@ public class MainActivity extends Activity {
         quickRow = new LinearLayout(this);
         quickRow.setOrientation(LinearLayout.HORIZONTAL);
         quickRow.setPadding(dp(20), dp(4), dp(20), dp(4));
+        quickRow.setTranslationY(dp(6));
         quickRow.setClipChildren(false);
         bottom.addView(quickRow, new LinearLayout.LayoutParams(-1, -2));
 
-        title = text(34, "sans-serif-light", Color.WHITE);
+        title = text(22, "sans-serif-light", Color.WHITE);
         title.setShadowLayer(dp(18), 0, 0, 0x66000000);
         title.setSingleLine(true);
         bottom.addView(title, new LinearLayout.LayoutParams(-2, -2));
@@ -613,7 +614,7 @@ public class MainActivity extends Activity {
         buildQuickLinks();
         wireFocus();
 
-        if (!dock.isEmpty()) { title.setText(ThemeColors.themedFavorites(this) ? "" : dock.get(0).label); setGlow(dock.get(0).color); }
+        if (!dock.isEmpty()) { title.setText(dock.get(0).label); setGlow(dock.get(0).color); }
         View last = lastFocusedId == View.NO_ID ? null : findViewById(lastFocusedId);
         if (last != null) last.requestFocus();
         else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
@@ -678,6 +679,8 @@ public class MainActivity extends Activity {
         card.setOnClickListener(v -> launch(new Intent(Intent.ACTION_MAIN)
                 .addCategory(app.category)
                 .setComponent(app.component)
+                .putExtra("theme_surface", themeSurface)
+                .putExtra("theme_accent", themeAccent)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)));
         card.setOnFocusChangeListener((v, has) -> {
             float s = has ? (inDock ? 1.12f : 1.1f) : 1f;
@@ -689,8 +692,8 @@ public class MainActivity extends Activity {
             if (!has) return;
             lastFocusedId = v.getId();
             if (inDock) {
-                title.setText(themed ? "" : app.label);
-                title.animate().alpha(themed ? 0f : 1f).setDuration(200).start();
+                title.setText(app.label);
+                title.animate().alpha(1f).setDuration(200).start();
                 animateGlow(app.color);
                 fadeGlow(1f);
                 scroll.smoothScrollTo(0, 0);

@@ -5,4 +5,4 @@ dependencyResolutionManagement {
     repositories { google(); mavenCentral() }
 }
 rootProject.name = 'MuslimTV'
-include ':app', ':launcher'
+include ':app', ':launcher', ':quran'

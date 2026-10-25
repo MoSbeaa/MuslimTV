@@ -4,7 +4,7 @@
 #   optimize/install.sh launcher   the home screen: install + make it the default Home
 #   optimize/install.sh all        both
 #   optimize/install.sh tizentube  install TizenTube Cobalt if missing (official release, device ABI)
-#   optimize/install.sh quran      free Quran for Android, official no-Google APK
+#   optimize/install.sh quran      MuslimTV Quran: native TV reader, two-page view
 #   optimize/install.sh extras     TizenTube + Quran; add TV Bro only with INSTALL_TV_BRO=1
 # TizenTube is included in launcher/all setup unless SKIP_TIZENTUBE=1; existing installs stay untouched.
 # The first install of the screensaver replaces an APK signed with another key: uninstall the old one first
@@ -28,6 +28,9 @@ push_install() {   # $1 apk name, $2 package, optional $3 local APK path
   if ! grep -q Success <<< "$out"; then
     # only a signing-key clash justifies removing the installed app (and its settings); anything else stops here
     if grep -qE 'UPDATE_INCOMPATIBLE|signatures do not match' <<< "$out"; then
+      if [ "$2" = sa.muslimtv.quran ]; then
+        echo "!! Quran signing key differs; keeping existing pages and reading position. Use the same signing key to update."; exit 1
+      fi
       echo "An older $2 signed with another key is installed: removing it, then installing again."
       # removing the home app while the stock one is off would leave the TV with no home at all
       [ "$2" = sa.muslimtv.home ] && "$PY" -I optimize/tv.py "pm enable ${STOCK%%/*}" > /dev/null || true
@@ -97,13 +100,7 @@ install_quran() {
   if [ "${SKIP_QURAN:-0}" = 1 ]; then
     echo "Quran skipped (SKIP_QURAN=1)."; return 0
   fi
-  local installed
-  installed=$("$PY" -I optimize/tv.py "pm list packages com.quran.labs.androidquran" | tr -d '\r')
-  if grep -qx 'package:com.quran.labs.androidquran' <<< "$installed"; then
-    echo "Quran is already installed; preserving its version, downloads and settings."
-    return 0
-  fi
-  from_github quran/quran_android com.quran.labs.androidquran 'quran-[0-9A-Za-z.-]+-no-google\.apk'
+  push_install muslimtv-quran.apk sa.muslimtv.quran "${LOCAL_QURAN_APK:-}"
 }
 
 # Install before opening a new launcher, so its first default tile is available at first launch.
