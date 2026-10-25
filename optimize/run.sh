@@ -7,7 +7,7 @@
 #                              (the apps' settings stay: installing over keeps them; the old summary.md
 #                              becomes summary-<n>.md so the new run's before/after starts clean)
 #   SKIP_LAUNCHER=1 optimize/run.sh   keep the TV's own home screen (firmware that won't let another app be Home)
-#   SKIP_EXTRAS=1 optimize/run.sh     without TV Bro and SmartTube
+#   SKIP_EXTRAS=1 optimize/run.sh     skip the optional extras stage; SKIP_TIZENTUBE=1 also opts out of TizenTube
 # Before: optimize/setup.sh and optimize/find-tv.sh. Optional packages the household gave up go in
 # optimize/lists/mine.txt (one per line, picked from lists/tcl-optional.txt) before running.
 # Results in optimize/run/: summary.md (before/after), ram-*.txt, backup.txt, report.md, steps.log (times), run.log.
@@ -31,7 +31,7 @@ title() {
     tweaks)      echo "Speed and memory tweaks" ;;
     screensaver) echo "Install MuslimTV Screensaver" ;;
     launcher)    echo "Install the home screen (safety switch on)" ;;
-    extras)      echo "Install TV Bro (web browser) and SmartTube (YouTube without ads)" ;;
+    extras)      echo "Ensure TizenTube is installed; TV Bro only with INSTALL_TV_BRO=1" ;;
     after)       echo "Measure after (restart + 3 min)" ;;
     after-saver) echo "Measure our screensaver (1 min)" ;;
     report)      echo "Write the report" ;;
@@ -83,7 +83,7 @@ report() {
   echo "Home: $(tv "cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN" | tail -1)"
   echo "Screensaver: $(tv "settings get secure screensaver_components")"
   echo "Versions: screensaver $(tv "dumpsys package sa.muslimtv.screensaver | grep -m1 versionName" | sed 's/.*=//'), home $(tv "dumpsys package sa.muslimtv.home | grep -m1 versionName" | sed 's/.*=//')"
-  echo "Extras: TV Bro $([ -n "$(tv "pm list packages com.phlox.tvwebbrowser")" ] && echo yes || echo no), SmartTube $([ -n "$(tv "pm list packages org.smarttube.stable")" ] && echo yes || echo no)"
+  echo "Extras: TizenTube $([ -n "$(tv "pm list packages io.gh.reisxd.tizentube.cobalt")" ] && echo yes || echo no), TV Bro $([ -n "$(tv "pm list packages com.phlox.tvwebbrowser")" ] && echo yes || echo no)"
   local picks
   picks=$(grep -cvE '^\s*(#|$)' optimize/lists/mine.txt 2>/dev/null || true)
   echo "Optional picks (lists/mine.txt): ${picks:-0}"
