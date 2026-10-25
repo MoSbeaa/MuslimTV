@@ -39,7 +39,8 @@ public final class AdhanSettingsActivity extends Activity {
         row("الصلوات المفعّلة", () -> prayers());
         row("صوت الأذان: " + AdhanOptions.label(prefs.getString("voice", "makkah")), () -> voices(false));
         row("صوت الفجر: " + AdhanOptions.label(prefs.getString("fajr_voice", "fajr_makkah")), () -> voices(true));
-        row("مستوى صوت الأذان: " + prefs.getInt("volume", 65) + "٪", () -> volume());
+        row("مستوى صوت الأذان: " + prefs.getInt("volume", 65) + "٪", () -> volume(false));
+        row("مستوى صوت الفجر: " + prefs.getInt("fajr_volume", prefs.getInt("volume", 65)) + "٪", () -> volume(true));
         row("مدة التنبيه: " + prefs.getInt("duration", 12) + " ثانية", () -> duration());
         row("وقت العصر: المثل " + (prefs.getInt("asr", 2) == 2 ? "الثاني" : "الأول"), () -> asr());
         row("إيقاف الاستماع للصوت", () -> stopPreview());
@@ -86,9 +87,9 @@ public final class AdhanSettingsActivity extends Activity {
             .setPositiveButton("اختيار", (d, w) -> { prefs.edit().putString(fajr ? "fajr_voice" : "voice", AdhanOptions.IDS[index]).apply(); AdhanOptions.changed(this); render(); })
             .setNeutralButton("استماع / إيقاف", null).setNegativeButton("رجوع", null).create();
         dialog.setOnDismissListener(d -> stopPreview()); dialog.show();
-        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> { if (preview != null) stopPreview(); else listen(AdhanOptions.IDS[index]); });
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> { if (preview != null) stopPreview(); else listen(AdhanOptions.IDS[index], fajr); });
     }
-    private void listen(String id) {
+    private void listen(String id, boolean fajr) {
         stopPreview();
         if (audio != null && audio.requestAudioFocus(focus, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT) != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             Toast.makeText(this, "تعذر تشغيل المعاينة الآن", Toast.LENGTH_SHORT).show(); return;
@@ -97,7 +98,8 @@ public final class AdhanSettingsActivity extends Activity {
             MediaPlayer m = new MediaPlayer(); preview = m;
             m.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build());
             try (AssetFileDescriptor fd = getAssets().openFd("adhan/" + id + ".mp3")) { m.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength()); }
-            float level = prefs.getInt("volume", 65) / 100f; m.setVolume(level, level);
+            float level = (fajr ? prefs.getInt("fajr_volume", prefs.getInt("volume", 65)) : prefs.getInt("volume", 65)) / 100f;
+            m.setVolume(level, level);
             m.setOnPreparedListener(player -> { if (preview == player) player.start(); });
             m.setOnCompletionListener(player -> stopPreview());
             m.setOnErrorListener((player, what, extra) -> { stopPreview(); Toast.makeText(this, "تعذر تشغيل التسجيل", Toast.LENGTH_SHORT).show(); return true; });
@@ -108,16 +110,17 @@ public final class AdhanSettingsActivity extends Activity {
         if (preview != null) { MediaPlayer old = preview; preview = null; old.release(); }
         if (audio != null) audio.abandonAudioFocus(focus);
     }
-    private void volume() {
+    private void volume(boolean fajr) {
+        String key = fajr ? "fajr_volume" : "volume";
         LinearLayout box = new LinearLayout(this); box.setOrientation(LinearLayout.VERTICAL); box.setPadding(dp(20),dp(12),dp(20),dp(12));
         TextView value = new TextView(this); value.setTextColor(Color.WHITE);
-        SeekBar bar = new SeekBar(this); bar.setMax(100); bar.setProgress(prefs.getInt("volume",65)); value.setText(bar.getProgress()+"٪");
+        SeekBar bar = new SeekBar(this); bar.setMax(100); bar.setProgress(prefs.getInt(key,prefs.getInt("volume",65))); value.setText(bar.getProgress()+"٪");
         bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar b,int p,boolean user){value.setText(p+"٪");}
             public void onStartTrackingTouch(SeekBar b){} public void onStopTrackingTouch(SeekBar b){}
         }); box.addView(value); box.addView(bar);
-        AlertDialog d = new AlertDialog.Builder(this).setTitle("مستوى صوت الأذان") .setView(box)
-            .setPositiveButton("حفظ",(v,w)->{prefs.edit().putInt("volume",bar.getProgress()).apply();AdhanOptions.changed(this);render();}).setNegativeButton("إلغاء",null).create();
+        AlertDialog d = new AlertDialog.Builder(this).setTitle(fajr ? "مستوى صوت الفجر" : "مستوى صوت الأذان").setView(box)
+            .setPositiveButton("حفظ",(v,w)->{prefs.edit().putInt(key,bar.getProgress()).apply();AdhanOptions.changed(this);render();}).setNegativeButton("إلغاء",null).create();
         d.show(); bar.requestFocus();
     }
     private void duration() {
