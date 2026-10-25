@@ -21,6 +21,7 @@ final class AdhanOptions {
         try {
             j.put("voices", new org.json.JSONArray(java.util.Arrays.asList(IDS)));
             j.put("enabled", p.getBoolean("enabled", true));
+            j.put("sound_outside", p.getBoolean("sound_outside", false));
             j.put("sound", p.getBoolean("sound", true)); j.put("popup", p.getBoolean("popup", true));
             j.put("voice", p.getString("voice", "makkah")); j.put("fajr_voice", p.getString("fajr_voice", "fajr_makkah"));
             j.put("volume", p.getInt("volume", 65)); j.put("duration", p.getInt("duration", 12));

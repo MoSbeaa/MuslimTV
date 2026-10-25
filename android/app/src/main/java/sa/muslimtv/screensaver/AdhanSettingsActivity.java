@@ -30,10 +30,11 @@ public final class AdhanSettingsActivity extends Activity {
         body = new LinearLayout(this); body.setOrientation(LinearLayout.VERTICAL); body.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         body.setPadding(dp(80), dp(22), dp(80), dp(30)); scroll.addView(body);
         label("الأذان وتنبيهات الصلاة", 26, 0xFFD6AF6B);
-        label("صوت داخل الشاشة الرئيسية وشاشة التوقف فقط. خارج MuslimTV يظهر تنبيه صامت أعلى اليمين. يتوقف الأذان عند فتح تطبيق آخر.", 15, Color.WHITE);
+        label("يمكن اختيار تشغيل صوت الأذان داخل MuslimTV وأثناء استخدام التطبيقات الأخرى بشكل مستقل. الوضع الافتراضي خارج الواجهة صامت.", 15, Color.WHITE);
         label("المواقيت: MiaOnline — بداية الصلاة، لا وقت الإقامة. محفوظة محليًا للعمل دون إنترنت.", 14, 0xFFC6BBA4);
         toggle("تفعيل الأذان والتنبيهات", "enabled");
         toggle("صوت الأذان داخل MuslimTV", "sound");
+        row("أثناء استخدام التطبيقات: " + (prefs.getBoolean("sound_outside", false) ? "تشغيل الأذان" : "صامت"), this::outsideSound);
         toggle("التنبيه المرئي أعلى اليمين", "popup");
         row("الصلوات المفعّلة", () -> prayers());
         row("صوت الأذان: " + AdhanOptions.label(prefs.getString("voice", "makkah")), () -> voices(false));
@@ -60,6 +61,13 @@ public final class AdhanSettingsActivity extends Activity {
         row(name + (prefs.getBoolean(key, true) ? " — يعمل" : " — متوقف"), () -> {
             prefs.edit().putBoolean(key, !prefs.getBoolean(key, true)).apply(); AdhanOptions.changed(this); render();
         });
+    }
+    private void outsideSound() {
+        new AlertDialog.Builder(this).setTitle("الأذان أثناء استخدام التطبيقات")
+            .setSingleChoiceItems(new String[]{"صامت — تنبيه مرئي فقط", "تشغيل صوت الأذان"}, prefs.getBoolean("sound_outside", false) ? 1 : 0, (dialog, which) -> {
+                prefs.edit().putBoolean("sound_outside", which == 1).apply();
+                AdhanOptions.changed(this); dialog.dismiss(); render();
+            }).setNegativeButton("إلغاء", null).show();
     }
     private void prayers() {
         boolean[] chosen = new boolean[5]; for (int i = 0; i < 5; i++) chosen[i] = prefs.getBoolean(AdhanOptions.KEYS[i], true);

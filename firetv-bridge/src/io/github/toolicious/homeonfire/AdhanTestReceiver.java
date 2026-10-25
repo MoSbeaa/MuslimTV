@@ -8,6 +8,6 @@ import android.content.Intent;
 public final class AdhanTestReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context context, Intent intent) {
         HijackService.updateAdhan(new Intent().putExtra("preview_adhan", true));
-        setResultData("Manual adhan test requested; audio remains limited to the launcher/screensaver and saved settings.");
+        setResultData("Manual adhan test requested; audio follows saved inside/outside-app settings.");
     }
 }

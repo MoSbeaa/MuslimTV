@@ -40,7 +40,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/** MIA beginning-of-prayer alarms. Never plays audio outside the two MUSLIMTV surfaces. */
+/** MIA beginning-of-prayer alarms. Audio outside MuslimTV requires the owner's explicit saved choice. */
 final class AdhanEngine {
     private static final Uri CONFIG = Uri.parse("content://sa.muslimtv.screensaver.config/adhan");
     private static final String[] KEYS = {"Fajr","Dhuhr","Asr","Maghrib","Isha"};
@@ -90,19 +90,23 @@ final class AdhanEngine {
             if(!awake()) { Log.i("MUSLIMTVAdhan","Manual test skipped: device asleep"); return; }
             if(!config.optBoolean("enabled",false)) { showBanner("تجربة الأذان — الميزة معطّلة في الإعدادات",System.currentTimeMillis()); return; }
             if(config.optBoolean("popup",true)) showBanner("حان الآن موعد أذان الظهر",System.currentTimeMillis());
-            if(inside() && config.optBoolean("sound",true)) play(config.optString("voice","makkah"));
-            else Log.i("MUSLIMTVAdhan","Manual test silent: outside launcher/screensaver or sound disabled");
+            if(canPlayAudio()) play(config.optString("voice","makkah"));
+            else Log.i("MUSLIMTVAdhan","Manual test silent: audio disabled for current scope");
         }
-        if(!inside())handler.postDelayed(() -> { if(!inside())stopAudio(); },300);check();
+        if(!canPlayAudio())handler.postDelayed(() -> { if(!canPlayAudio())stopAudio(); },300);check();
     }
     void onWindow(String pkg,String cls) {
         if(pkg==null || cls==null) return;
         if("sa.muslimtv.home".equals(pkg) && "sa.muslimtv.home.MainActivity".equals(cls)) { home=true;preview=false; }
         else if("sa.muslimtv.screensaver".equals(pkg) && "sa.muslimtv.screensaver.MainActivity".equals(cls)) { preview=true;home=false; }
         else if(!cls.startsWith("android.") && !pkg.equals("com.android.systemui")) { home=false;preview=false;dream=false; }
-        if(!inside())stopAudio();
+        if(!canPlayAudio())stopAudio();
     }
     private boolean inside() { return home || dream || preview; }
+    private boolean canPlayAudio() {
+        return config.optBoolean("enabled", false)
+            && (inside() ? config.optBoolean("sound", true) : config.optBoolean("sound_outside", false));
+    }
     private boolean awake() { PowerManager p=service.getSystemService(PowerManager.class);return p!=null && p.isInteractive(); }
     private int dp(int n){return Math.round(n*service.getResources().getDisplayMetrics().density);}
     private void refreshConfig() {
@@ -110,7 +114,7 @@ final class AdhanEngine {
         try(Cursor c=service.getContentResolver().query(CONFIG,null,null,null,null)) {
             if(c!=null && c.moveToFirst())config=new JSONObject(c.getString(0));
         }catch(Exception e){Log.w("MUSLIMTVAdhan","Settings provider not ready");}
-        if(!config.optBoolean("enabled",false) || !config.optBoolean("sound",true))stopAudio();
+        if(!canPlayAudio())stopAudio();
         if(!config.optBoolean("enabled",false) || !config.optBoolean("popup",true))hideBanner();
     }
     private static String dayKey(long millis) { SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd",Locale.ROOT);f.setTimeZone(ZONE);return f.format(new Date(millis)); }
@@ -130,7 +134,7 @@ final class AdhanEngine {
         if(stopped)return;
         long now=System.currentTimeMillis();
         if(now-configAt>10000 || now<configAt)refreshConfig();
-        if(!awake())stopAudio();
+        if(!awake() || !canPlayAudio())stopAudio();
         String today=dayKey(now);
         if(!fetching && (days.optJSONObject(today)==null || now-store.getLong("fetched_at",0)>12*3600000L)
                 && (now-attemptAt>5*60000L || now<attemptAt))fetchTimetable();
@@ -143,7 +147,7 @@ final class AdhanEngine {
             // Persist before emitting: periodic checks and exact alarm delivery cannot duplicate it.
             if(!store.edit().putString("done_"+KEYS[i],today).commit())continue;
             if(config.optBoolean("popup",true))showBanner("حان الآن موعد أذان "+NAMES[i],due);
-            if(inside() && config.optBoolean("sound",true))play(i==0?config.optString("fajr_voice","fajr_makkah"):config.optString("voice","makkah"));
+            if(canPlayAudio())play(i==0?config.optString("fajr_voice","fajr_makkah"):config.optString("voice","makkah"));
         }
         long next=(now/3600000L+1)*3600000L;String nextName="";
         for(int offset=0;offset<2;offset++) {
@@ -209,7 +213,7 @@ final class AdhanEngine {
         return id.matches("makkah|quds|madinah|alafasy|fajr_makkah|fajr_madinah");
     }
     private void play(String id) {
-        if(!inside() || !awake() || !allowedVoice(id))return;
+        if(!canPlayAudio() || !awake() || !allowedVoice(id))return;
         stopAudio();
         if(audio==null || audio.requestAudioFocus(focus,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED)return;
         try {
@@ -220,7 +224,7 @@ final class AdhanEngine {
                 if(fd==null)throw new java.io.IOException();m.setDataSource(fd.getFileDescriptor(),fd.getStartOffset(),fd.getLength());
             }
             float level=Math.max(0,Math.min(100,config.optInt("volume",65)))/100f;m.setVolume(level,level);
-            m.setOnPreparedListener(p->{if(player==p && inside() && awake()){p.start();Log.i("MUSLIMTVAdhan","Adhan playback started: "+id);handler.postDelayed(audioLimit,10*60000L);}else stopAudio();});
+            m.setOnPreparedListener(p->{if(player==p && canPlayAudio() && awake()){p.start();Log.i("MUSLIMTVAdhan","Adhan playback started: "+id);handler.postDelayed(audioLimit,10*60000L);}else stopAudio();});
             m.setOnCompletionListener(p->stopAudio());m.setOnErrorListener((p,w,e)->{stopAudio();report("تعذر تشغيل تسجيل الأذان");return true;});m.prepareAsync();
         }catch(Exception e){stopAudio();report("تعذر فتح تسجيل الأذان");}
     }
