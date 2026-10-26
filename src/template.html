@@ -28,7 +28,7 @@
   /* card-only mode for the launcher */
   html.widget,html.widget body{background:transparent}
   html.widget .photo,html.widget .veil,html.widget .grain,html.widget .top-veil,html.widget .bottom-veil,
-  html.widget .dimmer,html.widget #credit,html.widget .top,html.widget .clockwrap,html.widget .bottom{display:none}
+  html.widget .dimmer,html.widget #credit,html.widget .top,html.widget .clockwrap,html.widget .prayer-strip,html.widget .bottom{display:none}
   html.widget .stage{height:auto;padding:0;display:block;transition:none}
   html.widget .mid{display:block}
   html.widget .week{width:100%}
@@ -165,6 +165,17 @@
   }
   .subline .dot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.9}
 
+  .prayer-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1vw;direction:rtl}
+  .prayer-card{
+    min-width:0;padding:.8vh .95vw;text-align:center;
+    background:rgba(4,14,9,.60);border:1px solid rgba(220,184,111,.16);border-radius:12px;
+  }
+  .prayer-card .name{display:block;color:#D6AF6B;font-size:clamp(12px,.96vw,18px);font-weight:500}
+  .prayer-card .time{display:block;margin-top:.15vh;color:var(--sand);font-family:'ThmanyahDisplay','Thmanyah',serif;
+    font-size:clamp(16px,1.35vw,25px);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .prayer-card.next{border-color:rgba(220,184,111,.55);background:rgba(25,39,27,.70)}
+  .prayer-card.next .time{color:#FFE9B8}
+
   .bottom{
     display:grid;grid-template-columns:1fr .9fr 1.3fr;
     gap:2.4vw;align-items:start;
@@ -268,6 +279,8 @@
       <ul id="week-list"><li class="empty">جارٍ التحميل…</li></ul>
     </div>
   </section>
+
+  <section class="prayer-strip" id="prayer-strip" aria-label="مواقيت الصلاة اليوم"></section>
 
   <footer class="bottom">
     <div class="panel p-prayer">
@@ -388,6 +401,19 @@ function buildPrayers(t){
     const [h,mi] = String(t[k]).split(':').map(Number);
     return {key:k, name:PRAYER_NAMES[k], h, mi};
   });
+  renderPrayerStrip();
+}
+
+function renderPrayerStrip(){
+  const strip = document.getElementById('prayer-strip');
+  if(!strip) return;
+  strip.replaceChildren();
+  for(const prayer of PRAYERS){
+    const card = document.createElement('div'); card.className = 'prayer-card';
+    const name = document.createElement('span'); name.className = 'name'; name.textContent = prayerName(prayer);
+    const time = document.createElement('span'); time.className = 'time'; time.textContent = fmt12(prayer.h, prayer.mi);
+    card.append(name, time); strip.appendChild(card);
+  }
 }
 
 // Umm al-Qura: Fajr at 18.5°, Maghrib at sunset, Isha 90 min after Maghrib (120 in Ramadan),
@@ -505,6 +531,9 @@ function tickPrayer(){
   if(!PRAYERS.length) return;
   const p = riyadhParts();
   const mins = p.h*60 + p.mi + p.s/60;
+  const nextIndex = PRAYERS.findIndex(x => (x.h*60+x.mi) > mins);
+  document.querySelectorAll('#prayer-strip .prayer-card').forEach((card, i) =>
+    card.classList.toggle('next', i === (nextIndex < 0 ? 0 : nextIndex)));
 
   // between adhan and iqama: show the iqama countdown
   const cur = PRAYERS.find(x=>{

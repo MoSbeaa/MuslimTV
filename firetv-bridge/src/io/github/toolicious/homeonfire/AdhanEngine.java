@@ -77,6 +77,11 @@ final class AdhanEngine {
         handler.post(tick);
     }
     void stop() { stopped=true;handler.removeCallbacksAndMessages(null);stopAudio();hideBanner();cancelAlarm(); }
+    boolean dismissAudio() {
+        if(player==null)return false;
+        stopAudio();
+        return true;
+    }
     void update(Intent intent) {
         if(intent!=null && intent.hasExtra("scope")) {
             boolean visible=intent.getBooleanExtra("visible",false);String scope=intent.getStringExtra("scope");

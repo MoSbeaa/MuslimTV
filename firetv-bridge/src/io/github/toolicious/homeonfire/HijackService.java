@@ -1399,6 +1399,16 @@ public class HijackService extends AccessibilityService {
             trackKeyState(keyCode);
         }
 
+        // A single Back press dismisses a playing adhan without leaving the current screen.
+        // Consume its repeat DOWNs and paired UP as well, so an app never receives a partial press.
+        if (keyCode == KeyEvent.KEYCODE_BACK && isDown) {
+            if (consumedDownKey == keyCode) return true;
+            if (event.getRepeatCount() == 0 && adhanEngine != null && adhanEngine.dismissAudio()) {
+                consumedDownKey = keyCode;
+                return true;
+            }
+        }
+
         // Learn mode: the config screen asked us to capture the next assignable
         // key so the user can bind it as the launch key (same-process handoff).
         // While waiting we also swallow the navigation keys (d-pad, OK, Menu,
