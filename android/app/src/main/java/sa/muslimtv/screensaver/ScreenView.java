@@ -17,7 +17,12 @@ final class ScreenView {
     @SuppressWarnings("deprecation")
     static WebView create(final Context c) {
         WebView w = new WebView(c);
-        w.setBackgroundColor(0xFF040E09);   // no white flash before the page paints
+        android.content.SharedPreferences colors = c.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        int surface = colors.getInt("theme_surface", 0xFF102D21);
+        w.setBackgroundColor(android.graphics.Color.rgb(
+            Math.max(2, Math.round(android.graphics.Color.red(surface) * .22f)),
+            Math.max(2, Math.round(android.graphics.Color.green(surface) * .22f)),
+            Math.max(2, Math.round(android.graphics.Color.blue(surface) * .22f))));
         w.setFocusable(false);
         w.setVerticalScrollBarEnabled(false);
         w.setHorizontalScrollBarEnabled(false);
@@ -38,7 +43,10 @@ final class ScreenView {
         s.setAllowUniversalAccessFromFileURLs(true);
         s.setCacheMode(WebSettings.LOAD_NO_CACHE);   // photos are cached by PhotoCache, data must be fresh
         if (android.os.Build.VERSION.SDK_INT >= 23) s.setOffscreenPreRaster(true);   // draw before it is shown
-        w.loadUrl(new Prefs(c).dashboardUrl(c));
+        String theme = String.format(java.util.Locale.ROOT, "&surface=%06X&accent=%06X",
+            colors.getInt("theme_surface", 0xFF102D21) & 0xFFFFFF,
+            colors.getInt("theme_accent", 0xFFD6AF6B) & 0xFFFFFF);
+        w.loadUrl(new Prefs(c).dashboardUrl(c) + theme);
         UpdateJob.schedule(c);
         return w;
     }

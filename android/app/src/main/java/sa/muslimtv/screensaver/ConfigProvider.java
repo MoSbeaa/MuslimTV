@@ -40,6 +40,11 @@ public class ConfigProvider extends ContentProvider {
         if ("ADHAN_STATUS".equals(method) && extras != null) {
             AdhanOptions.prefs(getContext()).edit().putString("status", extras.getString("status", "")).apply();
         }
+        if ("SET_THEME".equals(method) && extras != null) {
+            getContext().getSharedPreferences("settings", android.content.Context.MODE_PRIVATE).edit()
+                .putInt("theme_surface", extras.getInt("surface", 0xFF102D21) | 0xFF000000)
+                .putInt("theme_accent", extras.getInt("accent", 0xFFD6AF6B) | 0xFF000000).apply();
+        }
         return new android.os.Bundle();
     }
 

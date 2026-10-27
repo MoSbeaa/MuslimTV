@@ -20,7 +20,7 @@ public final class ThemeActivity extends Activity {
         body = new LinearLayout(this); body.setOrientation(LinearLayout.VERTICAL);
         body.setPadding(dp(100), dp(24), dp(100), dp(24)); scroll.addView(body);
         label("ألوان الواجهة", 27);
-        label("اختر مظهرًا جاهزًا، أو أدخل لون البطاقات ولون الزخارف بصيغة #RRGGBB. تتغير ألوان المشغل وبطاقة الصلاة؛ تبقى الصور كما هي.", 16);
+        label("اختر مظهرًا جاهزًا، أو أدخل لون البطاقات ولون الزخارف بصيغة #RRGGBB. تتغير ألوان المشغل وشاشة التوقف معًا؛ تبقى الصور كما هي.", 16);
         button("صور المفضلة: " + (ThemeColors.themedFavorites(this) ? "متوافقة مع الثيم" : "صور التطبيقات الأصلية")).setOnClickListener(v -> {
             Dock.prefs(this).edit().putBoolean("themed_favorites", !ThemeColors.themedFavorites(this)).apply();
             Toast.makeText(this, "تم تغيير صور المفضلة", Toast.LENGTH_SHORT).show(); finish();
@@ -87,6 +87,7 @@ public final class ThemeActivity extends Activity {
     private void invalid() { Toast.makeText(this, "أدخل ست خانات للون، مثل #102D21", Toast.LENGTH_LONG).show(); }
     private void apply(int bg, int gold) {
         Dock.prefs(this).edit().putInt("theme_surface", bg).putInt("theme_accent", gold).apply();
+        ThemeColors.syncToSaver(this);
         Toast.makeText(this, "تم حفظ ألوان الواجهة", Toast.LENGTH_SHORT).show(); finish();
     }
 }

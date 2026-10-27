@@ -152,6 +152,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        ThemeColors.syncToSaver(this);
         if (!ThemeColors.signature(this).equals(themeSignature)) { recreate(); return; }
         IntentFilter tf = new IntentFilter(Intent.ACTION_TIME_TICK);
         tf.addAction(Intent.ACTION_TIME_CHANGED);
@@ -409,28 +410,38 @@ public class MainActivity extends Activity {
         weatherDetails = prefs.getString("weather_details", weatherDetails);
         long now = System.currentTimeMillis();
         if (weatherLoading || now - weatherAttempt < 5 * 60 * 1000L
-                || (prefs.contains("weather_week") && now - prefs.getLong("weather_at", 0) < 20 * 60 * 1000L)) return;
+                || ("eccc".equals(prefs.getString("weather_source", ""))
+                    && prefs.contains("weather_week") && now - prefs.getLong("weather_at", 0) < 20 * 60 * 1000L)) return;
         weatherAttempt = now;
         weatherLoading = true;
         new Thread(() -> {
             java.net.HttpURLConnection connection = null;
             try {
                 connection = (java.net.HttpURLConnection) new java.net.URL(
-                    "https://api.open-meteo.com/v1/forecast?latitude=49.8951&longitude=-97.1384&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&forecast_days=7&timezone=America%2FWinnipeg").openConnection();
+                    "https://api.weather.gc.ca/collections/citypageweather-realtime/items/mb-36?f=json").openConnection();
                 connection.setConnectTimeout(8000); connection.setReadTimeout(8000);
                 StringBuilder body = new StringBuilder();
                 try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(connection.getInputStream(), java.nio.charset.StandardCharsets.UTF_8))) {
                     String line; while ((line = reader.readLine()) != null) body.append(line);
                 }
-                org.json.JSONObject response = new org.json.JSONObject(body.toString());
-                org.json.JSONObject current = response.getJSONObject("current");
-                org.json.JSONObject daily = response.getJSONObject("daily");
-                int code = current.getInt("weather_code");
+                org.json.JSONObject response = new org.json.JSONObject(body.toString()).getJSONObject("properties");
+                org.json.JSONObject current = response.getJSONObject("currentConditions");
+                org.json.JSONObject group = response.getJSONObject("forecastGroup");
+                org.json.JSONObject daily = ecccDaily(group);
+                int code = current.optJSONObject("iconCode").optInt("value", -1);
+                if (code < 0) {
+                    org.json.JSONArray hours = response.getJSONObject("hourlyForecastGroup").getJSONArray("hourlyForecasts");
+                    if (hours.length() > 0) code = hours.getJSONObject(0).getJSONObject("iconCode").optInt("value", -1);
+                }
                 String condition = weatherCondition(code);
-                String temp = String.format(new java.util.Locale("ar"), "%d°", Math.round(current.getDouble("temperature_2m")));
+                String temp = String.format(new java.util.Locale("ar"), "%d°", Math.round(current.getJSONObject("temperature").getJSONObject("value").getDouble("en")));
                 String label = temp + " " + condition;
-                String details = "وينبيغ، كندا\n" + label + "\nالحرارة بالدرجة المئوية\nآخر تحديث: " + current.getString("time").replace('T', ' ') + "\nالمصدر: Open-Meteo";
-                prefs.edit().putString("weather_label", label).putString("weather_details", details).putString("weather_week", daily.toString()).putLong("weather_at", System.currentTimeMillis()).apply();
+                String details = "وينبيغ، كندا\n" + label + "\nالحرارة بالدرجة المئوية\nآخر تحديث: "
+                    + current.getJSONObject("timestamp").getString("en").replace('T', ' ').replace("Z", " UTC")
+                    + "\nالمصدر: هيئة البيئة والتغير المناخي الكندية";
+                prefs.edit().putString("weather_label", label).putString("weather_details", details)
+                    .putString("weather_week", daily.toString()).putString("weather_source", "eccc")
+                    .putLong("weather_at", System.currentTimeMillis()).apply();
                 handler.post(() -> { if (!isDestroyed()) { weatherPill.setText(label); weatherDetails = details; renderWeatherForecast(); } });
             } catch (Exception e) {
                 handler.post(() -> { if (!isDestroyed() && !prefs.contains("weather_label")) weatherPill.setText("الطقس غير متاح"); if (!isDestroyed()) renderWeatherForecast(); });
@@ -441,16 +452,46 @@ public class MainActivity extends Activity {
     private android.app.AlertDialog weatherDialog;
     private LinearLayout weatherForecastBody;
     private static String weatherCondition(int code) {
-        if (code == 0) return "صافٍ";
-        if (code <= 3) return "غائم";
-        if (code == 45 || code == 48) return "ضباب";
-        if (code >= 51 && code <= 57) return "رذاذ";
-        if (code >= 61 && code <= 67) return "ممطر";
-        if (code >= 71 && code <= 77) return "ثلوج";
-        if (code >= 80 && code <= 82) return "زخات مطر";
-        if (code == 85 || code == 86) return "زخات ثلج";
-        if (code >= 95 && code <= 99) return "عواصف رعدية";
-        return "غير متاح";
+        if (code == 0 || code == 1) return "مشمس";
+        if (code >= 2 && code <= 3 || code >= 32 && code <= 33) return "غائم جزئيًا";
+        if (code == 10 || code == 34) return "غائم";
+        if (code == 30 || code == 31) return "صافٍ";
+        if (code == 20) return "ضباب";
+        if (code == 14 || code == 15 || code == 22 || code == 23 || code == 27 || code == 28) return "ثلوج";
+        if (code == 17 || code == 29) return "عواصف رعدية";
+        if (code == 21) return "رذاذ";
+        if (code >= 11 && code <= 13 || code >= 24 && code <= 26) return "أمطار";
+        return "طقس وينبيغ";
+    }
+
+    private static org.json.JSONObject ecccDaily(org.json.JSONObject group) throws Exception {
+        java.text.SimpleDateFormat parse = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.ROOT);
+        parse.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        java.util.Calendar day = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("America/Winnipeg"));
+        day.setTime(parse.parse(group.getJSONObject("timestamp").getString("en")));
+        java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT);
+        format.setTimeZone(day.getTimeZone());
+        org.json.JSONArray dates = new org.json.JSONArray(), highs = new org.json.JSONArray();
+        org.json.JSONArray lows = new org.json.JSONArray(), codes = new org.json.JSONArray();
+        org.json.JSONArray periods = group.getJSONArray("forecasts");
+        for (int n = 0; n < periods.length() && dates.length() < 7; n++) {
+            org.json.JSONObject period = periods.getJSONObject(n);
+            String name = period.getJSONObject("period").getJSONObject("value").getString("en").toLowerCase(java.util.Locale.ROOT);
+            org.json.JSONArray temperatures = period.optJSONObject("temperatures") == null ? null
+                : period.getJSONObject("temperatures").optJSONArray("temperature");
+            Object value = temperatures != null && temperatures.length() > 0
+                ? temperatures.getJSONObject(0).getJSONObject("value").get("en") : org.json.JSONObject.NULL;
+            if (name.contains("night") || name.contains("tonight")) {
+                if (lows.length() > 0 && lows.isNull(lows.length() - 1)) lows.put(lows.length() - 1, value);
+                day.add(java.util.Calendar.DAY_OF_MONTH, 1);
+            } else if (value != org.json.JSONObject.NULL) {
+                dates.put(format.format(day.getTime())); highs.put(value); lows.put(org.json.JSONObject.NULL);
+                org.json.JSONObject abbreviated = period.optJSONObject("abbreviatedForecast");
+                codes.put(abbreviated == null ? -1 : abbreviated.getJSONObject("icon").optInt("value", -1));
+            }
+        }
+        return new org.json.JSONObject().put("time", dates).put("temperature_2m_max", highs)
+            .put("temperature_2m_min", lows).put("weather_code", codes);
     }
 
     private void showWeatherForecast() {
@@ -501,8 +542,8 @@ public class MainActivity extends Activity {
                 row.setGravity(Gravity.CENTER_VERTICAL);
                 row.setPadding(0, dp(7), 0, dp(7));
                 String day = display.format(parse.parse(dates.getString(n)));
-                String temperature = String.format(new java.util.Locale("ar"), "العظمى %d°  ·  الصغرى %d°",
-                    Math.round(highs.getDouble(n)), Math.round(lows.getDouble(n)));
+                String temperature = String.format(new java.util.Locale("ar"), "العظمى %d°  ·  الصغرى %s",
+                    Math.round(highs.getDouble(n)), lows.isNull(n) ? "—" : String.format(new java.util.Locale("ar"), "%d°", Math.round(lows.getDouble(n))));
                 String[] cells = {day, weatherCondition(codes.getInt(n)), temperature};
                 for (int c = 0; c < cells.length; c++) {
                     TextView cell = text(15, "regular", c == 0 ? themeAccent : Color.WHITE);

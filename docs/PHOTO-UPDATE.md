@@ -8,6 +8,10 @@ Original total: 166,652,958 bytes. TV copies: 27,878,475 bytes.
 
 Both launcher and screensaver carry the collection in their APKs. The screensaver intercepts its photos/index.json and photos/tv/*.jpg requests from bundled assets instead of contacting the upstream repository. The launcher uses these JPEGs as its bundled wallpapers and skips the unrelated upstream collection. The screensaver rotates the full local set rather than limiting it to five upstream photos for four days. Existing rotation intervals stay unchanged.
 
+On the screensaver, a loaded next photo now fades through black over roughly 2.4 seconds. Only the background changes; the clock and information cards remain visible. Repeated requests for the same image do not restart its animation.
+
+The screensaver receives the selected launcher palette when the home screen opens or its theme changes. Prayer cards, the hadith card, highlights, and dark photo gradients use that palette; the photographs themselves keep their original colors.
+
 To prepare a later update:
 
     PYTHONPATH=optimize/run/photo-tools python .github/tools/prepare_tv_photos.py
