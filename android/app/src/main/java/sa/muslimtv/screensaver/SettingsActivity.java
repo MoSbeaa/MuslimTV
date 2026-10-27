@@ -121,6 +121,10 @@ public class SettingsActivity extends Activity {
         row("موعد مخصص", prefs.eventDate().isEmpty() ? "غير مفعّل" : prefs.eventTitle(), R.drawable.ic_sync, this::editCountdown);
 
         header("التوقيت");
+        row("الساعة فوق التطبيقات", AdhanOptions.prefs(this).getBoolean("clock_overlay", true) ? "ظاهرة" : "مخفية", R.drawable.ic_eye,
+            () -> { android.content.SharedPreferences p = AdhanOptions.prefs(this);
+                p.edit().putBoolean("clock_overlay", !p.getBoolean("clock_overlay", true)).apply();
+                AdhanOptions.changed(this); render(); });
         row("تبديل الصورة كل", minutesLabel(Integer.parseInt(prefs.photoMinutes())), R.drawable.ic_sync,
             new Runnable() { public void run() { pickPhotoMinutes(); } });
         row("بدء شاشة التوقف بعد", idleLabel(), R.drawable.ic_screensaver,

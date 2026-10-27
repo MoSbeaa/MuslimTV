@@ -54,7 +54,9 @@ final class AdhanEngine {
     private boolean home, dream, preview, stopped, fetching;
     private long configAt, attemptAt, alarmAt, statusAt;
     private MediaPlayer player;
-    private View banner;
+    private View banner, clockOverlay;
+    private TextView clockText;
+    private long clockMinute = -1;
     private final AudioManager.OnAudioFocusChangeListener focus = change -> { if(change < 0) stopAudio(); };
     private final Runnable tick = new Runnable() { public void run() { if(stopped) return; check(); handler.postDelayed(this,1000); } };
     private final Runnable hide = () -> hideBanner();
@@ -76,7 +78,7 @@ final class AdhanEngine {
         service.sendBroadcast(new Intent("sa.muslimtv.ADHAN_QUERY_SCOPE").setPackage("sa.muslimtv.screensaver"));
         handler.post(tick);
     }
-    void stop() { stopped=true;handler.removeCallbacksAndMessages(null);stopAudio();hideBanner();cancelAlarm(); }
+    void stop() { stopped=true;handler.removeCallbacksAndMessages(null);stopAudio();hideBanner();hideClock();cancelAlarm(); }
     boolean dismissAudio() {
         if(player==null)return false;
         stopAudio();
@@ -106,6 +108,7 @@ final class AdhanEngine {
         else if("sa.muslimtv.screensaver".equals(pkg) && "sa.muslimtv.screensaver.MainActivity".equals(cls)) { preview=true;home=false; }
         else if(!cls.startsWith("android.") && !pkg.equals("com.android.systemui")) { home=false;preview=false;dream=false; }
         if(!canPlayAudio())stopAudio();
+        updateClock(System.currentTimeMillis());
     }
     private boolean inside() { return home || dream || preview; }
     private boolean canPlayAudio() {
@@ -121,6 +124,7 @@ final class AdhanEngine {
         }catch(Exception e){Log.w("MUSLIMTVAdhan","Settings provider not ready");}
         if(!canPlayAudio())stopAudio();
         if(!config.optBoolean("enabled",false) || !config.optBoolean("popup",true))hideBanner();
+        updateClock(System.currentTimeMillis());
     }
     private static String dayKey(long millis) { SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd",Locale.ROOT);f.setTimeZone(ZONE);return f.format(new Date(millis)); }
     private long time(JSONObject row,String field) {
@@ -139,6 +143,7 @@ final class AdhanEngine {
         if(stopped)return;
         long now=System.currentTimeMillis();
         if(now-configAt>10000 || now<configAt)refreshConfig();
+        updateClock(now);
         if(!awake() || !canPlayAudio())stopAudio();
         String today=dayKey(now);
         if(!fetching && (days.optJSONObject(today)==null || now-store.getLong("fetched_at",0)>12*3600000L)
@@ -235,6 +240,38 @@ final class AdhanEngine {
         }catch(Exception e){stopAudio();report("تعذر فتح تسجيل الأذان");}
     }
     private void stopAudio(){handler.removeCallbacks(audioLimit);if(player!=null){MediaPlayer old=player;player=null;old.release();}if(audio!=null)audio.abandonAudioFocus(focus);}
+    private void updateClock(long now) {
+        if(stopped || !config.optBoolean("clock_overlay",true) || !awake() || inside()) { hideClock(); return; }
+        if(clockOverlay==null) {
+            TextView text=new TextView(service);text.setTextSize(23);text.setTextColor(0xFFFFFDF6);
+            text.setGravity(Gravity.CENTER);text.setPadding(dp(13),dp(5),dp(13),dp(5));
+            if(android.os.Build.VERSION.SDK_INT>=26)try{text.setTypeface(service.getResources().getFont(R.font.rakkas));}catch(Exception ignored){}
+            GradientDrawable bg=new GradientDrawable();bg.setColor(0x99040E09);bg.setCornerRadius(dp(12));bg.setStroke(dp(1),0x29DCB86F);
+            text.setBackground(bg);
+            WindowManager.LayoutParams params=new WindowManager.LayoutParams(-2,-2,WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE|WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,PixelFormat.TRANSLUCENT);
+            params.gravity=Gravity.TOP|Gravity.RIGHT;params.x=dp(28);params.y=dp(20);
+            try{service.getSystemService(WindowManager.class).addView(text,params);clockOverlay=text;clockText=text;clockMinute=-1;}
+            catch(Exception e){Log.w("MUSLIMTVClock","Clock overlay unavailable",e);return;}
+        }
+        long minute=now/60000L;
+        if(minute!=clockMinute) {
+            clockMinute=minute;
+            Calendar c=Calendar.getInstance(ZONE);c.setTimeInMillis(now);
+            int hour=c.get(Calendar.HOUR);if(hour==0)hour=12;
+            String value=hour+":"+String.format(Locale.ROOT,"%02d",c.get(Calendar.MINUTE))+(c.get(Calendar.AM_PM)==Calendar.AM?" ص":" م");
+            clockText.setText(arabicDigits(value));
+        }
+    }
+    private static String arabicDigits(String value) {
+        StringBuilder out=new StringBuilder();for(int i=0;i<value.length();i++){
+            char c=value.charAt(i);out.append(c>='0'&&c<='9'?(char)('٠'+c-'0'):c);
+        }return out.toString();
+    }
+    private void hideClock() {
+        if(clockOverlay!=null){try{service.getSystemService(WindowManager.class).removeView(clockOverlay);}catch(Exception ignored){}
+            clockOverlay=null;clockText=null;clockMinute=-1;}
+    }
     private void showBanner(String title,long when) {
         if(!awake())return;hideBanner();
         LinearLayout box=new LinearLayout(service);box.setOrientation(LinearLayout.VERTICAL);box.setPadding(dp(20),dp(15),dp(20),dp(15));box.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
@@ -244,7 +281,7 @@ final class AdhanEngine {
         box.addView(heading);
         TextView time=new TextView(service);SimpleDateFormat format=new SimpleDateFormat("h:mm a",new Locale("ar"));format.setTimeZone(ZONE);time.setText(format.format(new Date()));time.setTextColor(0xFFE5DECC);time.setTextSize(12);time.setGravity(Gravity.RIGHT);box.addView(time);
         WindowManager.LayoutParams params=new WindowManager.LayoutParams(Math.min(dp(350),service.getResources().getDisplayMetrics().widthPixels-dp(48)),-2,WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE|WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,PixelFormat.TRANSLUCENT);
-        params.gravity=Gravity.TOP|Gravity.RIGHT;params.x=dp(28);params.y=dp(32);
+        params.gravity=Gravity.TOP|Gravity.RIGHT;params.x=dp(28);params.y=clockOverlay==null?dp(32):dp(82);
         try {service.getSystemService(WindowManager.class).addView(box,params);banner=box;Log.i("MUSLIMTVAdhan","Prayer banner shown");handler.postDelayed(hide,Math.max(5,Math.min(30,config.optInt("duration",12)))*1000L);}catch(Exception e){Log.w("MUSLIMTVAdhan","Overlay unavailable",e);}
     }
     private void hideBanner(){handler.removeCallbacks(hide);if(banner!=null){try{service.getSystemService(WindowManager.class).removeView(banner);}catch(Exception ignored){}banner=null;}}
