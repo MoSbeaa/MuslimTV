@@ -12,8 +12,8 @@ final class ThemeColors {
     static void syncToSaver(Context c) {
         android.os.Bundle colors = new android.os.Bundle();
         colors.putInt("surface", surface(c)); colors.putInt("accent", accent(c));
-        try { c.getContentResolver().call("sa.muslimtv.screensaver.config", "SET_THEME", null, colors); }
-        catch (Exception ignored) { } // The launcher also works when the optional screensaver is absent.
+        try { c.getContentResolver().call(android.net.Uri.parse("content://sa.muslimtv.screensaver.config"), "SET_THEME", null, colors); }
+        catch (Exception | LinkageError ignored) { } // The launcher also works when the optional screensaver is absent.
     }
     static String hex(int color) { return String.format(Locale.ROOT, "#%06X", color & 0xFFFFFF); }
     static int parse(String value) {
