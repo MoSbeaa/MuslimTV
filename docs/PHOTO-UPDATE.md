@@ -8,9 +8,9 @@ Original total: 166,652,958 bytes. TV copies: 27,878,475 bytes.
 
 Both launcher and screensaver carry the collection in their APKs. The screensaver intercepts its photos/index.json and photos/tv/*.jpg requests from bundled assets instead of contacting the upstream repository. The launcher uses these JPEGs as its bundled wallpapers and skips the unrelated upstream collection. The screensaver rotates the full local set rather than limiting it to five upstream photos for four days. Existing rotation intervals stay unchanged.
 
-On the screensaver, a loaded next photo now fades through black over roughly 2.4 seconds. Only the background changes; the clock and information cards remain visible. Repeated requests for the same image do not restart its animation.
+On the screensaver, two photo layers fade the old image to black and the new image in over roughly 2.4 seconds. The new image is assigned only to the invisible layer; the clock and information cards remain visible. Initial display waits briefly for the bundled photo index so it need not switch from a placeholder image after opening. The old minute-long photo movement and the burst preload of all 83 photos have been removed because they can force repeated WebView redraws and exhaust memory on a Fire TV Stick.
 
-The screensaver receives the selected launcher palette when the home screen opens or its theme changes. Prayer cards, the hadith card, highlights, and dark photo gradients use that palette; the photographs themselves keep their original colors.
+The screensaver receives the selected launcher palette when the home screen opens or its theme changes. Prayer and hadith cards, including the optional home card, use the launcher's 55% surface opacity, 30% accent border, 1 CSS-pixel border, and 26-pixel corners. The black photo gradient matches the launcher scrim. The photographs keep their original colors.
 
 To prepare a later update:
 

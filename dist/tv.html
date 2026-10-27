@@ -18,8 +18,6 @@
     --gold:#DCB86F;
     --surface-rgb:16,45,33;
     --accent-rgb:220,184,111;
-    --veil-rgb:3,10,7;
-    --veil-solid:#040E09;
     --green-lt:#57D294;
     --red:#EE6A50;
   }
@@ -31,13 +29,13 @@
   @keyframes reveal{to{opacity:1}}
   /* card-only mode for the launcher */
   html.widget,html.widget body{background:transparent}
-  html.widget .photo,html.widget .photo-fade,html.widget .veil,html.widget .grain,html.widget .top-veil,html.widget .bottom-veil,
+  html.widget .photo,html.widget .veil,html.widget .grain,html.widget .top-veil,html.widget .bottom-veil,
   html.widget .dimmer,html.widget #credit,html.widget .top,html.widget .clockwrap,html.widget .prayer-strip,html.widget .bottom{display:none}
   html.widget .stage{height:auto;padding:0;display:block;transition:none}
   html.widget .mid{display:block}
   html.widget .week{width:100%}
   html,body{
-    height:100%;overflow:hidden;background:var(--veil-solid);color:var(--sand);
+    height:100%;overflow:hidden;background:#000;color:var(--sand);
     font-family:'Thmanyah',system-ui,sans-serif;
     -webkit-user-select:none;user-select:none;cursor:none;
   }
@@ -45,23 +43,19 @@
   .photo{
     position:fixed;inset:0;z-index:0;
     background-image:none;
-    background-color:var(--veil-solid);
+    background-color:#000;
     background-size:cover;
     background-position:center 26%;
     background-repeat:no-repeat;
-    transform:scale(1.03);   /* edges stay covered while it settles */
+    opacity:0;transition:opacity 1.2s ease-in-out;will-change:opacity;
   }
+  .photo.current{opacity:1}
   /* each photo's darkness as a plain black layer: same look as filter:brightness, nothing to recompute */
   .photo::after{content:'';position:absolute;inset:0;background:#000;opacity:var(--dim,.05)}
-  /* Fade only the photo. Text and cards stay steady while the next image is swapped behind black. */
-  .photo-fade{position:fixed;inset:0;z-index:0;background:var(--veil-solid);opacity:0;pointer-events:none;
-    transition:opacity 1.2s ease-in-out}
-  .photo-fade.on{opacity:1}
+  /* Two photo layers: each image is set only while its layer is invisible. */
   .veil{
     position:fixed;inset:0;z-index:1;
-    background:
-      linear-gradient(180deg,rgba(var(--veil-rgb),.62) 0%,rgba(var(--veil-rgb),.30) 22%,rgba(var(--veil-rgb),.12) 46%,rgba(var(--veil-rgb),.42) 74%,rgba(var(--veil-rgb),.88) 100%),
-      radial-gradient(120% 85% at 22% 34%,rgba(var(--surface-rgb),.40) 0%,rgba(var(--surface-rgb),0) 58%);
+    background:linear-gradient(180deg,rgba(0,0,0,.70) 0%,rgba(0,0,0,.25) 25%,rgba(0,0,0,.15) 50%,rgba(0,0,0,.55) 75%,rgba(0,0,0,.90) 100%);
   }
   /* photo credits live in PHOTO-CREDITS.md on GitHub, not on screen */
   #credit{display:none;
@@ -73,14 +67,7 @@
     position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.05;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='.55'/></svg>");
   }
-  .top-veil{
-    position:fixed;left:0;top:0;width:56vw;height:34vh;z-index:3;pointer-events:none;
-    background:radial-gradient(120% 100% at 0% 0%,rgba(var(--veil-rgb),.82) 0%,rgba(var(--veil-rgb),.42) 45%,rgba(var(--veil-rgb),0) 76%);
-  }
-  .bottom-veil{
-    position:fixed;left:0;right:0;bottom:0;height:30vh;z-index:3;pointer-events:none;
-    background:linear-gradient(180deg,rgba(var(--veil-rgb),0) 0%,rgba(var(--veil-rgb),.55) 42%,rgba(var(--veil-rgb),.90) 100%);
-  }
+  .top-veil,.bottom-veil{display:none}
 
   .stage{
     position:relative;z-index:5;height:100vh;
@@ -94,9 +81,9 @@
 
   .week{
     width:min(760px,48vw);justify-self:end;
-    background:rgba(var(--surface-rgb),.65);   /* no backdrop blur: over a moving photo it is redone every frame */
-    border:1px solid rgba(var(--accent-rgb),.25);
-    border-radius:12px;
+    background:rgba(var(--surface-rgb),.55);   /* same surface and stroke as the launcher favourites band */
+    border:1px solid rgba(var(--accent-rgb),.30);
+    border-radius:26px;
     padding:1.7vh 1.4vw;
   }
   .week .hd{
@@ -176,7 +163,7 @@
   .prayer-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1vw;direction:rtl}
   .prayer-card{
     min-width:0;padding:.8vh .95vw;text-align:center;
-    background:rgba(var(--surface-rgb),.65);border:1px solid rgba(var(--accent-rgb),.25);border-radius:12px;
+    background:rgba(var(--surface-rgb),.55);border:1px solid rgba(var(--accent-rgb),.30);border-radius:26px;
   }
   .prayer-card .name{display:block;color:var(--gold);font-size:clamp(12px,.96vw,18px);font-weight:500}
   .prayer-card .time{display:block;margin-top:.15vh;color:var(--sand);font-family:'ThmanyahDisplay','Thmanyah',serif;
@@ -218,14 +205,6 @@
   .p-countdown .sub{white-space:normal;line-height:1.4;max-width:100%;font-size:clamp(11px,.88vw,17px)}
 
 
-  /* A new photo settles in over a minute, then holds still: an endless drift kept the TV redrawing
-     the whole screen 60 times a second, for hours. */
-  @keyframes settle{
-    from{transform:scale(1.055) translate3d(-.55%,-.4%,0)}
-    to{transform:scale(1.03) translate3d(0,0,0)}
-  }
-  @media (prefers-reduced-motion:no-preference){.photo.settle{animation:settle 60s ease-out both}}
-
   /* ===== top left: weather, set like the date block on the right (no boxes) ===== */
   .weather{text-align:left;flex-shrink:0}
   .wxline{display:flex;align-items:baseline;gap:.5em;justify-content:flex-end;line-height:1.3;
@@ -251,8 +230,8 @@
 </style>
 </head>
 <body>
+<div class="photo current"></div>
 <div class="photo"></div>
-<div class="photo-fade"></div>
 <div id="credit"></div>
 <div class="veil"></div>
 <div class="grain"></div>
@@ -439,12 +418,9 @@ function applyTheme(){
     return [0,2,4].map(i => parseInt(valid.slice(i,i+2),16));
   };
   const surface = rgb('surface', '102D21'), accent = rgb('accent', 'DCB86F');
-  const veil = surface.map(x => Math.max(2, Math.round(x * .22)));
   const style = document.documentElement.style;
   style.setProperty('--surface-rgb', surface.join(','));
   style.setProperty('--accent-rgb', accent.join(','));
-  style.setProperty('--veil-rgb', veil.join(','));
-  style.setProperty('--veil-solid', `rgb(${veil.join(',')})`);
   style.setProperty('--gold', `rgb(${accent.join(',')})`);
 }
 applyTheme();
@@ -1019,26 +995,29 @@ function reveal(){
 }
 
 let CURRENT_BG_URL = '', BG_PENDING = null, BG_FADING = false;
-function paintBackground(url, b){
-  const ph = document.querySelector('.photo');
-  if(!ph) return;
-  CURRENT_BG_URL = url;
-  ph.style.backgroundImage = "url('" + url + "')";
-  ph.style.setProperty('--dim', (1 - (b.d || 0.95)).toFixed(2));
-  ph.classList.remove('settle'); void ph.offsetWidth; ph.classList.add('settle');
+let BG_ACTIVE = document.querySelector('.photo.current');
+let BG_HIDDEN = document.querySelector('.photo:not(.current)');
+function paintBackground(layer, url, b){
+  if(!layer) return;
+  layer.style.backgroundImage = "url('" + url + "')";
+  layer.style.setProperty('--dim', (1 - (b.d || 0.95)).toFixed(2));
   const cr = document.getElementById('credit');
   if(cr) cr.textContent = b.c ? 'الصورة: ' + b.c : '';
 }
 function fadeToPendingBackground(){
   if(!BG_PENDING || BG_FADING) return;
-  const veil = document.querySelector('.photo-fade');
-  if(!veil){ const next = BG_PENDING; BG_PENDING = null; paintBackground(next.url, next.b); return; }
+  if(!BG_ACTIVE || !BG_HIDDEN) return;
   BG_FADING = true;
-  veil.classList.add('on');
+  const outgoing = BG_ACTIVE, incoming = BG_HIDDEN;
+  outgoing.classList.remove('current');
   setTimeout(() => {
     const next = BG_PENDING; BG_PENDING = null;
-    if(next && next.url !== CURRENT_BG_URL) paintBackground(next.url, next.b);
-    requestAnimationFrame(() => requestAnimationFrame(() => veil.classList.remove('on')));
+    if(next && next.url !== CURRENT_BG_URL){
+      paintBackground(incoming, next.url, next.b);
+      CURRENT_BG_URL = next.url;
+      BG_ACTIVE = incoming; BG_HIDDEN = outgoing;
+      requestAnimationFrame(() => requestAnimationFrame(() => incoming.classList.add('current')));
+    }else outgoing.classList.add('current');
     setTimeout(() => {
       BG_FADING = false;
       if(BG_PENDING && BG_PENDING.url !== CURRENT_BG_URL) fadeToPendingBackground();
@@ -1048,8 +1027,9 @@ function fadeToPendingBackground(){
 }
 function showBackground(url, b){
   reveal();
+  if(BG_FADING){ BG_PENDING = {url, b}; return; }
   if(url === CURRENT_BG_URL) return;
-  if(!CURRENT_BG_URL){ paintBackground(url, b); return; }
+  if(!CURRENT_BG_URL){ paintBackground(BG_ACTIVE, url, b); CURRENT_BG_URL = url; return; }
   BG_PENDING = {url, b};
   fadeToPendingBackground();
 }
@@ -1087,7 +1067,7 @@ function photoSet(n){
   }
   return pick;
 }
-let BG_SLOT = -1, PREFETCHED = false;
+let BG_SLOT = -1;
 function applyBackground(force){
   try {
     const p = riyadhParts();
@@ -1108,8 +1088,8 @@ function applyBackground(force){
     img.onload = () => { done = true; clearTimeout(t); showBackground(url, b); };
     img.onerror = () => { clearTimeout(t); fallback(); done = true; };
     img.src = url;
-    // fetch the rest of the set once, quietly, so the app has each one on disk before its turn
-    if(!PREFETCHED){ PREFETCHED = true; setTimeout(() => set.forEach(x => { new Image().src = PHOTO_BASE + x.f; }), 20000); }
+    // The next image is loaded only when needed. Loading the entire personal collection at once
+    // can exhaust this Fire TV Stick's WebView memory and briefly blank its photo layer.
   } catch(e) {}
 }
 
@@ -1137,8 +1117,9 @@ function boot(){
   const cs = document.getElementById('clock-sub');
   if(cs) cs.textContent = 'بتوقيت ' + CONFIG.city;
   document.title = 'MuslimTV Screensaver';
-  applyBackground(true);
-  loadPhotoIndex().then(() => applyBackground(true));
+  if(REMOTE_BGS.length) applyBackground(true);
+  const firstPhotoFallback = REMOTE_BGS.length ? null : setTimeout(() => applyBackground(true), 1200);
+  loadPhotoIndex().then(() => { if(firstPhotoFallback) clearTimeout(firstPhotoFallback); applyBackground(true); });
   setInterval(() => applyBackground(false), 60*1000);
   tickClock(); tickDates(); tickRamadan(); tickCountdown();
   if(CONFIG.panel === 'none') document.querySelector('.week').style.display = 'none';

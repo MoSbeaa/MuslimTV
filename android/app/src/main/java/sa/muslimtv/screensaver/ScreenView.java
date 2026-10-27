@@ -18,11 +18,7 @@ final class ScreenView {
     static WebView create(final Context c) {
         WebView w = new WebView(c);
         android.content.SharedPreferences colors = c.getSharedPreferences("settings", Context.MODE_PRIVATE);
-        int surface = colors.getInt("theme_surface", 0xFF102D21);
-        w.setBackgroundColor(android.graphics.Color.rgb(
-            Math.max(2, Math.round(android.graphics.Color.red(surface) * .22f)),
-            Math.max(2, Math.round(android.graphics.Color.green(surface) * .22f)),
-            Math.max(2, Math.round(android.graphics.Color.blue(surface) * .22f))));
+        w.setBackgroundColor(android.graphics.Color.BLACK); // same black base as the photo dissolve
         w.setFocusable(false);
         w.setVerticalScrollBarEnabled(false);
         w.setHorizontalScrollBarEnabled(false);

@@ -65,7 +65,9 @@ final class HomeCard {
             String frag = c.getString(0), panel = c.getString(1);
             if (frag == null || panel == null || "none".equals(panel)) return null;
             frag = frag.replaceAll("(^|&)(panel|week)=[^&]*", "");   // the screensaver's own card choice
-            return "file:///android_asset/web/tv.html#" + frag + "&panel=" + panel + "&widget=1";
+            return "file:///android_asset/web/tv.html#" + frag + "&panel=" + panel + "&widget=1"
+                + "&surface=" + ThemeColors.hex(ThemeColors.surface(activity)).substring(1)
+                + "&accent=" + ThemeColors.hex(ThemeColors.accent(activity)).substring(1);
         } catch (RuntimeException e) {
             return null;   // screensaver app missing or too old
         }
@@ -83,17 +85,6 @@ final class HomeCard {
         web.setHorizontalScrollBarEnabled(false);
         web.setOverScrollMode(View.OVER_SCROLL_NEVER);
         web.setWebViewClient(new WebViewClient() {
-            @Override public void onPageFinished(WebView view, String page) {
-                String accent = ThemeColors.hex(ThemeColors.accent(activity));
-                int color = ThemeColors.surface(activity);
-                String surface = "rgba(" + Color.red(color) + "," + Color.green(color) + "," + Color.blue(color) + ",0.60)";
-                String css = ":root{--gold:" + accent + ";} .week{background:" + surface
-                    + "!important;border-color:" + accent + "55!important;} .week .hd,.panel .label{color:" + accent
-                    + "!important;} .week .hd::after{background:linear-gradient(90deg," + accent + "88,transparent)!important;}";
-                view.evaluateJavascript("(function(){var s=document.createElement('style');s.textContent="
-                    + org.json.JSONObject.quote(css) + ";document.head.appendChild(s);})()", null);
-            }
-
             // the page asks GitHub for its fonts; answer from the APK
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) {
