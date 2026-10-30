@@ -160,7 +160,7 @@
   }
   .subline .dot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.9}
 
-  .prayer-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1vw;direction:rtl}
+  .prayer-strip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1vw;direction:rtl}
   .prayer-card{
     min-width:0;padding:.8vh .95vw;text-align:center;
     background:rgba(var(--surface-rgb),.55);border:1px solid rgba(var(--accent-rgb),.30);border-radius:26px;
@@ -393,6 +393,8 @@ function tickDates(){
 
 const PRAYER_KEYS = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
 const PRAYER_NAMES = {Fajr:'الفجر',Dhuhr:'الظهر',Asr:'العصر',Maghrib:'المغرب',Isha:'العشاء'};
+const DISPLAY_KEYS = ['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'];
+const DISPLAY_NAMES = {...PRAYER_NAMES, Sunrise:'الشروق'};
 let PRAYERS = [];
 
 let DAY_TIMES = null;
@@ -409,10 +411,13 @@ function renderPrayerStrip(){
   const strip = document.getElementById('prayer-strip');
   if(!strip) return;
   strip.replaceChildren();
-  for(const prayer of PRAYERS){
+  for(const key of DISPLAY_KEYS){
+    if(!DAY_TIMES?.[key]) continue;
+    const [h, mi] = String(DAY_TIMES[key]).split(':').map(Number);
     const card = document.createElement('div'); card.className = 'prayer-card';
-    const name = document.createElement('span'); name.className = 'name'; name.textContent = prayerName(prayer);
-    const time = document.createElement('span'); time.className = 'time'; time.textContent = fmt12(prayer.h, prayer.mi);
+    card.dataset.prayer = key;
+    const name = document.createElement('span'); name.className = 'name'; name.textContent = key === 'Dhuhr' && isFriday() ? 'الجمعة' : DISPLAY_NAMES[key];
+    const time = document.createElement('span'); time.className = 'time'; time.textContent = fmt12(h, mi);
     card.append(name, time); strip.appendChild(card);
   }
 }
@@ -533,8 +538,9 @@ function tickPrayer(){
   const p = riyadhParts();
   const mins = p.h*60 + p.mi + p.s/60;
   const nextIndex = PRAYERS.findIndex(x => (x.h*60+x.mi) > mins);
-  document.querySelectorAll('#prayer-strip .prayer-card').forEach((card, i) =>
-    card.classList.toggle('next', i === (nextIndex < 0 ? 0 : nextIndex)));
+  const nextPrayer = PRAYERS[nextIndex < 0 ? 0 : nextIndex];
+  document.querySelectorAll('#prayer-strip .prayer-card').forEach(card =>
+    card.classList.toggle('next', card.dataset.prayer === nextPrayer.key));
 
   // between adhan and iqama: show the iqama countdown
   const cur = PRAYERS.find(x=>{
