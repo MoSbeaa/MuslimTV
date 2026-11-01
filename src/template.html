@@ -34,6 +34,7 @@
   html.widget .stage{height:auto;padding:0;display:block;transition:none}
   html.widget .mid{display:block}
   html.widget .week{width:100%}
+  html.widget.panel-prayers .week{padding-left:10px;padding-right:10px}
   html,body{
     height:100%;overflow:hidden;background:#000;color:var(--sand);
     font-family:'Thmanyah',system-ui,sans-serif;
@@ -160,7 +161,7 @@
   }
   .subline .dot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.9}
 
-  .prayer-strip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1vw;direction:rtl;padding:0 10px}
+  .prayer-strip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1vw;direction:rtl}
   .prayer-card{
     min-width:0;padding:.8vh .95vw;text-align:center;
     background:rgba(var(--surface-rgb),.55);border:1px solid rgba(var(--accent-rgb),.30);border-radius:26px;
@@ -1073,7 +1074,7 @@ function boot(){
 
 // The launcher's card: the chosen panel only, refreshed like on the screensaver, nothing else loaded.
 function bootWidget(){
-  document.documentElement.classList.add('widget');
+  document.documentElement.classList.add('widget', 'panel-' + CONFIG.panel);
   restoreSnap();
   setTimeout(saveSnap, 15*1000);
   setInterval(saveSnap, 60*1000);

@@ -1,7 +1,5 @@
 package sa.muslimtv.home;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -54,7 +52,7 @@ import java.util.Map;
 
 /**
  * Apple TV style home screen: clock top-left, pills top-right, the focused dock app's name over an
- * ambient glow, a dock of pinned apps, and every other app in a grid that scrolls up on Down.
+ * a dock of pinned apps, and every other app in a grid that scrolls up on Down.
  * Plain framework views only (no AndroidX). Network only for hosted wallpapers and the optional card (HomeCard).
  *
  * Adapted from github.com/mihirgupta0900/tv-home (MIT, see android/launcher/LICENSE-tv-home):
@@ -89,7 +87,6 @@ public class MainActivity extends Activity {
     private LinearLayout content, dockRow;
     private FrameLayout hero;
     private LinearLayout grid;
-    private View glow;
     private ImageView wallBack, wallFront;
     private View gridShade;
     private String[] wallpapers = new String[0];
@@ -99,8 +96,6 @@ public class MainActivity extends Activity {
     private final Runnable rotateWallpaper = this::nextWallpaper;
     static final long WALLPAPER_INTERVAL_MS = 10 * 60 * 1000;
     private TextView greeting, clock, ampm, date, title, wifiPill, weatherPill, appsLabel;
-    private int glowColor = 0xFF3A3A3A;
-    private ValueAnimator glowAnim;
     private int lastFocusedId = View.NO_ID;
     private boolean firstShow = true;
     private int packageSeq;
@@ -236,10 +231,6 @@ public class MainActivity extends Activity {
         try {
             wallpapers = getAssets().list("wallpapers");
         } catch (java.io.IOException ignored) { }
-
-        glow = new View(this);
-        root.addView(glow, new FrameLayout.LayoutParams(-1, -1));
-        setGlow(glowColor);
 
         scroll = new HomeScrollView(this);
         scroll.setVerticalScrollBarEnabled(false);
@@ -585,7 +576,7 @@ public class MainActivity extends Activity {
             ic.setTint(has ? ThemeColors.ink(themeAccent) : 0xE6FFFFFF);
             v.animate().scaleX(has ? 1.08f : 1f).scaleY(has ? 1.08f : 1f)
                     .setInterpolator(new OvershootInterpolator(2f)).setDuration(220).start();
-            if (has) { lastFocusedId = v.getId(); scroll.smoothScrollTo(0, 0); fadeGlow(1f); }
+            if (has) { lastFocusedId = v.getId(); scroll.smoothScrollTo(0, 0); dimForGrid(false); }
         });
         return p;
     }
@@ -655,7 +646,7 @@ public class MainActivity extends Activity {
         buildQuickLinks();
         wireFocus();
 
-        if (!dock.isEmpty()) { title.setText(dock.get(0).label); setGlow(dock.get(0).color); }
+        if (!dock.isEmpty()) title.setText(dock.get(0).label);
         View last = lastFocusedId == View.NO_ID ? null : findViewById(lastFocusedId);
         if (last != null) last.requestFocus();
         else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
@@ -735,11 +726,10 @@ public class MainActivity extends Activity {
             if (inDock) {
                 title.setText(app.label);
                 title.animate().alpha(1f).setDuration(200).start();
-                animateGlow(app.color);
-                fadeGlow(1f);
+                dimForGrid(false);
                 scroll.smoothScrollTo(0, 0);
             } else {
-                fadeGlow(0.35f);
+                dimForGrid(true);
                 title.animate().alpha(0f).setDuration(200).start();
                 scrollToRow(box);
             }
@@ -1061,30 +1051,9 @@ public class MainActivity extends Activity {
         wifiPill.setText(name);
     }
 
-    // ---------------------------------------------------------------- glow
-
-    private void setGlow(int color) {
-        glowColor = color;
-        GradientDrawable g = new GradientDrawable();
-        g.setGradientType(GradientDrawable.RADIAL_GRADIENT);
-        g.setGradientCenter(0.5f, 0.78f);
-        g.setGradientRadius(getResources().getDisplayMetrics().widthPixels * 0.62f);
-        g.setColors(new int[]{withAlpha(color, 0.5f), withAlpha(color, 0.14f), Color.TRANSPARENT});
-        glow.setBackground(g);
-    }
-
-    private void animateGlow(int to) {
-        if (glowAnim != null) glowAnim.cancel();
-        glowAnim = ValueAnimator.ofObject(new ArgbEvaluator(), glowColor, to);
-        glowAnim.setDuration(450);
-        glowAnim.addUpdateListener(a -> setGlow((int) a.getAnimatedValue()));
-        glowAnim.start();
-    }
-
-    private void fadeGlow(float alpha) {
-        glow.animate().alpha(alpha).setDuration(300).start();
-        // The grid sits over the photo's busiest middle part, so dim it while browsing apps.
-        gridShade.animate().alpha(alpha < 1f ? 1f : 0f).setDuration(300).start();
+    // Dim the busy center of the photo while browsing the app grid.
+    private void dimForGrid(boolean dim) {
+        gridShade.animate().alpha(dim ? 1f : 0f).setDuration(300).start();
     }
 
     // ---------------------------------------------------------------- wallpaper
@@ -1234,7 +1203,7 @@ public class MainActivity extends Activity {
         handler.postDelayed(rotateWallpaper, Math.max(1000, delay));
     }
 
-    /** Average the banner's vivid pixels, then push saturation so the glow reads as a colour. */
+    /** Sample the banner's vivid pixels for the app card's background colour. */
     private int sampleColor(String pkg, Drawable d) {
         Integer cached = colorCache.get(pkg);
         if (cached != null) return cached;

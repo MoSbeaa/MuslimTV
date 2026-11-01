@@ -179,7 +179,7 @@ def weak_in_tirmidhi(text):
 
 def hadith_for_screen():
     """assets/shared/hadith.json -> each hadith from its companion on (simple_parts) if it fits the card, with the
-    book, its number and a grade: al-Tirmidhi's own, or for the other Sunan Al-Albani's. One a scholar grades weak,
+    book and its number. Grading remains internal to selection and is not printed on the TV. One a scholar grades weak,
     one from the four Sunan Al-Albani does not grade Sahih, Hasan or Hasan Sahih, or one al-Tirmidhi does not grade
     حسن or صحيح, is not shown."""
     digits = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
@@ -199,8 +199,7 @@ def hadith_for_screen():
                 or not albani_accepts(full["book"], full.get("grades")):
             continue
         if any(k == "q" for k, _ in parts) and words <= HADITH_MAX_WORDS:
-            grade = tirmidhi_grade(full["text"]) or albani_grade(full.get("grades"))
-            source = f"{full['book']} · {str(full['number']).translate(digits)}" + (f" · {grade}" if grade else "")
+            source = f"{full['book']} · {str(full['number']).translate(digits)}"
             out.append({"parts": parts, "source": source})
     return out
 
