@@ -182,10 +182,13 @@ final class Prefs {
 
     String fragment() {
         String[] city = city();
+        // Fire OS on older sticks still treats Winnipeg as UTC-6 in winter.
+        // Manitoba Standard Time has been UTC-5 year-round since 2026-11-01.
+        String zone = "وينبيغ".equals(city[0]) ? "Etc/GMT+5" : TZ;
         List<String> ids = new ArrayList<>();
         for (String s : shows()) ids.add(s.split("\\|", 2)[0]);
         return "asr=" + adhanAsr() + "&city=" + Uri.encode(city[0]) + "&lat=" + city[1] + "&lon=" + city[2]
-            + "&tz=" + Uri.encode(TZ)
+            + "&tz=" + Uri.encode(zone)
             + "&teams=" + join(teamIds(), ",")
             + "&panel=" + panel()
             + "&week=" + ("none".equals(panel()) ? "0" : "1")   // for a page older than #panel

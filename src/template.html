@@ -305,6 +305,7 @@ const CONFIG = {
   city: ((name) => /^winnipeg$/i.test(name) || name === 'وينيبغ' ? 'وينبيغ' : name)(_Q.get('city') || 'وينبيغ'),
   latitude: _num('lat', 24.7136),
   longitude: _num('lon', 46.6753),
+  // Prayer dates use the city zone passed by the app. The clock follows Fire TV itself.
   timezone: _Q.get('tz') || 'America/Winnipeg',
   prayerMethod: 4,
   asrMithl: _num('asr', 2),
@@ -363,30 +364,31 @@ function fmt12(h, mi){
 }
 
 function tickClock(){
-  const p = riyadhParts();
-  const h12 = p.h % 12 === 0 ? 12 : p.h % 12;
+  const now = new Date();
+  const h = now.getHours(), mi = now.getMinutes();
+  const h12 = h % 12 === 0 ? 12 : h % 12;
   // one box per digit: browsers ignore letter-spacing on Arabic digits, and ٤ reaches into the next digit
   const digits = s => [...s].map(ch => '<i>' + ch + '</i>').join('');
-  const key = h12 + ':' + p.mi;
+  const key = h12 + ':' + mi;
   if(key === tickClock.last) return;   // ticks every second, redraws once a minute
   tickClock.last = key;
   document.getElementById('ck-h').innerHTML = digits(ar(h12));
-  document.getElementById('ck-m').innerHTML = digits(ar(pad(p.mi)));
-  document.getElementById('ck-ap').textContent = p.h < 12 ? 'ص' : 'م';
+  document.getElementById('ck-m').innerHTML = digits(ar(pad(mi)));
+  document.getElementById('ck-ap').textContent = h < 12 ? 'ص' : 'م';
 }
 
 function tickDates(){
   const now = new Date();
   try{
     let h = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{
-      timeZone: CONFIG.timezone, weekday:'long', day:'numeric', month:'long', year:'numeric'
+      weekday:'long', day:'numeric', month:'long', year:'numeric'
     }).format(now);
     h = h.replace(/\s*هـ\s*$/,'').replace(/،\s*$/,'');
     document.getElementById('hijri').textContent = h + ' هـ';
   }catch(e){}
   try{
     document.getElementById('greg').textContent = new Intl.DateTimeFormat(GREG,{
-      timeZone: CONFIG.timezone, weekday:'long', day:'numeric', month:'long', year:'numeric'
+      weekday:'long', day:'numeric', month:'long', year:'numeric'
     }).format(now);
   }catch(e){}
 }

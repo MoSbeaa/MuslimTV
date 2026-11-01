@@ -45,7 +45,8 @@ final class AdhanEngine {
     private static final Uri CONFIG = Uri.parse("content://sa.muslimtv.screensaver.config/adhan");
     private static final String[] KEYS = {"Fajr","Dhuhr","Asr","Maghrib","Isha"};
     private static final String[] NAMES = {"الفجر","الظهر","العصر","المغرب","العشاء"};
-    private static final TimeZone ZONE = TimeZone.getTimeZone("America/Winnipeg");
+    // Manitoba Standard Time is UTC-5 year-round starting 2026-11-01. Old Fire OS tzdata falls back to UTC-6.
+    private static final TimeZone ZONE = TimeZone.getTimeZone("GMT-05:00");
     private final AccessibilityService service;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final SharedPreferences store;
@@ -68,10 +69,10 @@ final class AdhanEngine {
     }
     void start() {
         stopped=false;refreshConfig();
-        if(days.length()==0) new Thread(() -> {
+        if(days.optJSONObject(dayKey(System.currentTimeMillis()))==null) new Thread(() -> {
             try(InputStream input=service.getContentResolver().openInputStream(Uri.parse(CONFIG+"/timetable.json"))) {
                 JSONObject seed=flatten(new JSONTokener(read(input)).nextValue());
-                handler.post(() -> { if(!stopped && days.length()==0) { days=seed;store.edit().putString("days",seed.toString()).apply();check(); } });
+                handler.post(() -> { if(!stopped && days.optJSONObject(dayKey(System.currentTimeMillis()))==null) { days=seed;store.edit().putString("days",seed.toString()).apply();check(); } });
             }catch(Exception ignored) { }
         },"MiaBundledTimetable").start();
         service.sendBroadcast(new Intent("sa.muslimtv.ADHAN_QUERY_SCOPE").setPackage("sa.muslimtv.home"));
@@ -257,7 +258,7 @@ final class AdhanEngine {
         long minute=now/60000L;
         if(minute!=clockMinute) {
             clockMinute=minute;
-            Calendar c=Calendar.getInstance(ZONE);c.setTimeInMillis(now);
+            Calendar c=Calendar.getInstance();c.setTimeInMillis(now);
             int hour=c.get(Calendar.HOUR);if(hour==0)hour=12;
             String value=hour+":"+String.format(Locale.ROOT,"%02d",c.get(Calendar.MINUTE))+(c.get(Calendar.AM_PM)==Calendar.AM?" ص":" م");
             clockText.setText(arabicDigits(value));
@@ -279,7 +280,7 @@ final class AdhanEngine {
         TextView heading=new TextView(service);heading.setText(title);heading.setTextColor(0xFFFFE2A4);heading.setTextSize(21);heading.setGravity(Gravity.RIGHT);
         if(android.os.Build.VERSION.SDK_INT>=26)try{heading.setTypeface(service.getResources().getFont(R.font.rakkas));}catch(Exception ignored){}
         box.addView(heading);
-        TextView time=new TextView(service);SimpleDateFormat format=new SimpleDateFormat("h:mm a",new Locale("ar"));format.setTimeZone(ZONE);time.setText(format.format(new Date()));time.setTextColor(0xFFE5DECC);time.setTextSize(12);time.setGravity(Gravity.RIGHT);box.addView(time);
+        TextView time=new TextView(service);SimpleDateFormat format=new SimpleDateFormat("h:mm a",new Locale("ar"));time.setText(format.format(new Date()));time.setTextColor(0xFFE5DECC);time.setTextSize(12);time.setGravity(Gravity.RIGHT);box.addView(time);
         WindowManager.LayoutParams params=new WindowManager.LayoutParams(Math.min(dp(350),service.getResources().getDisplayMetrics().widthPixels-dp(48)),-2,WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE|WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,PixelFormat.TRANSLUCENT);
         params.gravity=Gravity.TOP|Gravity.RIGHT;params.x=dp(28);params.y=clockOverlay==null?dp(32):dp(82);
         try {service.getSystemService(WindowManager.class).addView(box,params);banner=box;Log.i("MUSLIMTVAdhan","Prayer banner shown");handler.postDelayed(hide,Math.max(5,Math.min(30,config.optInt("duration",12)))*1000L);}catch(Exception e){Log.w("MUSLIMTVAdhan","Overlay unavailable",e);}
