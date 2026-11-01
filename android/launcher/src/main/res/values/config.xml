@@ -10,6 +10,9 @@
     <string-array name="dock_apps">
         <item>io.gh.reisxd.tizentube.cobalt</item>   <!-- First on new installations; saved orders are preserved. -->
         <item>sa.muslimtv.quran</item>   <!-- Remote-first MuslimTV Quran reader. -->
+        <item>com.hnf.IslamApp</item>
+        <item>com.amazon.firebat</item>
+        <item>com.desktop.launcher</item>
         <item>com.google.android.youtube.tv</item>
         <item>com.netflix.ninja</item>
         <item>com.netflix.mediaclient</item>   <!-- Netflix on some TCL / Android TV builds -->

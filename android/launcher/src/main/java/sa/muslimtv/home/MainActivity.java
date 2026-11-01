@@ -1280,8 +1280,8 @@ public class MainActivity extends Activity {
         if (i != null) launch(i);
     }
 
-    private int themeAccent = 0xFFD6AF6B;
-    private int themeSurface = 0xFF102D21;
+    private int themeAccent = 0xFFF2F2F2;
+    private int themeSurface = 0xFF22252B;
     private String themeSignature;
     static final String SAVER_PKG = "sa.muslimtv.screensaver";
     private final Map<String, Typeface> fonts = new HashMap<>();

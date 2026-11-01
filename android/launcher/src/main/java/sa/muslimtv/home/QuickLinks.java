@@ -12,14 +12,14 @@ final class QuickLinks {
     static final String TIZENTUBE = "io.gh.reisxd.tizentube.cobalt";
     static final String[] TITLES = {
         "سورة مريم - عثمان المكي", "سورة الكهف - حسين عزام",
-        "سورة مريم - حسين عزام", "سورة مريم - إبراهيم إدريس", "أذكار الصباح - أحمد النفيس"
+        "سورة مريم - حسين عزام", "سورة الكهف - قناة الفجر", "أذكار الصباح - أحمد النفيس"
     };
     // Use the actual hyperlink destinations supplied by the user, not their display labels.
     static final String[] URLS = {
         "https://www.youtube.com/watch?v=WmMNROhzoEg",
         "https://www.youtube.com/watch?v=3ZJvLYqrUrM",
         "https://www.youtube.com/watch?v=81AdCO4ur68",
-        "https://www.youtube.com/watch?v=gfwn-9HShjQ",
+        "https://www.youtube.com/watch?v=ZeAFn_M0hT4",
         "https://www.youtube.com/watch?v=fD4uDIoCn3M"
     };
 

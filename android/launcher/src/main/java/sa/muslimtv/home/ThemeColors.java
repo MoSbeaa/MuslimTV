@@ -5,8 +5,8 @@ import android.graphics.Color;
 import java.util.Locale;
 
 final class ThemeColors {
-    static int surface(Context c) { return Dock.prefs(c).getInt("theme_surface", 0xFF102D21); }
-    static int accent(Context c) { return Dock.prefs(c).getInt("theme_accent", 0xFFD6AF6B); }
+    static int surface(Context c) { return Dock.prefs(c).getInt("theme_surface", 0xFF22252B); }
+    static int accent(Context c) { return Dock.prefs(c).getInt("theme_accent", 0xFFF2F2F2); }
     static boolean themedFavorites(Context c) { return Dock.prefs(c).getBoolean("themed_favorites", true); }
     static String signature(Context c) { return surface(c) + ":" + accent(c) + ":" + themedFavorites(c); }
     static void syncToSaver(Context c) {

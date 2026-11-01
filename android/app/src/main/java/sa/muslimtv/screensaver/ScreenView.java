@@ -40,8 +40,8 @@ final class ScreenView {
         s.setCacheMode(WebSettings.LOAD_NO_CACHE);   // photos are cached by PhotoCache, data must be fresh
         if (android.os.Build.VERSION.SDK_INT >= 23) s.setOffscreenPreRaster(true);   // draw before it is shown
         String theme = String.format(java.util.Locale.ROOT, "&surface=%06X&accent=%06X",
-            colors.getInt("theme_surface", 0xFF102D21) & 0xFFFFFF,
-            colors.getInt("theme_accent", 0xFFD6AF6B) & 0xFFFFFF);
+            colors.getInt("theme_surface", 0xFF22252B) & 0xFFFFFF,
+            colors.getInt("theme_accent", 0xFFF2F2F2) & 0xFFFFFF);
         w.loadUrl(new Prefs(c).dashboardUrl(c) + theme);
         UpdateJob.schedule(c);
         return w;

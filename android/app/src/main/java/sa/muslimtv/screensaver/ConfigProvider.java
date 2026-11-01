@@ -42,8 +42,8 @@ public class ConfigProvider extends ContentProvider {
         }
         if ("SET_THEME".equals(method) && extras != null) {
             getContext().getSharedPreferences("settings", android.content.Context.MODE_PRIVATE).edit()
-                .putInt("theme_surface", extras.getInt("surface", 0xFF102D21) | 0xFF000000)
-                .putInt("theme_accent", extras.getInt("accent", 0xFFD6AF6B) | 0xFF000000).apply();
+                .putInt("theme_surface", extras.getInt("surface", 0xFF22252B) | 0xFF000000)
+                .putInt("theme_accent", extras.getInt("accent", 0xFFF2F2F2) | 0xFF000000).apply();
         }
         return new android.os.Bundle();
     }

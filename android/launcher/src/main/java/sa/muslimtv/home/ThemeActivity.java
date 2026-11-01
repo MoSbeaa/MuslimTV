@@ -25,10 +25,10 @@ public final class ThemeActivity extends Activity {
             Dock.prefs(this).edit().putBoolean("themed_favorites", !ThemeColors.themedFavorites(this)).apply();
             Toast.makeText(this, "تم تغيير صور المفضلة", Toast.LENGTH_SHORT).show(); finish();
         });
-        preset("أخضر وذهبي — الافتراضي", 0xFF102D21, 0xFFD6AF6B);
+        preset("أخضر وذهبي", 0xFF102D21, 0xFFD6AF6B);
         preset("أزرق وفضي", 0xFF142D49, 0xFFCEDDEC);
         preset("عنابي وذهبي", 0xFF421D2B, 0xFFE6C17A);
-        preset("فحمي وأبيض", 0xFF22252B, 0xFFF2F2F2);
+        preset("فحمي وأبيض — الافتراضي", 0xFF22252B, 0xFFF2F2F2);
         preset("زمردي وعاجي", 0xFF073E35, 0xFFF4E8CB);
         preset("كحلي وذهبي", 0xFF101E36, 0xFFE5BB6C);
         preset("تركوازي ولؤلؤي", 0xFF12434B, 0xFFD8F3EE);

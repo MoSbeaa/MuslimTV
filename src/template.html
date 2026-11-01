@@ -15,9 +15,9 @@
   :root{
     --sand:#F6EFE0;
     --dim:#C3B8A2;
-    --gold:#DCB86F;
-    --surface-rgb:16,45,33;
-    --accent-rgb:220,184,111;
+    --gold:#F2F2F2;
+    --surface-rgb:34,37,43;
+    --accent-rgb:242,242,242;
     --green-lt:#57D294;
     --red:#EE6A50;
   }
@@ -304,10 +304,10 @@ const _list = k => (_Q.get(k) || '').split(',').map(x=>x.trim()).filter(Boolean)
 const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : v; };
 const CONFIG = {
   city: ((name) => /^winnipeg$/i.test(name) || name === 'وينيبغ' ? 'وينبيغ' : name)(_Q.get('city') || 'وينبيغ'),
-  latitude: _num('lat', 24.7136),
-  longitude: _num('lon', 46.6753),
+  latitude: _num('lat', 49.8951),
+  longitude: _num('lon', -97.1384),
   // Prayer dates use the city zone passed by the app. The clock follows Fire TV itself.
-  timezone: _Q.get('tz') || 'America/Winnipeg',
+  timezone: _Q.get('tz') || 'Etc/GMT+5',
   prayerMethod: 4,
   asrMithl: _num('asr', 2),
   // the card beside the clock: shows | prayers | forecast | verse | none
@@ -337,7 +337,7 @@ function applyTheme(){
     const valid = /^[0-9a-fA-F]{6}$/.test(hex) ? hex : fallback;
     return [0,2,4].map(i => parseInt(valid.slice(i,i+2),16));
   };
-  const surface = rgb('surface', '102D21'), accent = rgb('accent', 'DCB86F');
+  const surface = rgb('surface', '22252B'), accent = rgb('accent', 'F2F2F2');
   const style = document.documentElement.style;
   style.setProperty('--surface-rgb', surface.join(','));
   style.setProperty('--accent-rgb', accent.join(','));

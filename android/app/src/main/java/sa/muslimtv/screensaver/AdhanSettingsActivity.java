@@ -30,18 +30,18 @@ public final class AdhanSettingsActivity extends Activity {
         body = new LinearLayout(this); body.setOrientation(LinearLayout.VERTICAL); body.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         body.setPadding(dp(80), dp(22), dp(80), dp(30)); scroll.addView(body);
         label("الأذان وتنبيهات الصلاة", 26, 0xFFD6AF6B);
-        label("يمكن اختيار تشغيل صوت الأذان داخل MuslimTV وأثناء استخدام التطبيقات الأخرى بشكل مستقل. الوضع الافتراضي خارج الواجهة صامت.", 15, Color.WHITE);
+        label("يمكن اختيار تشغيل صوت الأذان داخل MuslimTV وأثناء استخدام التطبيقات الأخرى بشكل مستقل.", 15, Color.WHITE);
         label("المواقيت: MiaOnline — بداية الصلاة، لا وقت الإقامة. محفوظة محليًا للعمل دون إنترنت.", 14, 0xFFC6BBA4);
         toggle("تفعيل الأذان والتنبيهات", "enabled");
         toggle("صوت الأذان داخل MuslimTV", "sound");
-        row("أثناء استخدام التطبيقات: " + (prefs.getBoolean("sound_outside", false) ? "تشغيل الأذان" : "صامت"), this::outsideSound);
+        row("أثناء استخدام التطبيقات: " + (prefs.getBoolean("sound_outside", true) ? "تشغيل الأذان" : "صامت"), this::outsideSound);
         toggle("التنبيه المرئي أعلى اليمين", "popup");
         row("الصلوات المفعّلة", () -> prayers());
-        row("صوت الأذان: " + AdhanOptions.label(prefs.getString("voice", "makkah")), () -> voices(false));
-        row("صوت الفجر: " + AdhanOptions.label(prefs.getString("fajr_voice", "fajr_makkah")), () -> voices(true));
-        row("مستوى صوت الأذان: " + prefs.getInt("volume", 65) + "٪", () -> volume(false));
-        row("مستوى صوت الفجر: " + prefs.getInt("fajr_volume", prefs.getInt("volume", 65)) + "٪", () -> volume(true));
-        row("مدة التنبيه: " + prefs.getInt("duration", 12) + " ثانية", () -> duration());
+        row("صوت الأذان: " + AdhanOptions.label(prefs.getString("voice", "yt_GN1f4LNoTUs")), () -> voices(false));
+        row("صوت الفجر: " + AdhanOptions.label(prefs.getString("fajr_voice", "yt_ADVpixw_lhU")), () -> voices(true));
+        row("مستوى صوت الأذان: " + prefs.getInt("volume", 80) + "٪", () -> volume(false));
+        row("مستوى صوت الفجر: " + prefs.getInt("fajr_volume", 10) + "٪", () -> volume(true));
+        row("مدة التنبيه: " + prefs.getInt("duration", 30) + " ثانية", () -> duration());
         row("وقت العصر: المثل " + (prefs.getInt("asr", 2) == 2 ? "الثاني" : "الأول"), () -> asr());
         row("إيقاف الاستماع للصوت", () -> stopPreview());
         row("معاينة التنبيه الصامت", () -> sendPreview());
@@ -65,7 +65,7 @@ public final class AdhanSettingsActivity extends Activity {
     }
     private void outsideSound() {
         new AlertDialog.Builder(this).setTitle("الأذان أثناء استخدام التطبيقات")
-            .setSingleChoiceItems(new String[]{"صامت — تنبيه مرئي فقط", "تشغيل صوت الأذان"}, prefs.getBoolean("sound_outside", false) ? 1 : 0, (dialog, which) -> {
+            .setSingleChoiceItems(new String[]{"صامت — تنبيه مرئي فقط", "تشغيل صوت الأذان"}, prefs.getBoolean("sound_outside", true) ? 1 : 0, (dialog, which) -> {
                 prefs.edit().putBoolean("sound_outside", which == 1).apply();
                 AdhanOptions.changed(this); dialog.dismiss(); render();
             }).setNegativeButton("إلغاء", null).show();
@@ -98,7 +98,7 @@ public final class AdhanSettingsActivity extends Activity {
             MediaPlayer m = new MediaPlayer(); preview = m;
             m.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build());
             try (AssetFileDescriptor fd = getAssets().openFd("adhan/" + id + ".mp3")) { m.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength()); }
-            float level = (fajr ? prefs.getInt("fajr_volume", prefs.getInt("volume", 65)) : prefs.getInt("volume", 65)) / 100f;
+            float level = (fajr ? prefs.getInt("fajr_volume", 10) : prefs.getInt("volume", 80)) / 100f;
             m.setVolume(level, level);
             m.setOnPreparedListener(player -> { if (preview == player) player.start(); });
             m.setOnCompletionListener(player -> stopPreview());
@@ -114,7 +114,7 @@ public final class AdhanSettingsActivity extends Activity {
         String key = fajr ? "fajr_volume" : "volume";
         LinearLayout box = new LinearLayout(this); box.setOrientation(LinearLayout.VERTICAL); box.setPadding(dp(20),dp(12),dp(20),dp(12));
         TextView value = new TextView(this); value.setTextColor(Color.WHITE);
-        SeekBar bar = new SeekBar(this); bar.setMax(100); bar.setProgress(prefs.getInt(key,prefs.getInt("volume",65))); value.setText(bar.getProgress()+"٪");
+        SeekBar bar = new SeekBar(this); bar.setMax(100); bar.setProgress(prefs.getInt(key,fajr ? 10 : 80)); value.setText(bar.getProgress()+"٪");
         bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar b,int p,boolean user){value.setText(p+"٪");}
             public void onStartTrackingTouch(SeekBar b){} public void onStopTrackingTouch(SeekBar b){}

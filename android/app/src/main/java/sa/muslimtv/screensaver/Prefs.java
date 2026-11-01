@@ -87,13 +87,13 @@ final class Prefs {
         }
     }
 
-    /** {name, latitude, longitude}; Riyadh until the user picks */
+    /** {name, latitude, longitude}; Winnipeg is the new-install starting point. */
     private int adhanAsr() { return adhanContext.getSharedPreferences("adhan", Context.MODE_PRIVATE).getInt("asr", 2); }
 
     String[] city() {
-        String name = sp.getString("cityName", "الرياض");
+        String name = sp.getString("cityName", "وينبيغ");
         if ("Winnipeg".equalsIgnoreCase(name) || "وينيبغ".equals(name)) name = "وينبيغ";
-        return new String[] {name, sp.getString("cityLat", "24.6877"), sp.getString("cityLon", "46.7219")};
+        return new String[] {name, sp.getString("cityLat", "49.8951"), sp.getString("cityLon", "-97.1384")};
     }
     void setCity(String name, String lat, String lon) {
         sp.edit().putString("cityName", name).putString("cityLat", lat).putString("cityLon", lon).apply();
@@ -105,6 +105,7 @@ final class Prefs {
     List<String> teams() {
         if (!sp.contains("teams")) {
             List<String> v = new ArrayList<>();
+            if (!sp.contains("team1Id") && !sp.contains("team2Id")) return v;
             for (int slot = 1; slot <= 2; slot++) {
                 String[] def = TEAM_PRESETS[slot - 1];
                 String id = sp.getString("team" + slot + "Id", def[0]);
@@ -201,7 +202,7 @@ final class Prefs {
     }
 
     /** The card on the launcher's home screen: one of PANELS, off ("none") until the user picks one. */
-    String homePanel() { return sp.getString("homePanel", "none"); }
+    String homePanel() { return sp.getString("homePanel", "prayers"); }
     void setHomePanel(String v) { sp.edit().putString("homePanel", v).apply(); }
 
     List<String> teamIds() {
