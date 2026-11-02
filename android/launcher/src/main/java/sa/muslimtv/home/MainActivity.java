@@ -337,7 +337,9 @@ public class MainActivity extends Activity {
         weatherPill.setOnClickListener(v -> showWeatherForecast());
         TextView settings = iconPill("الإعدادات", R.drawable.ic_settings);
         settings.setOnClickListener(v -> showLauncherSettings());
-        for (TextView p : isInstalled(SAVER_PKG) ? new TextView[]{weatherPill, settings, saver}
+        TextView phone = iconPill("اقتران الهاتف", R.drawable.ic_phone_link);
+        phone.setOnClickListener(v -> openPhoneControl());
+        for (TextView p : isInstalled(SAVER_PKG) ? new TextView[]{weatherPill, settings, saver, phone}
                                                   : new TextView[]{weatherPill, settings}) {
             right.addView(p, llp(-2, dp(30), dp(10), 0, 0, 0));
             pills.add(p);
@@ -355,17 +357,122 @@ public class MainActivity extends Activity {
     }
 
     private void showLauncherSettings() {
-        new android.app.AlertDialog.Builder(this).setTitle("الإعدادات")
-            .setItems(new String[]{"روابط يوتيوب السريعة", "ترتيب التطبيقات", "الواي فاي والشبكة", "كل إعدادات Fire TV", "فتح واجهة أمازون", "طريقة العودة إلى MuslimTV", "ألوان الواجهة", "الأذان وتنبيهات الصلاة"}, (dialog, which) -> {
-                if (which == 0) startActivity(new Intent(this, QuickLinksActivity.class));
-                else if (which == 1) startActivity(new Intent(this, DockActivity.class));
-                else if (which == 2) launch(new Intent(Settings.ACTION_WIFI_SETTINGS));
-                else if (which == 3) openAmazon("settings");
-                else if (which == 4) openAmazon("home");
-                else if (which == 5) showReturnHelp();
-                else if (which == 6) startActivity(new Intent(this, ThemeActivity.class));
-                else launch(new Intent().setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".AdhanSettingsActivity")));
-            }).show();
+        final android.app.Dialog dialog = new android.app.Dialog(this);
+        LinearLayout body = new LinearLayout(this);
+        body.setOrientation(LinearLayout.VERTICAL);
+        body.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        body.setPadding(dp(24), dp(18), dp(24), dp(22));
+        GradientDrawable background = new GradientDrawable();
+        background.setColor(themeSurface);
+        background.setCornerRadius(dp(20));
+        background.setStroke(dp(1), withAlpha(themeAccent, 0.7f));
+        body.setBackground(background);
+        TextView heading = text(28, "display", ThemeColors.ink(themeSurface));
+        heading.setText("إعدادات MuslimTV");
+        body.addView(heading);
+        TextView subtitle = text(14, "regular", withAlpha(ThemeColors.ink(themeSurface), .72f));
+        subtitle.setText("اختر ما تريد تعديله بالريموت");
+        body.addView(subtitle);
+        settingsSection(body, "الصلاة والاتصال");
+        if (isInstalled(SAVER_PKG)) {
+            settingsOption(body, dialog, "الأذان وتنبيهات الصلاة", "المواقيت والأصوات ومستوى الصوت", R.drawable.ic_screensaver,
+                () -> launch(new Intent().setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".AdhanSettingsActivity"))));
+            settingsOption(body, dialog, "التحكم من الهاتف", "اقتران برمز QR لتعديل الإعدادات", R.drawable.ic_phone_link, this::openPhoneControl);
+            settingsOption(body, dialog, "إعدادات شاشة التوقف", "المحتوى والصور ووقت البدء", R.drawable.ic_screensaver, () -> openPackage(SAVER_PKG));
+        }
+        settingsSection(body, "تخصيص الواجهة");
+        settingsOption(body, dialog, "ألوان الواجهة", "المظهر والرموز", R.drawable.ic_settings,
+            () -> startActivity(new Intent(this, ThemeActivity.class)));
+        settingsOption(body, dialog, "ترتيب التطبيقات", "المفضلة وتطبيقات الوصول السريع", R.drawable.ic_apps,
+            () -> startActivity(new Intent(this, DockActivity.class)));
+        settingsOption(body, dialog, "روابط يوتيوب السريعة", "العناوين والروابط الخمسة", R.drawable.ic_link,
+            () -> startActivity(new Intent(this, QuickLinksActivity.class)));
+        settingsSection(body, "الجهاز والمساعدة");
+        settingsOption(body, dialog, "الواي فاي والشبكة", null, R.drawable.ic_wifi,
+            () -> launch(new Intent(Settings.ACTION_WIFI_SETTINGS)));
+        settingsOption(body, dialog, "واجهة أمازون وإعدادات Fire TV", "افتح واجهة الجهاز الأصلية وكل إعداداته", R.drawable.ic_settings,
+            () -> openAmazon("home"));
+        settingsOption(body, dialog, "طريقة العودة إلى MuslimTV", null, R.drawable.ic_input, this::showReturnHelp);
+        android.widget.ScrollView scroll = new android.widget.ScrollView(this);
+        scroll.setFillViewport(true);
+        scroll.setVerticalScrollBarEnabled(false);
+        scroll.addView(body);
+        dialog.setContentView(scroll);
+        android.view.Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            android.view.WindowManager.LayoutParams attrs = window.getAttributes();
+            attrs.dimAmount = .68f;
+            window.setAttributes(attrs);
+        }
+        dialog.show();
+        if (window != null) window.setLayout(Math.min(getResources().getDisplayMetrics().widthPixels - dp(80), dp(720)),
+            Math.min(getResources().getDisplayMetrics().heightPixels - dp(90), dp(720)));
+        body.post(() -> {
+            for (int i = 0; i < body.getChildCount(); i++) {
+                View option = body.getChildAt(i);
+                if (option.isFocusable()) { option.requestFocus(); break; }
+            }
+        });
+    }
+
+    private void settingsSection(LinearLayout body, String label) {
+        TextView heading = text(15, "medium", themeAccent);
+        heading.setText(label);
+        heading.setPadding(dp(4), dp(20), dp(4), dp(7));
+        body.addView(heading);
+    }
+
+    private void settingsOption(LinearLayout body, android.app.Dialog dialog, String label, String detail,
+                                int icon, Runnable action) {
+        LinearLayout card = new LinearLayout(this);
+        card.setGravity(Gravity.CENTER_VERTICAL);
+        card.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        card.setPadding(dp(15), dp(9), dp(15), dp(9));
+        card.setFocusable(true);
+        card.setClickable(true);
+        GradientDrawable shape = new GradientDrawable();
+        shape.setCornerRadius(dp(12));
+        shape.setColor(withAlpha(themeAccent, .08f));
+        shape.setStroke(dp(1), withAlpha(themeAccent, .25f));
+        card.setBackground(shape);
+        Drawable art = getDrawable(icon).mutate();
+        art.setTint(themeAccent);
+        ImageView image = new ImageView(this);
+        image.setImageDrawable(art);
+        card.addView(image, new LinearLayout.LayoutParams(dp(23), dp(23)));
+        LinearLayout words = new LinearLayout(this);
+        words.setOrientation(LinearLayout.VERTICAL);
+        TextView title = text(18, "medium", ThemeColors.ink(themeSurface));
+        title.setText(label);
+        words.addView(title);
+        if (detail != null) {
+            TextView description = text(13, "regular", withAlpha(ThemeColors.ink(themeSurface), .7f));
+            description.setText(detail);
+            words.addView(description);
+        }
+        LinearLayout.LayoutParams wordsParams = new LinearLayout.LayoutParams(0, -2, 1f);
+        wordsParams.setMarginStart(dp(14));
+        card.addView(words, wordsParams);
+        card.setOnFocusChangeListener((v, focused) -> {
+            shape.setColor(focused ? themeAccent : withAlpha(themeAccent, .08f));
+            shape.setStroke(dp(focused ? 2 : 1), focused ? themeAccent : withAlpha(themeAccent, .25f));
+            int color = focused ? ThemeColors.ink(themeAccent) : ThemeColors.ink(themeSurface);
+            title.setTextColor(color);
+            if (detail != null) ((TextView) words.getChildAt(1)).setTextColor(withAlpha(color, .75f));
+            art.setTint(focused ? color : themeAccent);
+        });
+        card.setOnClickListener(v -> { dialog.dismiss(); action.run(); });
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+        params.bottomMargin = dp(7);
+        body.addView(card, params);
+    }
+
+    private void openPhoneControl() {
+        if (!launch(new Intent().setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".PhoneControlActivity"))))
+            new android.app.AlertDialog.Builder(this).setTitle("تعذر فتح اقتران الهاتف")
+                .setMessage("تأكد من تحديث تطبيق MuslimTV لشاشة التوقف.").setPositiveButton("حسنًا", null).show();
     }
 
     private void adhanScope(boolean visible) {

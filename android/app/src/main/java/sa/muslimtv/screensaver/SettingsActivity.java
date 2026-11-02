@@ -34,6 +34,8 @@ public class SettingsActivity extends Activity {
 
     private Prefs prefs;
     private LinearLayout list;
+    private ScrollView scroll;
+    private int surface, accent, ink, muted;
 
     /** Arabic locale for this screen, so every dialog title, list and button is laid out right-to-left. */
     @Override
@@ -49,9 +51,9 @@ public class SettingsActivity extends Activity {
         super.onCreate(b);
         prefs = new Prefs(this);
         UpdateJob.schedule(this);
-        ScrollView scroll = new ScrollView(this);
-        scroll.setBackground(new android.graphics.drawable.GradientDrawable(
-            android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM, new int[]{0xFF0A2016, 0xFF04120C, 0xFF020806}));
+        loadTheme();
+        scroll = new ScrollView(this);
+        applyThemeBackground();
         scroll.setVerticalScrollBarEnabled(false);
         android.widget.FrameLayout frame = new android.widget.FrameLayout(this);
         list = new LinearLayout(this);
@@ -68,20 +70,45 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onResume() {   // back in front (from the TV's settings, or opened again over itself): show what is set now
         super.onResume();
+        loadTheme();
+        applyThemeBackground();
         render();
     }
+
+    private void applyThemeBackground() {
+        if (scroll != null) scroll.setBackground(new android.graphics.drawable.GradientDrawable(
+            android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+            new int[]{mix(surface, 0xFF000000, .35f), mix(surface, 0xFF000000, .65f), 0xFF020304}));
+    }
+
+    private void loadTheme() {
+        android.content.SharedPreferences colors = getSharedPreferences("settings", MODE_PRIVATE);
+        surface = colors.getInt("theme_surface", 0xFF22252B);
+        accent = colors.getInt("theme_accent", 0xFFF2F2F2);
+        ink = 0xFFF6EFE0;
+        muted = 0xFFC6BBA4;
+    }
+
+    private static int mix(int first, int second, float towardsSecond) {
+        int r = Math.round(android.graphics.Color.red(first) * (1 - towardsSecond) + android.graphics.Color.red(second) * towardsSecond);
+        int g = Math.round(android.graphics.Color.green(first) * (1 - towardsSecond) + android.graphics.Color.green(second) * towardsSecond);
+        int b = Math.round(android.graphics.Color.blue(first) * (1 - towardsSecond) + android.graphics.Color.blue(second) * towardsSecond);
+        return android.graphics.Color.rgb(r, g, b);
+    }
+
+    private static int alpha(int color, int opacity) { return (color & 0x00FFFFFF) | (opacity << 24); }
 
     private void render() {
         list.removeAllViews();
         TextView title = new TextView(this);
         title.setText("MuslimTV");
-        title.setTextColor(0xFFF6EFE0);
+        title.setTextColor(ink);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
         title.setTypeface(font("ThmanyahDisplay-Bold"));
         list.addView(title);
         TextView sub = new TextView(this);
         sub.setText("إعدادات شاشة التوقف");
-        sub.setTextColor(0xFFC6BBA4);
+        sub.setTextColor(muted);
         sub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         sub.setTypeface(font("Thmanyah-Regular"));
         sub.setPadding(0, 0, 0, dp(18));
@@ -558,7 +585,7 @@ public class SettingsActivity extends Activity {
     private void header(String text) {
         TextView t = new TextView(this);
         t.setText(text);
-        t.setTextColor(0xFFD6AF6B);
+        t.setTextColor(accent);
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         t.setTypeface(font("Thmanyah-Medium"));
         t.setLetterSpacing(0.05f);
@@ -577,13 +604,13 @@ public class SettingsActivity extends Activity {
         card.setClickable(true);
         final android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
         bg.setCornerRadius(dp(14));
-        bg.setColor(0x14FFFFFF);
-        bg.setStroke(dp(2), 0x1FD6AF6B);
+        bg.setColor(alpha(surface, 150));
+        bg.setStroke(dp(1), alpha(accent, 85));
         card.setBackground(bg);
 
         final android.widget.ImageView ic = new android.widget.ImageView(this);
         final android.graphics.drawable.Drawable d = getDrawable(icon).mutate();
-        d.setTint(0xFFD6AF6B);
+        d.setTint(accent);
         ic.setImageDrawable(d);
         card.addView(ic, new LinearLayout.LayoutParams(dp(24), dp(24)));
 
@@ -591,7 +618,7 @@ public class SettingsActivity extends Activity {
         texts.setOrientation(LinearLayout.VERTICAL);
         final TextView name = new TextView(this);
         name.setText(label);
-        name.setTextColor(0xFFF6EFE0);
+        name.setTextColor(ink);
         name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
         name.setTypeface(font("Thmanyah-Medium"));
         name.setSingleLine(true);
@@ -599,7 +626,7 @@ public class SettingsActivity extends Activity {
         final TextView val = new TextView(this);
         if (value != null) {
             val.setText(value);
-            val.setTextColor(0xFFC6BBA4);
+            val.setTextColor(muted);
             val.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
             val.setTypeface(font("Thmanyah-Regular"));
             val.setSingleLine(true);
@@ -612,16 +639,16 @@ public class SettingsActivity extends Activity {
 
         final TextView chevron = new TextView(this);
         chevron.setText("›");   // shown mirrored (‹) in the RTL row
-        chevron.setTextColor(0x99C6BBA4);
+        chevron.setTextColor(alpha(muted, 160));
         chevron.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
         card.addView(chevron);
 
         card.setOnClickListener(v -> onClick.run());
         card.setOnFocusChangeListener((v, has) -> {
             // No scaling: a scaled rounded card overlapped its neighbours and blurred the text.
-            bg.setColor(has ? 0x33D6AF6B : 0x14FFFFFF);
-            bg.setStroke(dp(2), has ? 0xFFD6AF6B : 0x1FD6AF6B);
-            chevron.setTextColor(has ? 0xFFD6AF6B : 0x99C6BBA4);
+            bg.setColor(has ? mix(surface, accent, .22f) : alpha(surface, 150));
+            bg.setStroke(dp(has ? 2 : 1), has ? accent : alpha(accent, 85));
+            chevron.setTextColor(has ? accent : alpha(muted, 160));
         });
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
         lp.bottomMargin = dp(8);

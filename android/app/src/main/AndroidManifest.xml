@@ -43,7 +43,8 @@
 
         <activity android:name=".AdhanSettingsActivity" android:exported="true"
             android:permission="sa.muslimtv.screensaver.READ_CONFIG" android:screenOrientation="landscape" />
-        <activity android:name=".PhoneControlActivity" android:exported="false"
+        <activity android:name=".PhoneControlActivity" android:exported="true"
+            android:permission="sa.muslimtv.screensaver.READ_CONFIG"
             android:screenOrientation="landscape" />
         <!-- full-screen preview; any remote key closes it -->
         <activity
