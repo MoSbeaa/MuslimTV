@@ -34,6 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,8 +46,6 @@ final class AdhanEngine {
     private static final Uri CONFIG = Uri.parse("content://sa.muslimtv.screensaver.config/adhan");
     private static final String[] KEYS = {"Fajr","Dhuhr","Asr","Maghrib","Isha"};
     private static final String[] NAMES = {"الفجر","الظهر","العصر","المغرب","العشاء"};
-    // Manitoba Standard Time is UTC-5 year-round starting 2026-11-01. Old Fire OS tzdata falls back to UTC-6.
-    private static final TimeZone ZONE = TimeZone.getTimeZone("GMT-05:00");
     private final AccessibilityService service;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final SharedPreferences store;
@@ -69,7 +68,7 @@ final class AdhanEngine {
     }
     void start() {
         stopped=false;refreshConfig();
-        if(days.optJSONObject(dayKey(System.currentTimeMillis()))==null) new Thread(() -> {
+        if("mia".equals(config.optString("source","mia")) && days.optJSONObject(dayKey(System.currentTimeMillis()))==null) new Thread(() -> {
             try(InputStream input=service.getContentResolver().openInputStream(Uri.parse(CONFIG+"/timetable.json"))) {
                 JSONObject seed=flatten(new JSONTokener(read(input)).nextValue());
                 handler.post(() -> { if(!stopped && days.optJSONObject(dayKey(System.currentTimeMillis()))==null) { days=seed;store.edit().putString("days",seed.toString()).apply();check(); } });
@@ -121,20 +120,31 @@ final class AdhanEngine {
     private void refreshConfig() {
         configAt=System.currentTimeMillis();
         try(Cursor c=service.getContentResolver().query(CONFIG,null,null,null,null)) {
-            if(c!=null && c.moveToFirst())config=new JSONObject(c.getString(0));
+            if(c!=null && c.moveToFirst()){
+                JSONObject updated=new JSONObject(c.getString(0));
+                String key=scheduleKey(updated);
+                if(!key.equals(store.getString("schedule_key",""))){
+                    days=new JSONObject();store.edit().putString("schedule_key",key).remove("days").remove("fetched_at").apply();
+                    cancelAlarm();
+                }
+                config=updated;
+            }
         }catch(Exception e){Log.w("MUSLIMTVAdhan","Settings provider not ready");}
         if(!canPlayAudio())stopAudio();
         if(!config.optBoolean("enabled",false) || !config.optBoolean("popup",true))hideBanner();
         updateClock(System.currentTimeMillis());
     }
-    private static String dayKey(long millis) { SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd",Locale.ROOT);f.setTimeZone(ZONE);return f.format(new Date(millis)); }
-    private long time(JSONObject row,String field) {
+    private static String scheduleKey(JSONObject o){return o.optString("source","mia")+":"+o.optString("latitude")+":"+o.optString("longitude")+":"+o.optString("timezone")+":"+o.optInt("method",2);}
+    private TimeZone zone(){return TimeZone.getTimeZone(config.optString("timezone","GMT-05:00"));}
+    private String dayKey(long millis) { SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd",Locale.ROOT);f.setTimeZone(zone());return f.format(new Date(millis)); }
+    private long time(JSONObject row,String field,int index) {
         try {
             String text=row.getString(field);
             if(!text.matches("[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?"))return -1;
             int h=Integer.parseInt(text.substring(0,2)),m=Integer.parseInt(text.substring(3,5));if(h>23)return -1;
             String date=row.getString("d_date");
-            Calendar c=Calendar.getInstance(ZONE);c.clear();c.set(Integer.parseInt(date.substring(0,4)),Integer.parseInt(date.substring(5,7))-1,Integer.parseInt(date.substring(8,10)),h,m,0);return c.getTimeInMillis();
+            Calendar c=Calendar.getInstance(zone());c.clear();c.set(Integer.parseInt(date.substring(0,4)),Integer.parseInt(date.substring(5,7))-1,Integer.parseInt(date.substring(8,10)),h,m,0);
+            c.add(Calendar.MINUTE,config.optInt("off_"+KEYS[index],0));return c.getTimeInMillis();
         }catch(Exception e){return -1;}
     }
     private String field(int index) {
@@ -153,7 +163,7 @@ final class AdhanEngine {
         JSONObject row=days.optJSONObject(today);
         if(row!=null && awake())for(int i=0;i<KEYS.length;i++) {
             if(!config.optBoolean(KEYS[i],true))continue;
-            long due=time(row,field(i));
+            long due=time(row,field(i),i);
             if(due<0 || now<due || now-due>45000 || today.equals(store.getString("done_"+KEYS[i],"")))continue;
             // Persist before emitting: periodic checks and exact alarm delivery cannot duplicate it.
             if(!store.edit().putString("done_"+KEYS[i],today).commit())continue;
@@ -162,16 +172,17 @@ final class AdhanEngine {
         }
         long next=(now/3600000L+1)*3600000L;String nextName="";
         for(int offset=0;offset<2;offset++) {
-            Calendar c=Calendar.getInstance(ZONE);c.setTimeInMillis(now);c.add(Calendar.DATE,offset);
+            Calendar c=Calendar.getInstance(zone());c.setTimeInMillis(now);c.add(Calendar.DATE,offset);
             JSONObject nextDay=days.optJSONObject(dayKey(c.getTimeInMillis()));if(nextDay==null)continue;
             for(int i=0;i<5;i++)if(config.optBoolean(KEYS[i],true)){
-                long at=time(nextDay,field(i));if(at>now && at<next){next=at;nextName=NAMES[i];}
+                long at=time(nextDay,field(i),i);if(at>now && at<next){next=at;nextName=NAMES[i];}
             }
         }
         schedule(next);
         if(now-statusAt>60000 || now<statusAt){
-            statusAt=now;SimpleDateFormat format=new SimpleDateFormat("h:mm a",new Locale("ar"));format.setTimeZone(ZONE);
-            report(row==null?"لا يوجد جدول صالح لهذا اليوم؛ لن يصدر أذان بتوقيت تخميني":("جدول MiaOnline محفوظ"+(nextName.isEmpty()?"":" · القادم "+nextName+" "+format.format(new Date(next)))));
+            statusAt=now;SimpleDateFormat format=new SimpleDateFormat("h:mm a",new Locale("ar"));format.setTimeZone(zone());
+            String source="aladhan".equals(config.optString("source","mia"))?"حساب حسب المدينة":"جدول MiaOnline";
+            report(row==null?"لا يوجد جدول صالح لهذا اليوم؛ لن يصدر أذان بتوقيت تخميني":(source+" محفوظ"+(nextName.isEmpty()?"":" · القادم "+nextName+" "+format.format(new Date(next)))));
         }
     }
     private PendingIntent alarm() {
@@ -187,18 +198,49 @@ final class AdhanEngine {
     private void cancelAlarm(){AlarmManager m=service.getSystemService(AlarmManager.class);if(m!=null)m.cancel(alarm());alarmAt=0;}
     private void fetchTimetable() {
         fetching=true;attemptAt=System.currentTimeMillis();
+        final String key=scheduleKey(config);
+        final String source=config.optString("source","mia");
         new Thread(() -> {
             HttpURLConnection connection=null;
             try {
-                connection=(HttpURLConnection)new URL("https://miaonline.org/wp-json/dpt/v1/prayertime?filter=year").openConnection();
-                connection.setConnectTimeout(10000);connection.setReadTimeout(15000);
-                JSONObject fresh;try(InputStream in=connection.getInputStream()){fresh=flatten(new JSONTokener(read(in)).nextValue());}
+                JSONObject fresh;
+                if("aladhan".equals(source)){
+                    fresh=new JSONObject();
+                    for(int delta=0;delta<2;delta++){
+                        Calendar day=Calendar.getInstance(zone());day.add(Calendar.DATE,delta);
+                        JSONObject row=fetchAladhan(day.getTimeInMillis());fresh.put(row.getString("d_date"),row);
+                    }
+                }else{
+                    connection=(HttpURLConnection)new URL("https://miaonline.org/wp-json/dpt/v1/prayertime?filter=year").openConnection();
+                    connection.setConnectTimeout(10000);connection.setReadTimeout(15000);
+                    try(InputStream in=connection.getInputStream()){fresh=flatten(new JSONTokener(read(in)).nextValue());}
+                }
                 if(fresh.optJSONObject(dayKey(System.currentTimeMillis()))==null)throw new java.io.IOException("No current date");
-                store.edit().putString("days",fresh.toString()).putLong("fetched_at",System.currentTimeMillis()).apply();
-                handler.post(() -> {if(!stopped){days=fresh;statusAt=0;check();}});
-            } catch(Exception failed){Log.w("MUSLIMTVAdhan","Using cached MIA timetable");}
+                handler.post(() -> {if(!stopped && key.equals(scheduleKey(config))){
+                    days=fresh;store.edit().putString("days",fresh.toString()).putLong("fetched_at",System.currentTimeMillis()).apply();statusAt=0;check();}});
+            } catch(Exception failed){Log.w("MUSLIMTVAdhan","Using cached prayer timetable",failed);}
             finally{if(connection!=null)connection.disconnect();handler.post(() -> fetching=false);}
-        },"MiaPrayerTimetable").start();
+        },"MuslimTVPrayerTimetable").start();
+    }
+    private JSONObject fetchAladhan(long when)throws Exception{
+        SimpleDateFormat date=new SimpleDateFormat("dd-MM-yyyy",Locale.ROOT);date.setTimeZone(zone());
+        String query="latitude="+config.getDouble("latitude")+"&longitude="+config.getDouble("longitude")
+            +"&method="+config.optInt("method",2)+"&school="+(config.optInt("asr",2)==2?1:0)
+            +"&timezonestring="+URLEncoder.encode(config.getString("timezone"),"UTF-8");
+        HttpURLConnection connection=(HttpURLConnection)new URL("https://api.aladhan.com/v1/timings/"+date.format(new Date(when))+"?"+query).openConnection();
+        connection.setConnectTimeout(10000);connection.setReadTimeout(15000);
+        try(InputStream input=connection.getInputStream()){
+            JSONObject timings=new JSONObject(read(input)).getJSONObject("data").getJSONObject("timings");
+            SimpleDateFormat iso=new SimpleDateFormat("yyyy-MM-dd",Locale.ROOT);iso.setTimeZone(zone());
+            JSONObject row=new JSONObject().put("d_date",iso.format(new Date(when)));
+            String[] names={"Fajr","Sunrise","Dhuhr","Asr","Maghrib","Isha"};
+            String[] fields={"fajr_begins","sunrise","zuhr_begins","asr_mithl_1","maghrib_begins","isha_begins"};
+            for(int i=0;i<names.length;i++){
+                String value=timings.getString(names[i]);if(!value.matches("[0-2][0-9]:[0-5][0-9].*"))throw new java.io.IOException("Invalid time");
+                row.put(fields[i],value.substring(0,5));
+            }
+            row.put("asr_mithl_2",row.getString("asr_mithl_1"));return row;
+        }finally{connection.disconnect();}
     }
     private static String read(InputStream input)throws java.io.IOException {
         if(input==null)throw new java.io.IOException();ByteArrayOutputStream out=new ByteArrayOutputStream();byte[] buffer=new byte[16384];int n;

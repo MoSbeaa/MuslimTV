@@ -31,11 +31,12 @@ https://github.com/MoSbeaa/MuslimTV.git
 - بطاقات مفضلة برموز مبسطة تتبع ألوان الثيم تلقائيًا، مع خيار الرجوع إلى صور التطبيقات الأصلية.
 - ترتيب التطبيقات المفضلة والتنقل باستخدام جهاز التحكم، مع الحفاظ على الترتيب المحفوظ عند التحديث.
 - خمسة اختصارات فيديو قابلة لتعديل العناوين والروابط، مع فتحها في TizenTube.
-- مواقيت الصلاة من **MiaOnline** مع عرض الصلاة القادمة.
+- مواقيت الصلاة من **MiaOnline** لوينبيغ أو حساب حسب مدينة المستخدم، مع عرض الصلاة القادمة.
 - تشغيل الأذان داخل الواجهة وشاشة التوقف، مع خيار مستقل لتشغيله أثناء استخدام التطبيقات الأخرى.
-- تنبيه صلاة أعلى يمين الشاشة أثناء استخدام التطبيقات؛ صامت افتراضيًا مع إمكانية تفعيل صوت الأذان.
+- تنبيه صلاة أعلى يمين الشاشة أثناء استخدام التطبيقات؛ يمكن تشغيل الصوت أو جعله صامتًا من الإعدادات.
 - ساعة صغيرة فوق التطبيقات الأخرى بتوقيت وينبيغ، قابلة للإخفاء من الإعدادات.
 - اختيار أصوات الأذان والاستماع إليها قبل الحفظ: مكة، القدس، المدينة، والعفاسي، إضافة إلى تسجيلين من سوريا وناصر القطامي والأذان الدمشقي الجماعي وعمر هشام العربي، مع خيارات للفجر.
+- [التحكم من الهاتف عبر QR](docs/PHONE-CONTROL.md): صفحة عربية على الشبكة المنزلية لتعديل المواقيت والأذان والمظهر والتطبيقات والروابط دون تثبيت تطبيق هاتف.
 - حديث يتغيّر يوميًا، وطقس أسبوعي، وعدّاد رمضان.
 - ألوان جاهزة وألوان مخصصة، وخلفيات متناوبة متاحة دون اتصال.
 - عدّاد اختياري لموعد مخصص؛ عنوانه وتاريخه محفوظان محليًا، وهو مخفي افتراضيًا.
@@ -88,13 +89,13 @@ gradle -p android :app:assembleRelease :launcher:assembleRelease
 
 ### أدلة التخصيص
 
-[الأذان](docs/ADHAN.md) · [الألوان](docs/THEME-COLORS.md) · [الاختصارات](docs/QUICK-LINKS.md) · [الطقس والحديث](docs/DAILY-HADITH-WEEKLY-WEATHER.md) · [الخلفيات](docs/PHOTO-UPDATE.md) · [Fire TV وأمازون](docs/AMAZON-ACCESS.md)
+[الأذان](docs/ADHAN.md) · [التحكم من الهاتف](docs/PHONE-CONTROL.md) · [الألوان](docs/THEME-COLORS.md) · [الاختصارات](docs/QUICK-LINKS.md) · [الطقس والحديث](docs/DAILY-HADITH-WEEKLY-WEATHER.md) · [الخلفيات](docs/PHOTO-UPDATE.md) · [Fire TV وأمازون](docs/AMAZON-ACCESS.md)
 
 </div>
 
 ## English
 
-MuslimTV is an Islamic home screen and screensaver for Fire TV and Android TV. It includes Arabic typography, configurable themes, local wallpapers, daily hadith, weekly weather, MiaOnline prayer times, selectable adhan recordings with previews, and silent prayer banners over other apps. The public custom-event countdown is disabled by default and stores its title/date locally.
+MuslimTV is an Islamic home screen and screensaver for Fire TV and Android TV. It includes Arabic typography, configurable themes, local wallpapers, daily hadith, weekly weather, MiaOnline or city-based prayer times, selectable adhan recordings with previews, phone settings through a temporary QR pairing page, and prayer banners over other apps with optional audio. The public custom-event countdown is disabled by default and stores its title/date locally.
 
 The promotional images reflect the current visual style and omit personal event information; they are illustrative rather than live schedule screenshots. Existing TV backgrounds are unchanged.
 

@@ -66,3 +66,7 @@ def copyTvPage = tasks.register('copyTvPage', Sync) {
     into "$buildDir/generated/web"
 }
 preBuild.dependsOn copyTvPage
+
+dependencies {
+    implementation 'com.google.zxing:core:3.5.3'
+}

@@ -20,7 +20,7 @@ final class AdhanOptions {
         SharedPreferences p = prefs(c); JSONObject j = new JSONObject();
         try {
             j.put("voices", new org.json.JSONArray(java.util.Arrays.asList(IDS)));
-            j.put("enabled", p.getBoolean("enabled", true));
+            j.put("enabled", p.getBoolean("enabled", true) && !p.getBoolean("needs_prayer_review", false));
             j.put("sound_outside", p.getBoolean("sound_outside", true));
             j.put("sound", p.getBoolean("sound", true)); j.put("popup", p.getBoolean("popup", true));
             j.put("clock_overlay", p.getBoolean("clock_overlay", true));
@@ -29,6 +29,14 @@ final class AdhanOptions {
             j.put("fajr_volume", p.getInt("fajr_volume", 10));
             j.put("duration", p.getInt("duration", 30));
             j.put("asr", p.getInt("asr", 2));
+            Prefs settings = new Prefs(c);
+            String[] city = settings.city();
+            j.put("source", p.getString("prayer_source", "mia"));
+            j.put("city", city[0]); j.put("latitude", Double.parseDouble(city[1])); j.put("longitude", Double.parseDouble(city[2]));
+            j.put("timezone", p.getString("prayer_tz", "وينبيغ".equals(city[0]) ? "Etc/GMT+5" : Prefs.TZ));
+            j.put("method", p.getInt("prayer_method", 2));
+            for (String key : new String[]{"Fajr","Sunrise","Dhuhr","Asr","Maghrib","Isha"})
+                j.put("off_" + key, p.getInt("off_" + key, 0));
             for (String key : KEYS) j.put(key, p.getBoolean(key, true));
         } catch (org.json.JSONException impossible) { }
         return j;

@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="io.github.toolicious.homeonfire.muslimtv.OPEN_AMAZON" />
+    <uses-permission android:name="sa.muslimtv.screensaver.READ_CONFIG" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -42,6 +43,8 @@
 
         <activity android:name=".AdhanSettingsActivity" android:exported="true"
             android:permission="sa.muslimtv.screensaver.READ_CONFIG" android:screenOrientation="landscape" />
+        <activity android:name=".PhoneControlActivity" android:exported="false"
+            android:screenOrientation="landscape" />
         <!-- full-screen preview; any remote key closes it -->
         <activity
             android:name=".MainActivity"

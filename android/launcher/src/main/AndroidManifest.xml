@@ -78,6 +78,12 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
+        <provider android:name=".PhoneConfigProvider"
+            android:authorities="sa.muslimtv.home.phone"
+            android:exported="true"
+            android:readPermission="sa.muslimtv.screensaver.READ_CONFIG"
+            android:writePermission="sa.muslimtv.screensaver.READ_CONFIG" />
+
         <!-- favourites row from ADB (agents, optimize/dock.sh); DUMP = only the shell can send it -->
         <receiver
             android:name=".DockReceiver"

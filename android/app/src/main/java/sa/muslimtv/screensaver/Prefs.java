@@ -185,11 +185,21 @@ final class Prefs {
         String[] city = city();
         // Fire OS on older sticks still treats Winnipeg as UTC-6 in winter.
         // Manitoba Standard Time has been UTC-5 year-round since 2026-11-01.
-        String zone = "وينبيغ".equals(city[0]) ? "Etc/GMT+5" : TZ;
+        String zone = adhanContext.getSharedPreferences("adhan", Context.MODE_PRIVATE)
+            .getString("prayer_tz", "وينبيغ".equals(city[0]) ? "Etc/GMT+5" : TZ);
+        android.content.SharedPreferences prayer = adhanContext.getSharedPreferences("adhan", Context.MODE_PRIVATE);
         List<String> ids = new ArrayList<>();
         for (String s : shows()) ids.add(s.split("\\|", 2)[0]);
         return "asr=" + adhanAsr() + "&city=" + Uri.encode(city[0]) + "&lat=" + city[1] + "&lon=" + city[2]
             + "&tz=" + Uri.encode(zone)
+            + "&prayer_source=" + prayer.getString("prayer_source", "mia")
+            + "&prayer_method=" + prayer.getInt("prayer_method", 2)
+            + "&off_Fajr=" + prayer.getInt("off_Fajr", 0)
+            + "&off_Sunrise=" + prayer.getInt("off_Sunrise", 0)
+            + "&off_Dhuhr=" + prayer.getInt("off_Dhuhr", 0)
+            + "&off_Asr=" + prayer.getInt("off_Asr", 0)
+            + "&off_Maghrib=" + prayer.getInt("off_Maghrib", 0)
+            + "&off_Isha=" + prayer.getInt("off_Isha", 0)
             + "&teams=" + join(teamIds(), ",")
             + "&panel=" + panel()
             + "&week=" + ("none".equals(panel()) ? "0" : "1")   // for a page older than #panel

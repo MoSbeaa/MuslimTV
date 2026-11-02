@@ -309,6 +309,9 @@ const CONFIG = {
   // Prayer dates use the city zone passed by the app. The clock follows Fire TV itself.
   timezone: _Q.get('tz') || 'Etc/GMT+5',
   prayerMethod: 4,
+  prayerSource: _Q.get('prayer_source') || 'mia',
+  aladhanMethod: _num('prayer_method', 2),
+  prayerOffsets: Object.fromEntries(['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'].map(k=>[k,_num('off_'+k,0)])),
   asrMithl: _num('asr', 2),
   // the card beside the clock: shows | prayers | forecast | verse | none
   panel: (p => ['shows','prayers','forecast','verse','none'].includes(p) ? p : 'verse')
@@ -479,24 +482,60 @@ function miaToday(){
     Asr:CONFIG.asrMithl === 1 ? t.asr_mithl_1 : t.asr_mithl_2,
     Maghrib:t.maghrib_begins, Isha:t.isha_begins};
 }
+function shiftedTime(value, minutes){
+  const match = /^(\d{2}):(\d{2})/.exec(String(value || ''));
+  if(!match) return null;
+  const total = ((+match[1]*60 + +match[2] + minutes) % 1440 + 1440) % 1440;
+  return pad(Math.floor(total/60)) + ':' + pad(total%60);
+}
+function adjustedPrayers(times){
+  if(!times) return null;
+  return Object.fromEntries(Object.entries(times).map(([key,value])=>[key,shiftedTime(value,CONFIG.prayerOffsets[key] || 0)]));
+}
+async function aladhanToday(){
+  const p = riyadhParts();
+  const date = `${pad(p.d)}-${pad(p.mo)}-${p.y}`;
+  const query = new URLSearchParams({latitude:CONFIG.latitude,longitude:CONFIG.longitude,
+    method:CONFIG.aladhanMethod,school:CONFIG.asrMithl===2?1:0,timezonestring:CONFIG.timezone});
+  const r = await fetchT(`https://api.aladhan.com/v1/timings/${date}?${query}`,12000);
+  if(!r.ok) throw Error('prayer source');
+  const t = (await r.json()).data?.timings;
+  if(!t) throw Error('prayer timings');
+  return {Fajr:t.Fajr,Sunrise:t.Sunrise,Dhuhr:t.Dhuhr,Asr:t.Asr,Maghrib:t.Maghrib,Isha:t.Isha};
+}
 async function loadPrayers(){
-  let times = miaToday();
-  try {
-    let last = 0; try { last = +localStorage.getItem('miaFetchedAt'); } catch(e){}
-    if(!times || Date.now() - last > 6*3600*1000){
-      const r = await fetchT('https://miaonline.org/wp-json/dpt/v1/prayertime?filter=year', 12000);
-      if(!r.ok) throw 0;
-      const days = flattenMia(await r.json());
-      if(Object.keys(days).length){
-        MIA_DAYS = {...MIA_DAYS, ...days};
-        try { localStorage.setItem('miaDays',JSON.stringify(MIA_DAYS)); localStorage.setItem('miaFetchedAt',String(Date.now())); } catch(e){}
+  let times = null;
+  if(CONFIG.prayerSource === 'aladhan'){
+    try {
+      const key = `aladhan:${CONFIG.latitude}:${CONFIG.longitude}:${CONFIG.timezone}:${CONFIG.aladhanMethod}:${CONFIG.asrMithl}:${riyadhParts().y}-${riyadhParts().mo}-${riyadhParts().d}`;
+      const cached = JSON.parse(localStorage.getItem('prayerCache') || '{}');
+      times = cached.key === key ? cached.times : null;
+      if(!times || Date.now()-cached.at > 12*3600*1000){
+        times = await aladhanToday();
+        localStorage.setItem('prayerCache',JSON.stringify({key,times,at:Date.now()}));
       }
-      times = miaToday();
-    }
-  }catch(e){}
-  // No fabricated alarm times: the native scheduler uses only valid, date-matched MIA rows.
-  // The existing astronomical estimate remains a display fallback if a future year is unavailable.
-  try { buildPrayers(times || computePrayers()); } catch(e){}
+    }catch(e){}
+  }else{
+    times = miaToday();
+    try {
+      let last = 0; try { last = +localStorage.getItem('miaFetchedAt'); } catch(e){}
+      if(!times || Date.now() - last > 6*3600*1000){
+        const r = await fetchT('https://miaonline.org/wp-json/dpt/v1/prayertime?filter=year', 12000);
+        if(!r.ok) throw 0;
+        const days = flattenMia(await r.json());
+        if(Object.keys(days).length){
+          MIA_DAYS = {...MIA_DAYS, ...days};
+          try { localStorage.setItem('miaDays',JSON.stringify(MIA_DAYS)); localStorage.setItem('miaFetchedAt',String(Date.now())); } catch(e){}
+        }
+        times = miaToday();
+      }
+    }catch(e){}
+  }
+  // MIA retains its old visual estimate if a future bundled year is absent. The selected
+  // calculation source never displays times from a different method when it is unavailable.
+  if(!times && CONFIG.prayerSource === 'aladhan'){
+    PRAYERS=[]; DAY_TIMES=null; renderPrayerStrip();
+  }else try { buildPrayers(adjustedPrayers(times || computePrayers())); } catch(e){}
   tickPrayer(); tickRamadan();
   if(CONFIG.panel === 'prayers') renderPanel(false);
 }

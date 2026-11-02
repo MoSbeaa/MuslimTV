@@ -131,6 +131,8 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { pickIdle(); } });
 
         header("التطبيق");
+        row("التحكم من الهاتف", "امسح رمز QR لتعديل الإعدادات من هاتفك", R.drawable.ic_sync,
+            () -> startActivity(new Intent(this, PhoneControlActivity.class)));
         row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل · كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
             prefs.setAutoUpdate(!prefs.autoUpdate()); render(); } });
         row("تحديث الشاشة الآن", Updater.versionNote(this) + " " + "ينزّل أحدث إصدار من الشاشة. يُحدَّث التطبيق عبر مساعد الذكاء الاصطناعي مع الحفاظ على إعدادات الشاشة الرئيسية وشاشة التوقف.", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });

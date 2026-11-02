@@ -31,7 +31,10 @@ public final class AdhanSettingsActivity extends Activity {
         body.setPadding(dp(80), dp(22), dp(80), dp(30)); scroll.addView(body);
         label("الأذان وتنبيهات الصلاة", 26, 0xFFD6AF6B);
         label("يمكن اختيار تشغيل صوت الأذان داخل MuslimTV وأثناء استخدام التطبيقات الأخرى بشكل مستقل.", 15, Color.WHITE);
-        label("المواقيت: MiaOnline — بداية الصلاة، لا وقت الإقامة. محفوظة محليًا للعمل دون إنترنت.", 14, 0xFFC6BBA4);
+        label("المواقيت: " + ("aladhan".equals(prefs.getString("prayer_source", "mia"))
+            ? "حساب حسب المدينة — راجع مواقيت اليوم من الهاتف قبل التفعيل" : "جدول MiaOnline — بداية الصلاة، لا وقت الإقامة"), 14, 0xFFC6BBA4);
+        if(prefs.getBoolean("needs_prayer_review",false))
+            label("الأذان متوقف حتى تعرض مواقيت اليوم وتراجعها من صفحة الهاتف.",15,0xFFFFD080);
         toggle("تفعيل الأذان والتنبيهات", "enabled");
         toggle("صوت الأذان داخل MuslimTV", "sound");
         row("أثناء استخدام التطبيقات: " + (prefs.getBoolean("sound_outside", true) ? "تشغيل الأذان" : "صامت"), this::outsideSound);
@@ -128,7 +131,7 @@ public final class AdhanSettingsActivity extends Activity {
         new AlertDialog.Builder(this).setTitle("مدة التنبيه المرئي").setItems(names,(d,i)->{prefs.edit().putInt("duration",seconds[i]).apply();AdhanOptions.changed(this);render();}).show();
     }
     private void asr() {
-        new AlertDialog.Builder(this).setTitle("وقت العصر في جدول MiaOnline")
+        new AlertDialog.Builder(this).setTitle("وقت العصر في جدول الصلاة")
             .setItems(new String[]{"المثل الأول","المثل الثاني"},(d,i)->{prefs.edit().putInt("asr",i+1).apply();AdhanOptions.changed(this);render();}).show();
     }
     private void sendPreview() {
